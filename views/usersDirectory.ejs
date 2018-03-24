@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User directory</title>
+</head>
+<body>
+
+    <h1>
+        Behold, our lovely user list
+    </h1>
+
+    <h2>
+        Users:
+    </h2>
+
+    <!-- Lets render an ordered list of all our users! Using the EJS 'loop' syntax -->
+    <ul>
+        <% userList.forEach(function(user) { %>
+            <li>
+                ID: <%= user.id %>
+                <br>
+                <a href=<%= path %>/<%= user.id %>> <%= user.firstName %> <%= user.lastName %> </a>
+            </li>
+            <br>
+        <% }); %>
+    </ul>
+
+</body>
+</html>

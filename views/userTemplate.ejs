@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User information</title>
+</head>
+<body>
+
+    <!-- Username will be displayed as a heading -->
+    <h1>
+        <!-- Use the EJS notation to generate dynamic values, in this case simply the username as a heading -->
+
+        <%= user.firstName %>   <!-- This EJS functionality can read an object passed to the EJS renderer
+                                     by the JS which called 'render' on this page. When res.render(page, data)
+                                     is called, we can place a list of data objects as a parameter which
+                                     EJS can access, and will use to fill in values in this template, as
+                                     designated by the notation here (with the percentage symbols). See the EJS
+                                     documentation for specific details on how to access data within the template -->
+    </h1>
+
+    <!-- Some test paragraph -->
+    <p>
+        Yo yo yo, this guy's full name is <%= user.firstName %> <%= user.lastName %>
+
+        <br><br>
+
+        <!-- Use the EJS js syntax to only diplay links appropriately (eg. no 'prev user if this is the first one) -->
+        <% if (previd >= 0) { %>
+            <a href=<%= path %><%= previd %>>Previous user</a>
+        <% } %>
+        <% if (nextid <= maxid) { %>
+            <a href=<%= path %><%= nextid %>>Next user</a>
+        <% } %>
+    </p>
+
+    <p>
+        <a href="/users/">Return to user list</a>
+    </p>
+
+</body>
+</html>
