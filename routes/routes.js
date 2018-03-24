@@ -1,0 +1,26 @@
+//Gain access to express package so that we can edit the 'router' component of the application object.
+
+const express = require('express');
+const userDataController = require('../controllers/userDataController');
+
+const router = express.Router();     //This will set the routing and response callbacks for the application requests
+
+
+//Define 'GET' routes using the ROUTER rather than the APP object
+//Define a handler for HTTP GET requests that come into the server, along any URL path. For now, we will
+//define this such that we just send back a hello world message.
+//
+router.get('/', userDataController.homeDirectoryGet);
+
+
+//Route for getting user names
+router.get('/users', userDataController.generateUserList);
+
+
+//Route for getting a specific user via id in URL
+router.get('/users/:id', userDataController.userDetail);
+
+
+//We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
+//via app.use()
+module.exports = router;
