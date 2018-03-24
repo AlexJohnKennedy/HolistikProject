@@ -22,7 +22,7 @@ app.set("view engine", "ejs");  //Sets EJS to be the templating engine we are us
 
 
 //Use the 'importing' functionality of 'require' call to access our database (which currently is just another local JS code)
-const db = require('./public/javascripts/models/db.js');
+const db = require('./models/db.js');
 
 
 //Define a handler for HTTP GET requests that come into the server, along any URL path. For now, we will
