@@ -8,7 +8,9 @@ const db = require('../models/db.js');
 
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
-    res.send("hello world!");
+    res.render('landingPage', {
+        path : "/"
+    });
 }
 
 //Define behaviour and access data to get user list

@@ -16,6 +16,9 @@ app.set("view engine", "ejs");  //Sets EJS to be the templating engine we are us
 //Tell the app to use the router object
 app.use(router);
 
+//Declare a static directory
+app.use(express.static(__dirname + '/public'));
+
 //Start the server with app.listen( /* PORT NUMBER */ )
 //This function literally runs the server and makes the host listen for live HTTP requests at the specified port!!
 const PORT = process.env.PORT || 3000;  //This is for deploying using heroku. It says 'use the port heroku assigns for us, and if that's not there, use 3000
