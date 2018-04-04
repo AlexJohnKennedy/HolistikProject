@@ -20,6 +20,7 @@ const defaultNodeSize = {
     width  : "100"
 };
 const defaultNodeTitle = "New concept";
+const defaultHierarchicalRelationshipLabel = "Child";
 
 //Define a counter which will track the current 'id' number to append
 let currIdNum = 0;
@@ -47,7 +48,7 @@ function createNewNode() {
     let newElemDetails = createNewNode_HtmlElement(defaultNodePosition.left, defaultNodePosition.top);
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
-    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId);
+    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.topPos, newElemDetails.leftPos, newElemDetails.height, newElemDetails.width);
     canvasState.contentNodeList.push(newNode);
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
@@ -63,6 +64,9 @@ function createNewNode_HtmlElement(leftPos, topPos) {
     let idString = idPrefix + currIdNum;
     currIdNum++;
 
+    //Add element as a child of the canvas object!
+    drawingCanvas.appendChild(newElem);
+
     newElem.setAttribute("id", idString);    //Assign the id.
     //Assign the classes we need. Most of them facilitate interaction with interact.js library.
     newElem.setAttribute("class", "draggable drag-drop dropzone contentNode node");
@@ -77,9 +81,176 @@ function createNewNode_HtmlElement(leftPos, topPos) {
     //Return the html element we just made, and it's id string.
     return {
         elementReference : newElem,
-        elementId        : idString
-    }
+        elementId        : idString,
+        topPos           : topPos,
+        leftPos          : leftPos,
+        height           : defaultNodeSize.height,
+        width            : defaultNodeSize.width
+    };
 }
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Node overlap detection and rearranging functions ----------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
+function detectOverlaps() {
+    //TODO
+}
+
+function detectOverlaps(movedNode) {
+    //TODO
+}
+
+function rearrangeAllNodes() {
+    //TODO
+}
+
+function rearrangeNodes(overlappingNodes) {
+    //TODO
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- ContentNode 'class' definition (actually a javascript 'prototype') ----------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** This is a definition of a constructor 'function' which defines an object prototype structure, representing a logical
+ *  content node, which currently exists on the drawing canvas. Using this we can treat 'ContentNode' as somewhat of a
+ *  class.
+ * @constructor
+ */
+function ContentNode(element, id, top, left, height, width){
+    // --- Object properties ---
+    this.htmlElement     = element;
+    this.idString        = id;
+    this.isVisible       = true;    //New nodes are always deemed visible (for now)
+    this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have chilren yet anyway
+    this.colour          = defaultColour;
+    this.position.top    = top;
+    this.position.left   = left;
+    this.size.height     = height;
+    this.size.width      = width;
+    this.titleText       = defaultNodeTitle;
+
+    this.childrenList    = [];      //Upon creation, new nodes have no defined relationships.
+    this.parentList      = [];
+    this.semanticRelList = [];
+}
+
+/**
+ * Moves or animates a node to a specified position on screen, then update the tracked state.
+ * @param top
+ * @param left
+ * @param animateFlag flag to specify whether the movement should be smoothly animated or be performed instantly.
+ */
+ContentNode.prototype.moveNodeTo = function(top, left, animateFlag) {
+    if (animateFlag) {
+        //TODO
+        alert("ANIMATIONS ARE NOT DONE YET. SET ANIMATE FLAG TO FALSE IN THE moveNodeTo() METHOD");
+    }
+    else {
+        this.htmlElement.style.top = top.toString();
+        this.htmlElement.style.left = left.toString();
+    }
+
+    //Ask the controlling context to detect possible overlaps after this move!
+    detectOverlaps(this);
+
+    this.updatePosition(top, left);
+};
+
+/**
+ * Simply used to update the object state position values (a setter method). Does not apply any on screen changes.
+ * @param top
+ * @param left
+ */
+ContentNode.prototype.updatePosition = function(top, left) {
+    this.position.top = top;
+    this.position.left = left;
+};
+
+/**
+ * Used to actively resize nodes and apply visible changes. Should subsequently update the state to the result
+ */
+ContentNode.prototype.resizeNode = function(newHeight, newWidth, animate) {
+    //TODO
+};
+
+/**
+ * Setter method for updating object state in regard to the current node size
+ */
+ContentNode.prototype.updateSize = function() {
+    //TODO
+};
+
+/**
+ * Update the name of a contentNode
+ */
+ContentNode.prototype.setTitleText = function(name) {
+    this.titleText = name;
+    this.htmlElement.innerText = name;
+};
+
+/**
+ * This function is used to assign a passed node to be a child of the node the method is being invoked on.
+ * The function also receives a 'label' which, as a simple string, dictates the 'family' or 'type' of relationship
+ * this nesting exists under.
+ *
+ * If the parent node (invoked-upon-node) already has a child with the same label, the passed node will be added to
+ * the same 'list of children' inside the relationship object which represents that label.
+ *
+ * If the parent node does not have a child with the same label, a new relationship object will be created to
+ * represent that 'family' of children.
+ *
+ * NOTE: There is an overloaded version of this method, which does not specify a second argument. That will simply do
+ *       the same action but use a 'default label'.
+ *
+ * @param node the node object which will become the child of this object.
+ * @param relationshipLabel the 'label' (string) which specifies the relationship type, or 'categorises' the relationship
+ */
+ContentNode.prototype.addChild = function(node, relationshipLabel) {
+    //Search through the current child list for relationship objects which match
+};
+
+/**
+ * Convenience overload of the addChild(node, label) method which simply uses a default value for the label.
+ * @param node the node object to become the child of this object.
+ */
+ContentNode.prototype.addChild = function(node) {
+    this.addChild(node, defaultHierarchicalRelationshipLabel);
+};
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Hierarchical Relationship 'Class' definition --------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Creates a new object which represents a labelled/categorised, hierarchical relationship between a singular parent
+ * node, and a collection of children.
+ * @param label the label that will be assigned to this object
+ * @constructor
+ */
+function HierarchicalRelationship(label, parentNode) {
+    this.displayedLabel = label;    //This will be the string that shows up with rendered (i.e. preserve whitespace and capitals)
+    this.categoryLabel = label.toLowerCase().trim().replace(/\s/g,'');    //This is the string used for 'id matching'. Whitespace and captials are removed.
+
+    this.parentNode = parentNode;
+    this.children   = [];   //Start the list empty, and use the adder method to append children
+}
+
+HierarchicalRelationship.prototype.addChild = function(node) {
+    this.children.push(node);
+};
+
+HierarchicalRelationship.prototype.compareLabel = function(label) {
+    //Convert the passed string to the appropriate formation
+    let converted = label.toLowerCase().trim().replace(/\s/g,'');
+
+    if (converted === this.categoryLabel) {
+        return true;
+    }
+    else {
+        return false;
+    }
+};
