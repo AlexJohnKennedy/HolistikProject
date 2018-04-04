@@ -1,0 +1,43 @@
+<!-- reusable header for entire website, which uses generic CSS classes for easy styling
+  -- This header will just contain a nice looking logo/emblem thingy, with a simple nav
+  -- bar to move between the pages.
+
+  -- PAGES INCLUDE:
+  -- -- Profile page (or login page if not currently logged in) - TODO
+  -- -- Project listing page - For viewing all of your 'projects' and 'shared projects'
+  -- -- Actual application page
+  -- -- Tutorial page, about us, and extra info page (???) - TODO
+  -->
+
+<!-- ------------------------------------------------------------------------------------ -->
+
+<!-- Nav bar -->
+<nav class="navbar navbar-default" role="navigation">
+
+    <!-- use a simple div to 'contain' the nav bar elements -->
+    <div class="container-fluid">
+
+        <div class="navbar-header">
+            <!-- The left of the nav bar will be a 'brand name' element, also serving as a hyperlink to the homepage? -->
+            <a class="navbar-brand brandNameText" href="/">
+                Holistik
+            </a>
+
+            <!-- List of remaining nav bar elements -->
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/main">Home</a>
+                </li>
+                <li>
+                    <a href="/profile">Profile</a>
+                </li>
+                <li>
+                    <a href="/helppage">Help</a>
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>

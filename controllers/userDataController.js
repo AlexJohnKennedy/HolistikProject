@@ -6,6 +6,12 @@ const db = require('../models/db.js');
 //It is not up to the controller object to decide WHICH URLS activate which repsonses, that is the job of the router
 //Here, we are simply defining the functions which pass data to views to be rendered, and the router will decide when to call each one
 
+//Define a simple main page rendering for front end development
+function mainPageGet(req, res) {
+    res.render('pages/mindMapPage');
+}
+
+
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
     res.render('landingPage', {
@@ -62,5 +68,6 @@ function userDetail(req, res) {
 module.exports = {
     homeDirectoryGet : homeDirectoryGet,
     generateUserList : generateUserList,
-    userDetail : userDetail
+    userDetail : userDetail,
+    mainPageGet : mainPageGet
 }

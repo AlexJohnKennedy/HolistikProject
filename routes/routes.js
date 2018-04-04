@@ -12,6 +12,9 @@ const router = express.Router();     //This will set the routing and response ca
 //
 router.get('/', userDataController.homeDirectoryGet);
 
+//Route for going to the 'main' application page (the one where it functions as a one-screen app)
+router.get('/main', userDataController.mainPageGet);
+
 
 //Route for getting user names
 router.get('/users', userDataController.generateUserList);

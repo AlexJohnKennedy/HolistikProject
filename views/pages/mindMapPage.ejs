@@ -1,0 +1,47 @@
+<!-- This entire application is likely to be single-screen: This page will form that! -->
+<!-- To avoid preposterous amounts of code inside of one file, we will use EJS 'partials' to separate the
+  -- page information into multiple files.
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Holisitk - Dynamic Mind Mapping and Organisation</title>
+    <link rel="stylesheet" href="/stylesheets/styleMain_testing.css">
+</head>
+
+<!-- -------------------------------------------------------------- -->
+
+<body>
+
+    <!-- HEADER. Will render at the top of every page, and server as a nav bar for the main site pages -->
+    <header>
+        <% include ../partials/header.ejs %>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <h2>ITS TIME TO TEST </h2>
+        <p>TEST TEST TEST TEST TEST</p>
+
+
+
+
+
+
+
+
+
+    </main>
+
+    <!-- FOOTER. Will render at the bottom of every page on the website, ideally! -->
+    <footer>
+        <% include ../partials/footer.ejs %>
+    </footer>
+
+</body>
+
+</html>
