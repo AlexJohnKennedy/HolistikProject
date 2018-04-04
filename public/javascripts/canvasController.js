@@ -132,7 +132,8 @@ function ContentNode(element, id, top, left, height, width){
     this.size.width      = width;
     this.titleText       = defaultNodeTitle;
 
-    this.childrenList    = [];      //Upon creation, new nodes have no defined relationships.
+    //Upon creation, new nodes have no defined relationships.
+    this.childrenList    = [];  //Note that this is NOT an array of nodes, it is an array of HierarchicalRelationships, which contain references to child nodes
     this.parentList      = [];
     this.semanticRelList = [];
 }
@@ -210,6 +211,20 @@ ContentNode.prototype.setTitleText = function(name) {
  */
 ContentNode.prototype.addChild = function(node, relationshipLabel) {
     //Search through the current child list for relationship objects which match
+    for (const rel of this.childrenList) {
+        //If this relationship object has a matching object, we can just add it and move on!
+        if (rel.compareLabel(relationshipLabel)) {
+            //MATCH! No need to create a new relationship object.
+            rel.addChild(node);
+            return;
+        }
+    }
+
+    //If we got here, that means we need to create a new object, and this node does not already have a child with this
+    //label
+    let rel = new HierarchicalRelationship(relationshipLabel, this);    //Assign this node to be the parent, of course!
+    this.childrenList.push(rel);    //Add the new relationship object to the list of children aggregators.
+    rel.addChild(node);
 };
 
 /**
