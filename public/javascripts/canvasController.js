@@ -16,8 +16,8 @@ const defaultNodePosition = {
 };
 const defaultColour = "blue";
 const defaultNodeSize = {
-    height : "50",
-    width  : "100"
+    height : "50px",
+    width  : "100px"
 };
 const defaultNodeTitle = "New concept";
 const defaultHierarchicalRelationshipLabel = "Child";
@@ -71,12 +71,12 @@ function createNewNode_HtmlElement(leftPos, topPos) {
     //Assign the classes we need. Most of them facilitate interaction with interact.js library.
     newElem.setAttribute("class", "draggable drag-drop dropzone contentNode node");
 
-    newElem.style.color  = defaultColour;
+    newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
     newElem.innerText    = defaultNodeTitle;
     newElem.style.height = defaultNodeSize.height;
     newElem.style.width  = defaultNodeSize.width;
-    newElem.style.top    = topPos.toString();
-    newElem.style.left   = leftPos.toString();
+    newElem.style.top    = topPos.toString()+"px";
+    newElem.style.left   = leftPos.toString()+"px";
 
     //Return the html element we just made, and it's id string.
     return {
@@ -126,10 +126,15 @@ function ContentNode(element, id, top, left, height, width){
     this.isVisible       = true;    //New nodes are always deemed visible (for now)
     this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have chilren yet anyway
     this.colour          = defaultColour;
-    this.position.top    = top;
-    this.position.left   = left;
-    this.size.height     = height;
-    this.size.width      = width;
+    this.position        = {
+        top  : top,
+        left : left
+
+    };
+    this.size            = {
+        height : height,
+        width  : width
+    };
     this.titleText       = defaultNodeTitle;
 
     //Upon creation, new nodes have no defined relationships.
@@ -150,8 +155,8 @@ ContentNode.prototype.moveNodeTo = function(top, left, animateFlag) {
         alert("ANIMATIONS ARE NOT DONE YET. SET ANIMATE FLAG TO FALSE IN THE moveNodeTo() METHOD");
     }
     else {
-        this.htmlElement.style.top = top.toString();
-        this.htmlElement.style.left = left.toString();
+        this.htmlElement.style.top = top.toString()+"px";
+        this.htmlElement.style.left = left.toString()+"px";
     }
 
     //Ask the controlling context to detect possible overlaps after this move!

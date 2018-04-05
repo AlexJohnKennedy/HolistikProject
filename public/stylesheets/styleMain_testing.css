@@ -3,14 +3,29 @@
 html {
   height: 100%;
 }
-/*
-body {
-  background: linear-gradient(to right, rgba(100, 100, 100, 0.2), rgba(30, 30, 30, 1)), url('https://source.unsplash.com/eWw2BKvKX_0/1600x900');
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
+
+/* Lets make the 'drawing canvas' some big block which is relatively positioned. */
+#drawingCanvas {
+    position: relative;
+    height : 500px;
+    width  : 500px;
+    background-color: bisque;
 }
-*/
+
+/* Lets make any 'node' element be absolutely positioned on top of it's parent */
+/* This is so that it can be positioned anywhere on the parent                 */
+.node {
+    position : absolute;
+}
+
+/* Let's implement a default colouring and shit for content nodes, for testing purposes */
+.contentNode {
+    color : cornsilk;   /* test colour for the nodes name at this time */
+}
+
+
+
+/* FONTS AND SHIT */
 
 .brandNameText {
     font-family: "Open Sans", cursive;
@@ -46,9 +61,4 @@ h4, .navbar-nav {
   font-family: "Open Sans", sans-serif;
   font-weight: 700;
 }
-/*
-ul {
-    background: azure;
-    background-color: rgba(200,200,200,0.5);
-}
-*/
+

@@ -16,7 +16,7 @@ app.set("view engine", "ejs");  //Sets EJS to be the templating engine we are us
 //Tell the app to use the router object
 app.use(router);
 
-//Declare a static directory
+//Declare a static directory for accessing public files (client side scripts and static resources which load on the front end)
 app.use(express.static(__dirname + '/public'));
 
 //Start the server with app.listen( /* PORT NUMBER */ )
