@@ -75,11 +75,11 @@ function onNodeMoved(elem) {
     //Find the logical object representing this element
     let contentNode = getContentNode(elem);
 
-    contentNode.translation.y  = yPos;
+    //Update the logical object, so it stays in sync. The reason we do this is to avoid string parsing constantly when doing
+    //collision calculations in the logic model. Similary, we only update it at the end of the move, rather than during the drag itself,
+    //becuase it's kinda pointless to do so many updates.
+    contentNode.translation.y = yPos;
     contentNode.translation.x = xPos;
-
-    //DEBUG
-    alert("The new translation of this node is considered to be y = "+yPos+" x = "+xPos);
 }
 
 // this is used later in the resizing and gesture demos

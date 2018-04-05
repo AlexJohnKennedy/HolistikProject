@@ -179,15 +179,10 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateFlag) {
     //Ask the controlling context to detect possible overlaps after this move!
     detectOverlaps(this);
 
-    this.updatePosition(y, left);
-};
-
-/**
- * Simply used to update the object state translation values (a setter method). Does not apply any on screen changes.
- */
-ContentNode.prototype.updatePosition = function(x, y) {
     this.translation.y = y;
     this.translation.x = x;
+    this.htmlElement.setAttribute("xTranslation", x.toString());
+    this.htmlElement.setAttribute("yTranslation", y.toString());
 };
 
 /**
