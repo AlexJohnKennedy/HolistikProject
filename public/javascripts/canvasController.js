@@ -8,11 +8,11 @@ const canvasState = {
     resourceNodeList : []
 };
 
-//Define a default position (relative to the drawing canvas) to place newly created nodes at.
-//Later on, we should probably make nodes appear on a cursor position, or something more user-friendly.
+//Define a default translation (relative to the drawing canvas) to place newly created nodes at.
+//Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
 const defaultNodePosition = {
-    top  : 100,     //Corresponding values to CSS 'absolute position' coordinates.
-    left : 100
+    x : 100,     //Corresponding values to CSS 'absolute translation' coordinates.
+    y : 100
 };
 const defaultColour = "blue";
 const defaultNodeSize = {
@@ -44,16 +44,16 @@ function createNewNode() {
 
     //Create the HTML element for this node by directly editing the browser DOM.
     //The creation method will return the new html element object, and it's id string.
-    let newElemDetails = createNewNode_HtmlElement(defaultNodePosition.left, defaultNodePosition.top);
+    let newElemDetails = createNewNode_HtmlElement(defaultNodePosition.x, defaultNodePosition.y);
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
-    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.topPos, newElemDetails.leftPos, newElemDetails.height, newElemDetails.width);
+    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width);
     canvasState.contentNodeList.push(newNode);
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
-function createNewNode_HtmlElement(leftPos, topPos) {
+function createNewNode_HtmlElement(xPos, yPos) {
     //Access the DOM, and find the drawingCanvas element. We will add the new content node as a DIV nested inside of this
     let drawingCanvas = document.getElementById("drawingCanvas");
 
@@ -70,22 +70,44 @@ function createNewNode_HtmlElement(leftPos, topPos) {
     //Assign the classes we need. Most of them facilitate interaction with interact.js library.
     newElem.setAttribute("class", "draggable drag-drop dropzone contentNode node");
 
+    //We will store the translation VALUES as attributes in the HTML DOM object itself, so that the interaction libraries can easily access them!
+    newElem.setAttribute("xTranslation", xPos.toString());
+    newElem.setAttribute("yTranslation", yPos.toString());
+
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
     newElem.innerText    = defaultNodeTitle;
     newElem.style.height = defaultNodeSize.height;
     newElem.style.width  = defaultNodeSize.width;
-    newElem.style.top    = topPos.toString()+"px";
-    newElem.style.left   = leftPos.toString()+"px";
+    newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
 
     //Return the html element we just made, and it's id string.
     return {
         elementReference : newElem,
         elementId        : idString,
-        topPos           : topPos,
-        leftPos          : leftPos,
+        x                : xPos,
+        y                : yPos,
         height           : defaultNodeSize.height,
         width            : defaultNodeSize.width
     };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Functions for accessing into the aggregated nodes ---------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+function getContentNode(element) {
+    //Find by id.
+    let id = element.getAttribute("id");
+
+    for (let node of canvasState.contentNodeList) {
+        if (node.idString == id) {
+            return node;
+        }
+    }
+
+    //We didn't find it...
+    alert("Could not find a matching node object with id: "+id);
+    return null;
 }
 
 
@@ -118,17 +140,16 @@ function rearrangeNodes(overlappingNodes) {
  *  class.
  * @constructor
  */
-function ContentNode(element, id, top, left, height, width){
+function ContentNode(element, id, x, y, height, width){
     // --- Object properties ---
     this.htmlElement     = element;
     this.idString        = id;
     this.isVisible       = true;    //New nodes are always deemed visible (for now)
     this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have chilren yet anyway
     this.colour          = defaultColour;
-    this.position        = {
-        top  : top,
-        left : left
-
+    this.translation     = {
+        x : x,
+        y : y
     };
     this.size            = {
         height : height,
@@ -143,35 +164,30 @@ function ContentNode(element, id, top, left, height, width){
 }
 
 /**
- * Moves or animates a node to a specified position on screen, then update the tracked state.
- * @param top
- * @param left
+ * Moves or animates a node to a specified translation on screen, then update the tracked state.
  * @param animateFlag flag to specify whether the movement should be smoothly animated or be performed instantly.
  */
-ContentNode.prototype.moveNodeTo = function(top, left, animateFlag) {
+ContentNode.prototype.moveNodeTo = function(x, y, animateFlag) {
     if (animateFlag) {
         //TODO
         alert("ANIMATIONS ARE NOT DONE YET. SET ANIMATE FLAG TO FALSE IN THE moveNodeTo() METHOD");
     }
     else {
-        this.htmlElement.style.top = top.toString()+"px";
-        this.htmlElement.style.left = left.toString()+"px";
+        this.htmlElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
     }
 
     //Ask the controlling context to detect possible overlaps after this move!
     detectOverlaps(this);
 
-    this.updatePosition(top, left);
+    this.updatePosition(y, left);
 };
 
 /**
- * Simply used to update the object state position values (a setter method). Does not apply any on screen changes.
- * @param top
- * @param left
+ * Simply used to update the object state translation values (a setter method). Does not apply any on screen changes.
  */
-ContentNode.prototype.updatePosition = function(top, left) {
-    this.position.top = top;
-    this.position.left = left;
+ContentNode.prototype.updatePosition = function(x, y) {
+    this.translation.y = y;
+    this.translation.x = x;
 };
 
 /**

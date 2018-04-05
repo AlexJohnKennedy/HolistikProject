@@ -12,10 +12,12 @@ html {
     background-color: bisque;
 }
 
-/* Lets make any 'node' element be absolutely positioned on top of it's parent */
+/* Lets make any 'node' element be absolutely positioned on y of it's parent */
 /* This is so that it can be positioned anywhere on the parent                 */
 .node {
     position : absolute;
+    top : 0px;
+    left : 0px;
 }
 
 /* Let's implement a default colouring and shit for content nodes, for testing purposes */
