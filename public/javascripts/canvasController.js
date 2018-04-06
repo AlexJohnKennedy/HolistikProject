@@ -14,10 +14,10 @@ const defaultNodePosition = {
     x : 100,     //Corresponding values to CSS 'absolute translation' coordinates.
     y : 100
 };
-const defaultColour = "blue";
+const defaultColour = "dodgerblue";
 const defaultNodeSize = {
-    height : "50px",
-    width  : "100px"
+    height : 50,
+    width  : 100
 };
 const defaultNodeTitle = "New concept";
 const defaultHierarchicalRelationshipLabel = "Child";
@@ -26,6 +26,11 @@ const defaultHierarchicalRelationshipLabel = "Child";
 let currIdNum = 0;
 const idPrefix  = "contentNode";
 
+//Define default spacing between 'auto arranged' nodes, which will define spacing for whenever we need to re-arrange guys
+let childrenVerticalSpacing   = 35;   //pixels. Vertical space between parents and children.
+let childrenHorizontalSpacing = 20;   //pixels. Horizontal space between children.
+let verticalSpacing           = 50;   //pixels. Vertical space between un-related nodes. (not including semantic relationships).
+let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Node creation and deletion functionality ------------------------------------------------------------------------
@@ -76,8 +81,8 @@ function createNewNode_HtmlElement(xPos, yPos) {
 
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
     newElem.innerText    = defaultNodeTitle;
-    newElem.style.height = defaultNodeSize.height;
-    newElem.style.width  = defaultNodeSize.width;
+    newElem.style.height = defaultNodeSize.height + "px";
+    newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
 
     //Return the html element we just made, and it's id string.
@@ -108,6 +113,30 @@ function getContentNode(element) {
     //We didn't find it...
     alert("Could not find a matching node object with id: "+id);
     return null;
+}
+
+//Recursive function to BFS through all children of this node, and delete a class from the corresponding html element.
+function removeHtmlClassFromAllDescendants(node, className) {
+    node.htmlElement.classList.remove(className);
+
+    //recurse to all children
+    for (let rel of node.childrenList) {
+        for (let child of rel.children) {
+            removeHtmlClassFromAllDescendants(child, className);
+        }
+    }
+}
+
+//Recursive function to BFS through all children of this node, and delete a class from the corresponding html element.
+function addHtmlClassFromAllDescendants(node, className) {
+    node.htmlElement.classList.add(className);
+
+    //recurse to all children
+    for (let rel of node.childrenList) {
+        for (let child of rel.children) {
+            removeHtmlClassFromAllDescendants(child, className);
+        }
+    }
 }
 
 
@@ -165,24 +194,27 @@ function ContentNode(element, id, x, y, height, width){
 
 /**
  * Moves or animates a node to a specified translation on screen, then update the tracked state.
- * @param animateFlag flag to specify whether the movement should be smoothly animated or be performed instantly.
+ * @param animateTime value to specify how long the 'transition' animation should take. <= 0 results in instantly changing
  */
-ContentNode.prototype.moveNodeTo = function(x, y, animateFlag) {
-    if (animateFlag) {
-        //TODO
-        alert("ANIMATIONS ARE NOT DONE YET. SET ANIMATE FLAG TO FALSE IN THE moveNodeTo() METHOD");
+ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
+    if (animateTime > 0) {
+        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
+        this.htmlElement.style.transitionProperty = "transform";
+        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
     }
-    else {
-        this.htmlElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-    }
-
-    //Ask the controlling context to detect possible overlaps after this move!
-    detectOverlaps(this);
+    this.htmlElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
     this.translation.y = y;
     this.translation.x = x;
     this.htmlElement.setAttribute("xTranslation", x.toString());
     this.htmlElement.setAttribute("yTranslation", y.toString());
+
+    //Reset the 'transition time' on the element, so that future transforms don't take take to happen (e.g. mouse dragging)
+    this.htmlElement.style.transitionProperty = "transform";
+    this.htmlElement.style.transitionDuration = "0s";
+
+    //Ask the controlling context to detect possible overlaps after this move!
+    detectOverlaps(this);
 };
 
 /**
@@ -246,7 +278,7 @@ ContentNode.prototype.addChild = function(node, relationshipLabel) {
  * Convenience overload of the addChild(node, label) method which simply uses a default value for the label.
  * @param node the node object to become the child of this object.
  */
-ContentNode.prototype.addChild = function(node) {
+ContentNode.prototype.addChildNoLabel = function(node) {
     this.addChild(node, defaultHierarchicalRelationshipLabel);
 };
 
@@ -270,7 +302,32 @@ function HierarchicalRelationship(label, parentNode) {
 }
 
 HierarchicalRelationship.prototype.addChild = function(node) {
+    //Remember the new child, unless this relationship already has this node as a child!
+    let newid = node.idString;
+    for (let child of this.children) {
+        if (child.idString == newid) {
+            //Oops! we already have this node added! Let's simply reposition it, and then do nothing else.
+            this.repositionChildren(node);
+            return;
+        }
+    }
     this.children.push(node);
+
+    //For now, whenever we add a new child, we will reposition all the children nodes to be underneath the parent
+    this.repositionChildren(node);
+};
+
+//This function will try to nicely arrange all of the children of a node relative to it's parent.
+HierarchicalRelationship.prototype.repositionChildren = function(newlyAddedNode) {
+    //TODO -- Algorithm for repositioning all of the children nicely
+
+    //For now, we will leave all of the other children where they are, and just place the newly added child
+    //directly below the parent, with a set default vertical padding.
+    let parentXpos = this.parentNode.translation.x;
+    let parentYpos = this.parentNode.translation.y;
+    let newChildY  = parentYpos + this.parentNode.size.height + childrenVerticalSpacing;
+
+    newlyAddedNode.moveNodeTo(parentXpos, newChildY, 0.6);
 };
 
 HierarchicalRelationship.prototype.compareLabel = function(label) {

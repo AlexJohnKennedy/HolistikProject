@@ -9,21 +9,82 @@ html {
     position: relative;
     height : 500px;
     width  : 500px;
-    background-color: bisque;
+    background-color : bisque;
+    /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
 }
 
 /* Lets make any 'node' element be absolutely positioned on y of it's parent */
-/* This is so that it can be positioned anywhere on the parent                 */
+/* This is so that it can be positioned anywhere on the parent               */
+/* The styling on this element will serve as the 'base' styling of all nodes. When 'actions' happen to nodes
+   (I.e. the user creates events through their interactions) then, nodes will visually respond to these changes.)
+   To define these changes, we can use CSS rules which apply to class types corresponding to each 'event state'.
+   Then, we will PROGRAMMATICALLY assign the relevent nodes to be of that class. CSS will apply those rules and
+   overwrite any properties from this base rule. Then, when the action/event ends, we can simply remove the class
+   from the class list of the relevent elements, which will return the rendering to this base rule */
 .node {
+    /* Positioning rules. Should probably not be overwritten ever, as doing so would mess up all positioning calculations */
     position : absolute;
     top : 0px;
     left : 0px;
+
+    /* Nodes look nicer with rounded corners! */
+    border-radius: 5px;
+
+    /* Nodes should have a nice looking border */
+    border-width: 3px;
+    border-color: black;
+    border-style: solid;
+
+    /* Future CHANGES to the border should have a graceful transition time */
+    transition-property: border-width, border-color, border-style;
+    transition-duration: 0.25s;
+
+    /* Nodes should have their title text CENTRED */
+    /* TODO -- make it so that collapsed, small nodes centre their title text, but larger ones have it up the top */
+    text-align: center;
 }
 
 /* Let's implement a default colouring and shit for content nodes, for testing purposes */
 .contentNode {
     color : cornsilk;   /* test colour for the nodes name at this time */
 }
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* --- DYNAMICALLY APPLIED STYLES ----------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* These are rules that will be applied to classes which will be dynamically be added and removed based on user       */
+/* actions. Mostly, these will provide visual feedback as to things which have just happened, and possible actions!   */
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+/* Define custom style for nodes which are potential 'droppable' areas */
+.potentialDropzone {
+    /* potential drop zones will all have dashed borders, which turn dark red (arbitrarily chosen) */
+    border-style: dashed;
+    border-color: darkred;
+}
+
+/* Define custom style for drop zone nodes, which have just had an element dragged into them.
+   I.e. the user is 'hovering' a droppable node over the drop zone, but has not let go of the mouse button yet */
+.potentialDropzoneHasItemHovering {
+    border-width : 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
