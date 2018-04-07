@@ -1,0 +1,69 @@
+/* Remove ugly underlines from links */
+.navbar a:link {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar a:visited {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar a:hover {
+    text-decoration: none;
+    background-color: lightgrey;
+}
+
+.navbar a:active {
+    text-decoration: none;
+    background-color: grey;
+}
+
+
+.navbar-nav {
+    display: inline-block;
+}
+
+.navbar-nav li {
+    display: inline-block;
+    padding-left: 5px;
+    padding-right: 5px;
+    vertical-align: center;
+}
+
+/* FONTS AND SHIT */
+
+.brandNameText {
+    font-family: "Open Sans", cursive;
+    font-weight: 800;
+    font-size: 1.5em;
+}
+.container {
+    padding: 80px 0;
+    text-align: center;
+    color: white;
+}
+
+h1 {
+    font-family: "Open Sans", cursive;
+    font-weight: 400;
+    font-size: 4em;
+
+}
+
+h2 {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 300;
+}
+
+h3 {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.5em;
+}
+
+h4, .navbar-nav {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 700;
+}

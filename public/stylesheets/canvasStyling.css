@@ -13,6 +13,60 @@ html {
     /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
 }
 
+/* Style the 'context box indicator' (thing which sits in the corner and tells you what the current context is */
+#contextIndicatorBox {
+    position: absolute;
+    top: 0px;   /* Sit in the top left corner */
+    left: 0px;
+    z-index: 0;     /* don't let this render on top of nodes */
+
+    height: 22px;
+    width:  200px;
+
+    background-color: darkblue;
+
+    border-width: 3px;
+    border-style: solid;
+    border-color: grey;
+}
+
+#contextIndicatorBox span {
+    color: cornsilk;
+    text-align: center;
+}
+
+/* Style the button inside the context box indicator */
+#contextIndicatorBox button:hover {
+    cursor: pointer;
+}
+
+/* Style the 'drag here to delete' box */
+.utilityDropZone {
+    display: inline-block;  /* relavtively positioned inline block */
+    position: relative;     /* move them relative to the canvas, but not absolute, so they still tile themselves amongst each other */
+    transform-origin: bottom left;
+    transform: translate(0px, 446px); /* Sit in the bottom left corner, by translating distance downwards*/
+
+    z-index: 0;     /* don't let this render on top of nodes */
+
+    height: 50px;
+    width:  100px;
+
+    background-color: #ad9d7f;
+
+    border-width: 2px;
+    border-style: solid;
+    border-color: grey;
+
+    text-align: center;
+
+    /* Future CHANGES to the border should have a graceful transition time */
+    transition-property: border-width, border-color, border-style;
+    transition-duration: 0.25s;
+}
+
+/*  --------------------- NODE RELATED STYLING ---------------------------------------------------------------------- */
+
 /* Lets make any 'node' element be absolutely positioned on y of it's parent */
 /* This is so that it can be positioned anywhere on the parent               */
 /* The styling on this element will serve as the 'base' styling of all nodes. When 'actions' happen to nodes
@@ -26,6 +80,8 @@ html {
     position : absolute;
     top : 0px;
     left : 0px;
+
+    transform-origin: center;
 
     /* Nodes look nicer with rounded corners! */
     border-radius: 5px;
@@ -62,10 +118,17 @@ html {
     border-style: dashed;
     border-color: darkred;
 }
+.potentialUtilityDropzone {
+    border-style: dashed;
+    border-color: darkblue;
+}
 
 /* Define custom style for drop zone nodes, which have just had an element dragged into them.
    I.e. the user is 'hovering' a droppable node over the drop zone, but has not let go of the mouse button yet */
 .potentialDropzoneHasItemHovering {
+    border-width : 5px;
+}
+.potentialUtilityDropzoneHasItemHovering {
     border-width : 5px;
 }
 
@@ -73,55 +136,4 @@ html {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* FONTS AND SHIT */
-
-.brandNameText {
-    font-family: "Open Sans", cursive;
-    font-weight: 300;
-    font-size: 1em;
-}
-.container {
-  padding: 100px 0;
-  text-align: center;
-  color: white;
-}
-
-h1 {
-  font-family: "Open Sans", cursive;
-  font-weight: 400;
-  font-size: 4em;
-
-}
-
-h2 {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 300;
-}
-
-h3 {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 1.5em;
-}
-
-h4, .navbar-nav {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 700;
-}
 

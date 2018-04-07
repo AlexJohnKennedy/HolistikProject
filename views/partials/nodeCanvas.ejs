@@ -8,4 +8,30 @@
 <!-- use an 'absolute' positions div as the drawing canvas container. -->
 <div id="drawingCanvas">
 
+    <!-- Create a little visual box which simply acts as a 'context' indicator, and provides a button for going back to upper context -->
+    <div id="contextIndicatorBox">
+
+        <!-- Back button for zooming out to previous context, if context is not currently global -->
+        <button onclick="zoomContextOut()">
+            <!-- TODO: put a little back button in here? -->
+            <!-- For now, just going to use text -->
+            Zoom out
+        </button>
+
+        <!-- text box indicator, to show the name of the node(s) providing the current convas context. -->
+        <span id="contextNameTextBox">
+            Global context
+        </span>
+    </div>
+
+    <!-- Create a box which deletes nodes that are dragged into them. -->
+    <div id="deleteNodeDropZone" class="utilityDropZone">
+        Drag here to delete node
+    </div>
+
+    <!-- Create a box which DETACHES nodes from their parents when dragged into here. -->
+    <div id="detachNodeDropZone" class="utilityDropZone">
+        Drag here to detach node
+    </div>
+
 </div>
