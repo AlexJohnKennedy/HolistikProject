@@ -267,3 +267,25 @@ interact('.utilityDropZone').dropzone({
         dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
     }
 });
+
+/**
+ * Define behaviour of delete-node utility dropzone. Basically, when you drop something into this
+ * it will ask the canvas controller to simply delete the node!
+ */
+interact('.utilityDropZone').dropzone({
+    // only accept elements matching this CSS selector
+    accept: '.node',
+
+    // Require a 25% element overlap for a drop to be possible
+    overlap: 0.25,
+
+    ondrop: function(event) {
+        //Gain access to the logic object representing the dropped html element, I.e. the node
+        let beingDragged = event.relatedTarget;
+        let dropped = getContentNode(beingDragged);
+
+        //Now, simply ask the canvas Controller to permanently delete the node. the CC will define
+        //how to handle deleation operations!
+        deleteNode(dropped);
+    }
+});

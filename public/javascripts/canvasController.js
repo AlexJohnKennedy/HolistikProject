@@ -5,7 +5,10 @@
 //(See the OOP modelling for nodes)
 const canvasState = {
     contentNodeList : [],   //Initially, there are no nodes! Of course there must be some 'load' function to reload previous projects.
-    resourceNodeList : []
+    resourceNodeList : [],
+    contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
+    rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
+    viewDepth : 3           //The current maximum view depth to be displayed on the canvas.
 };
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
@@ -33,7 +36,7 @@ let verticalSpacing           = 50;   //pixels. Vertical space between un-relate
 let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
 // ---------------------------------------------------------------------------------------------------------------------
-// --- Node creation and deletion functionality ------------------------------------------------------------------------
+// --- Node creation functionality -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 // These functions will access the page DOM and generate new or delete old HTML elements, representing 'content nodes'
 // to be rendered on the page. Accordingly, the logical models of these elements will be updated in the canvasState
@@ -45,11 +48,10 @@ let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-rela
  *  The HTML element will have a unique id, and have the associated class types to allow interact.js library to
  *  apply it's drag/drop/resize functionality to the node.
  */
-function createNewNode() {
-
+function createNewContentNode() {
     //Create the HTML element for this node by directly editing the browser DOM.
     //The creation method will return the new html element object, and it's id string.
-    let newElemDetails = createNewNode_HtmlElement(defaultNodePosition.x, defaultNodePosition.y);
+    let newElemDetails = createNewContentNode_HtmlElement(defaultNodePosition.x, defaultNodePosition.y);
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
     let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width);
@@ -58,7 +60,7 @@ function createNewNode() {
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
-function createNewNode_HtmlElement(xPos, yPos) {
+function createNewContentNode_HtmlElement(xPos, yPos) {
     //Access the DOM, and find the drawingCanvas element. We will add the new content node as a DIV nested inside of this
     let drawingCanvas = document.getElementById("drawingCanvas");
 
@@ -94,6 +96,57 @@ function createNewNode_HtmlElement(xPos, yPos) {
         height           : defaultNodeSize.height,
         width            : defaultNodeSize.width
     };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Node deletion functionality -------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * This function will PERMENENTLY delete a node from memory and from the page.
+ * It removes all reference to it in the canvasState and removes all of the relationships it had to it's children and parents.
+ *
+ * When invoking this function, you can optionally choose to 'stitch' the broken tree links back together.
+ *
+ * -- stitching the tree will make all the children of the deleted node become direct children of the deleted node's immediate parents.
+ *
+ * -- NOT stitching the tree will make all the children of the deleted node parentless root nodes. This essentially silently moves them
+ * -- to being 'top level' nodes. However, the moved nodes will be added to the context view, and become rootNodes of the current
+ * -- canvas view/context!
+ *
+ * @param node the node to be deleted.
+ * @param stitchTree flag to determine if the tree should be stitched.
+ */
+function deleteContentNode(node, stitchTree) {
+    console.log("we were just asked to delete the node: "+node.idString);
+
+    if (!stitchTree) {
+        //Okay, let's just directly delete this node and make all of it's children rootNodes of the current context!
+
+        node.detachFromAllChildren();
+        node.detachFromAllParents();
+
+        //Okay. Now we can delete the node completely!
+
+        //Remove the html node from the DOM.
+        let drawingCanvas = document.getElementById("drawingCanvas");
+        drawingCanvas.removeChild(node.htmlElement);
+
+        //Remove the logical node from all canvasState memory
+        let index = canvasState.contentNodeList.indexOf(node);
+        if (index == -1) {
+            alert("CRITICAL ERROR: attempted to delete a node that wasn't even stored in the contentNodeList!");
+        }
+        else {
+            canvasState.contentNodeList.splice(index,1);    //Delete one element, from the 'index' position
+        }
+
+        //Remove the logical node from the rootNode list, if it is there
+        index = canvasState.rootNodes.indexOf(node);
+        if (index != -1) {
+            canvasState.rootNodes.splice(index,1);
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -282,6 +335,21 @@ ContentNode.prototype.addChildNoLabel = function(node) {
     this.addChild(node, defaultHierarchicalRelationshipLabel);
 };
 
+/**
+ * Method for detaching this node from all of it's children! After calling this, this node will have no child relationships
+ * and all nodes that previously had this node as a parent will no longer have those applied.
+ */
+ContentNode.prototype.detachFromAllChildren = function() {
+    for (let rel of this.childrenList) {
+        rel.deleteRelationship();   //Completely destroy the relationship, as the parent will no longer exist!
+    }
+};
+
+ContentNode.prototype.detachFromAllParents = function() {
+    for (let rel of node.parentList) {
+        rel.removeChild(node);
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Hierarchical Relationship 'Class' definition --------------------------------------------------------------------
@@ -341,3 +409,63 @@ HierarchicalRelationship.prototype.compareLabel = function(label) {
         return false;
     }
 };
+
+/**
+ * Function which removes a passed node as a child of this relationship object. If removing the node brings our child count down to zero,
+ * then this relationship is deleted all together!
+ * @param node the node to be removed from being a child.
+ */
+HierarchicalRelationship.prototype.removeChild = function(node) {
+    //Find the passed node in our child list
+    let index = this.children.indexOf(node);
+    if (index == -1) {
+        //It wasn't a child to begin with.. do nothing.
+        console.log("Tried to remove "+node.idString+" from being a child of "+this.parentNode.idString+" but it was not a child to begin with!");
+        return;
+    }
+
+    //Delete the child.
+    this.children.splice(index,1);
+
+    if (this.children.length == 0) {
+        //Oh no! this relationship has no children left! We should just kill ourselves.
+        this.deleteRelationship();
+    }
+    else {
+        //Now, let's remove this relationship object from the node's parent list!
+        index = node.parentList.indexOf(this);
+        if (index == -1) {
+            alert("CRITICAL ERROR: a relationship object had a child, which did not have the relationship as a parent!");
+        }
+        else {
+            node.parentList.splice(index,1);
+        }
+    }
+};
+
+/**
+ * This function is used to completely remove this relationship from all associated nodes, and from memory entirely!
+ * Calling this function will:
+ * a) remove reference to this from all children's parentList.
+ * b) remove reference to this from the parent's childList.
+ */
+HierarchicalRelationship.prototype.deleteRelationship = function() {
+    for (let child of this.children) {
+        let index = child.parentList.indexOf(this);
+        if (index == -1) {
+            alert("CRITICAL ERROR: a relationship object had a child, which did not have the relationship as a parent!");
+        }
+        else {
+            child.parentList.splice(index,1);
+        }
+    }
+
+    let index = this.parentNode.childrenList.indexOf(this);
+    if (index == -1) {
+        alert("CRITICAL ERROR: a relationship object had a parent, which did not have the relationship as a child!");
+    }
+    else {
+        this.parentNode.childrenList.splice(index,1);
+    }
+};
+
