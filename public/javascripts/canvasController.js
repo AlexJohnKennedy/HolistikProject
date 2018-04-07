@@ -103,12 +103,22 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * This function will PERMENENTLY delete a node from memory and from the page.
+ * This function will PERMANENTLY delete a node from memory and from the page.
  * It removes all reference to it in the canvasState and removes all of the relationships it had to it's children and parents.
  *
  * When invoking this function, you can optionally choose to 'stitch' the broken tree links back together.
  *
- * -- stitching the tree will make all the children of the deleted node become direct children of the deleted node's immediate parents.
+ * -- stitching the tree will make all the children of the deleted node become direct children of the deleted node's immediate parents,
+ * -- provided that the parent -> deleted node label is the same as the deleted node -> child relationship label.
+ * --
+ * -- To avoid semantic confusion, we should only stitch together parents and children that are associated with the deleted node
+ * -- with MATCHING LABELS. Otherwise, the resulting 'stitched' relationships will probably make no sense.
+ * --
+ * -- E.g. if A --contains--> B --contains--> C, then deleting node B with the stitch flag set to TRUE will result in
+ * --      the following tree: A --contains--> C.
+ * -- But  if A --contains--> B --explains--> C, then deleting node B with the stich flag set to TRUE will result in
+ * --      the followinf tree: A, C (A will not be connected to C, as there is no way to congruently stitch two different
+ * --      relation types!
  *
  * -- NOT stitching the tree will make all the children of the deleted node parentless root nodes. This essentially silently moves them
  * -- to being 'top level' nodes. However, the moved nodes will be added to the context view, and become rootNodes of the current
@@ -120,32 +130,46 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
 function deleteContentNode(node, stitchTree) {
     console.log("we were just asked to delete the node: "+node.idString);
 
-    if (!stitchTree) {
-        //Okay, let's just directly delete this node and make all of it's children rootNodes of the current context!
-
-        node.detachFromAllChildren();
-        node.detachFromAllParents();
-
-        //Okay. Now we can delete the node completely!
-
-        //Remove the html node from the DOM.
-        let drawingCanvas = document.getElementById("drawingCanvas");
-        drawingCanvas.removeChild(node.htmlElement);
-
-        //Remove the logical node from all canvasState memory
-        let index = canvasState.contentNodeList.indexOf(node);
-        if (index == -1) {
-            alert("CRITICAL ERROR: attempted to delete a node that wasn't even stored in the contentNodeList!");
+    if (stitchTree) {
+        //Alright, we have to stitch the tree! Then, we just delete this node as usual!
+        //Cycle through every parent of the to-delete node. Then, for each parent, check to see if the to-delete node
+        //has a child relationship with a matching label. If one is found, call addChild() on the parent relationship,
+        //adding every node from the child relationship into the parent relationship!
+        for (let parentRel of node.parentList) {
+            for (let childRel of node.childrenList) {
+                if (parentRel.compareLabel(childRel.categoryLabel)) {
+                    //Matched! Add all children of this relationship to the corresponding parent label!
+                    for (let matchedChildNode of childRel.children) {
+                        parentRel.addChild(matchedChildNode);
+                    }
+                }
+            }
         }
-        else {
-            canvasState.contentNodeList.splice(index,1);    //Delete one element, from the 'index' position
-        }
+    }
 
-        //Remove the logical node from the rootNode list, if it is there
-        index = canvasState.rootNodes.indexOf(node);
-        if (index != -1) {
-            canvasState.rootNodes.splice(index,1);
-        }
+    //Okay, now let's just directly delete this node and make all of it's children rootNodes of the current context!
+    node.detachFromAllChildren();
+    node.detachFromAllParents();
+
+    //Okay. Now we can delete the node completely!
+
+    //Remove the html node from the DOM.
+    let drawingCanvas = document.getElementById("drawingCanvas");
+    drawingCanvas.removeChild(node.htmlElement);
+
+    //Remove the logical node from all canvasState memory
+    let index = canvasState.contentNodeList.indexOf(node);
+    if (index == -1) {
+        alert("CRITICAL ERROR: attempted to delete a node that wasn't even stored in the contentNodeList!");
+    }
+    else {
+        canvasState.contentNodeList.splice(index,1);    //Delete one element, from the 'index' position
+    }
+
+    //Remove the logical node from the rootNode list, if it is there
+    index = canvasState.rootNodes.indexOf(node);
+    if (index != -1) {
+        canvasState.rootNodes.splice(index,1);
     }
 }
 
