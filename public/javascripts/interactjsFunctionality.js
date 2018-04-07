@@ -122,7 +122,7 @@ function onNodeMoved(elem) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Define behaviour for any HTML Element that has the class of 'dropzone'.
+ * Define behaviour for any HTML Element that has the class of 'dropzone' - used for NODES that other nodes can be parented to
  * A Dropzone element means that other nodes can be dragged and dropping INTO the dropzone element, which usually means
  * that the dropzone node becomes the parent of the dragged-and-dropped node!
  *
@@ -220,3 +220,50 @@ function onElementDropped(event) {
 
     parent.addChildNoLabel(dropped);
 }
+
+/**
+ * Defines general dropzone behaviour for utility dropzones; 'potential dropzone' visual feedback.
+ *
+ * Note that here, we are just defining the visual feedbacks common to all utility dropzones.
+ * Since different utility dropzones will do different things when you actually drop a node into them (e.g. delete,
+ * move, and so on), the 'onDrop' callback just removes styling.
+ *
+ * Actual onDrop behaviour for specific types of utility nodes will be defined in another interact().dropzone() call,
+ * with more specific selectors for each one. They will define further 'onDrop' event handlers!
+ */
+interact('.utilityDropZone').dropzone({
+    // only accept elements matching this CSS selector
+    accept: '.node',
+
+    // Require a 25% element overlap for a drop to be possible
+    overlap: 0.25,
+
+    // --- Event Listeners -----------------------------------
+    // assign callback functions which will listen for dropzone related events:
+    ondropactivate: function(event) {
+        //Simply add potential utility dropzone feedback
+        event.target.classList.add("potentialUtilityDropzone");
+    },
+    ondropdeactivate: function(event) {
+        let dropzone     = event.target;
+
+        //Remove visual feedback for potential drop zones
+        dropzone.classList.remove("potentialUtilityDropzone");
+        dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+    },
+
+    ondragenter: function(event) {
+        let dropzone     = event.target;
+        dropzone.classList.add("potentialUtilityDropzoneHasItemHovering");
+    },
+    ondragleave: function(event) {
+        let dropzone     = event.target;
+        dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+    },
+
+    ondrop: function(event) {
+        let dropzone     = event.target;
+        dropzone.classList.remove("potentialUtilityDropzone");
+        dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+    }
+});

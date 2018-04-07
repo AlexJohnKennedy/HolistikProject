@@ -25,6 +25,7 @@ html {
 
     background-color: darkblue;
 
+    border-radius: 3px;
     border-width: 3px;
     border-style: solid;
     border-color: grey;
@@ -54,6 +55,7 @@ html {
 
     background-color: #ad9d7f;
 
+    border-radius: 3px;
     border-width: 2px;
     border-style: solid;
     border-color: grey;
