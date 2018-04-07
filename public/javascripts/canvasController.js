@@ -346,10 +346,10 @@ ContentNode.prototype.detachFromAllChildren = function() {
 };
 
 ContentNode.prototype.detachFromAllParents = function() {
-    for (let rel of node.parentList) {
-        rel.removeChild(node);
+    for (let rel of this.parentList) {
+        rel.removeChild(this);
     }
-}
+};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Hierarchical Relationship 'Class' definition --------------------------------------------------------------------
@@ -380,6 +380,9 @@ HierarchicalRelationship.prototype.addChild = function(node) {
         }
     }
     this.children.push(node);
+
+    //Now, we need to add THIS RELATIONSHIP as a parent reference into the new child's parentList, so that upwards tree traversal is also possible!
+    node.parentList.push(this);
 
     //For now, whenever we add a new child, we will reposition all the children nodes to be underneath the parent
     this.repositionChildren(node);

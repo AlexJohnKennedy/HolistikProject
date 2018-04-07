@@ -286,6 +286,7 @@ interact('.utilityDropZone').dropzone({
 
         //Now, simply ask the canvas Controller to permanently delete the node. the CC will define
         //how to handle deleation operations!
-        deleteNode(dropped);
+        deleteContentNode(dropped, false);  //Do not splice the tree
+        //deleteContentNode(dropped, true); //splice the tree
     }
 });
