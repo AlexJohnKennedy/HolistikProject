@@ -257,6 +257,10 @@ function ContentNode(element, id, x, y, height, width){
         x : x,
         y : y
     };
+    this.previousTranslation = {
+        x : x,  //This object will be used to remember the previous position of this node, so that we can perform 'go back' actions
+        y : y   //for example when we detatch a node from it's parents by dragging it into the 'detatch' zone. It should move back afterwards.
+    }           //We will update the 'previous position' whenever the user starts dragging the node!
     this.size            = {
         height : height,
         width  : width
@@ -292,6 +296,14 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
 
     //Ask the controlling context to detect possible overlaps after this move!
     detectOverlaps(this);
+};
+
+/**
+ * Moves or animates the node back to wherever it was prior to the last drag move by the user!
+ * @param animateTime
+ */
+ContentNode.prototype.returnToPreviousPosition = function(animateTime) {
+    this.moveNodeTo(this.previousTranslation.x, this.previousTranslation.y, animateTime);
 };
 
 /**
@@ -370,9 +382,13 @@ ContentNode.prototype.detachFromAllChildren = function() {
 };
 
 ContentNode.prototype.detachFromAllParents = function() {
+    //Remove ourselves from all our parent's child lists.
     for (let rel of this.parentList) {
         rel.removeChild(this);
     }
+
+    //Now, set our parent list to be empty, since of course, we have no parents anymore!
+    this.parentList = [];   //Left over relationships should be garbage collected.
 };
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -48,15 +48,18 @@ function onDragStart (event) {
     targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
     currTopZIndex++;
 
+    //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
+    //'previousTranslation' variable. That way, return to previous position funcitonality will work!
+    let contentNode = getContentNode(targetElem);
+    contentNode.previousTranslation = contentNode.translation;
+
     /*Now, this dragging event will trigger the follow up event of activating all potential dropzones.
       To avoid insanely confusing structures, we will ENFORCE that this dragged node cannot be nested inside one of its children/descendents.
       Thus, we must dictate HERE that all descendant nodes are no longer potential 'dropzones' for the time being!
       To do this, we will simply remove the 'dropzone' class from all of this node's descendants. Then, when we are finished dragging this node,
       we will re-add that class to all descendants, so that they can be seen as dropzones again for other potential nodes.
     */
-
     //Cycle all children, and deactive them as drop zones.
-    let contentNode = getContentNode(targetElem);
     removeHtmlClassFromAllDescendants(contentNode, "dropzone");
 }
 
@@ -221,8 +224,10 @@ function onElementDropped(event) {
     parent.addChildNoLabel(dropped);
 }
 
-/**
- * Defines general dropzone behaviour for utility dropzones; 'potential dropzone' visual feedback.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/*
+ * This set of functions define general dropzone behaviour for utility dropzones; 'potential dropzone' visual feedback.
  *
  * Note that here, we are just defining the visual feedbacks common to all utility dropzones.
  * Since different utility dropzones will do different things when you actually drop a node into them (e.g. delete,
@@ -231,7 +236,32 @@ function onElementDropped(event) {
  * Actual onDrop behaviour for specific types of utility nodes will be defined in another interact().dropzone() call,
  * with more specific selectors for each one. They will define further 'onDrop' event handlers!
  */
-interact('.utilityDropZone').dropzone({
+function utilityActivate(event) {
+    //Simply add potential utility dropzone feedback
+    event.target.classList.add("potentialUtilityDropzone");
+}
+function utilityDeactivate(event) {
+    let dropzone     = event.target;
+
+    //Remove visual feedback for potential drop zones
+    dropzone.classList.remove("potentialUtilityDropzone");
+    dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+}
+function utilityDragEnter(event) {
+    let dropzone     = event.target;
+    dropzone.classList.add("potentialUtilityDropzoneHasItemHovering");
+}
+function utilityDragLeave(event) {
+    let dropzone     = event.target;
+    dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+}
+function utilityDropVisualFeedback(event) {
+    let dropzone     = event.target;
+    dropzone.classList.remove("potentialUtilityDropzone");
+    dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+}
+
+interact('#detachNodeDropZone').dropzone({
     // only accept elements matching this CSS selector
     accept: '.node',
 
@@ -240,31 +270,24 @@ interact('.utilityDropZone').dropzone({
 
     // --- Event Listeners -----------------------------------
     // assign callback functions which will listen for dropzone related events:
-    ondropactivate: function(event) {
-        //Simply add potential utility dropzone feedback
-        event.target.classList.add("potentialUtilityDropzone");
-    },
-    ondropdeactivate: function(event) {
-        let dropzone     = event.target;
-
-        //Remove visual feedback for potential drop zones
-        dropzone.classList.remove("potentialUtilityDropzone");
-        dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
-    },
-
-    ondragenter: function(event) {
-        let dropzone     = event.target;
-        dropzone.classList.add("potentialUtilityDropzoneHasItemHovering");
-    },
-    ondragleave: function(event) {
-        let dropzone     = event.target;
-        dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
-    },
+    ondropactivate: utilityActivate,
+    ondropdeactivate: utilityDeactivate,
+    ondragenter: utilityDragEnter,
+    ondragleave: utilityDragLeave,
 
     ondrop: function(event) {
-        let dropzone     = event.target;
-        dropzone.classList.remove("potentialUtilityDropzone");
-        dropzone.classList.remove("potentialUtilityDropzoneHasItemHovering");
+        let draggedNode = getContentNode(event.relatedTarget);
+
+        //Simply detach this node from all of it's parents!
+        draggedNode.detachFromAllParents();
+
+        //Add as a root node to the canvas state, if it wasn't already there.
+        if (canvasState.rootNodes.indexOf(draggedNode) === -1) {
+            canvasState.rootNodes.push(draggedNode);
+        }
+
+        //Finally, animate the node back to it's previous position before the drag-and-drop
+        draggedNode.returnToPreviousPosition();
     }
 });
 
@@ -272,12 +295,17 @@ interact('.utilityDropZone').dropzone({
  * Define behaviour of delete-node utility dropzone. Basically, when you drop something into this
  * it will ask the canvas controller to simply delete the node!
  */
-interact('.utilityDropZone').dropzone({
+interact('#deleteNodeDropZone').dropzone({
     // only accept elements matching this CSS selector
     accept: '.node',
 
     // Require a 25% element overlap for a drop to be possible
     overlap: 0.25,
+
+    ondropactivate: utilityActivate,
+    ondropdeactivate: utilityDeactivate,
+    ondragenter: utilityDragEnter,
+    ondragleave: utilityDragLeave,
 
     ondrop: function(event) {
         //Gain access to the logic object representing the dropped html element, I.e. the node
