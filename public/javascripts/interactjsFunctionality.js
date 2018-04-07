@@ -42,11 +42,18 @@ let currTopZIndex = 1;      //TODO figure out a non-cancerous overflow-vulnerabl
 function onDragStart (event) {
     console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
 
+    //this.htmlElement.style.transitionProperty = "transform";
+    //this.htmlElement.style.transitionDuration = "0s";
+
     //Firstly, we want any item that is being dragged by the user to render ON TOP of everything else, so they can
     //always see what they are doing.
     let targetElem = event.target;
     targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
     currTopZIndex++;
+
+    //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
+    targetElem.style.transitionProperty = "transform";
+    targetElem.style.transitionDuration = "0s";
 
     //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
     //'previousTranslation' variable. That way, return to previous position funcitonality will work!
@@ -288,7 +295,7 @@ interact('#detachNodeDropZone').dropzone({
         }
 
         //Finally, animate the node back to it's previous position before the drag-and-drop
-        draggedNode.returnToPreviousPosition(0.6);
+        draggedNode.returnToPreviousPosition(0.2);
     }
 });
 

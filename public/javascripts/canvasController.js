@@ -278,7 +278,7 @@ function ContentNode(element, id, x, y, height, width){
  * @param animateTime value to specify how long the 'transition' animation should take. <= 0 results in instantly changing
  */
 ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
-    if (animateTime > 0) {
+    if (animateTime > 0.0) {
         //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
         this.htmlElement.style.transitionProperty = "transform";
         this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
@@ -290,9 +290,11 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
     this.htmlElement.setAttribute("xTranslation", x.toString());
     this.htmlElement.setAttribute("yTranslation", y.toString());
 
-    //Reset the 'transition time' on the element, so that future transforms don't take take to happen (e.g. mouse dragging)
-    this.htmlElement.style.transitionProperty = "transform";
-    this.htmlElement.style.transitionDuration = "0s";
+    //NEED TO SET THE TRANSFORM TRANSITION TIME BACK TO ZERO AFTER THE TRANSITION HAS FINISHED.
+    //OTHERWISE THIS WILL INTERFERE WITH OTHER THINGS, POTENTIALLY
+    //Cannot do it here, because then the transition we just instigated will be cancelled out!
+    //this.htmlElement.style.transitionProperty = "transform";
+    //this.htmlElement.style.transitionDuration = "0s";
 
     //Ask the controlling context to detect possible overlaps after this move!
     detectOverlaps(this);
@@ -439,7 +441,7 @@ HierarchicalRelationship.prototype.repositionChildren = function(newlyAddedNode)
     let parentYpos = this.parentNode.translation.y;
     let newChildY  = parentYpos + this.parentNode.size.height + childrenVerticalSpacing;
 
-    newlyAddedNode.moveNodeTo(parentXpos, newChildY, 0.6);
+    newlyAddedNode.moveNodeTo(parentXpos, newChildY, 0.35);
 };
 
 HierarchicalRelationship.prototype.compareLabel = function(label) {
