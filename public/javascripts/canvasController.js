@@ -80,7 +80,7 @@ function createNewNode_HtmlElement(xPos, yPos) {
     newElem.setAttribute("yTranslation", yPos.toString());
 
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
-    newElem.innerText    = defaultNodeTitle;
+    newElem.innerText    = idString; //defaultNodeTitle;
     newElem.style.height = defaultNodeSize.height + "px";
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
@@ -134,7 +134,7 @@ function addHtmlClassFromAllDescendants(node, className) {
     //recurse to all children
     for (let rel of node.childrenList) {
         for (let child of rel.children) {
-            removeHtmlClassFromAllDescendants(child, className);
+            addHtmlClassFromAllDescendants(child, className);
         }
     }
 }
