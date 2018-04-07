@@ -51,7 +51,8 @@ function onDragStart (event) {
     //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
     //'previousTranslation' variable. That way, return to previous position funcitonality will work!
     let contentNode = getContentNode(targetElem);
-    contentNode.previousTranslation = contentNode.translation;
+    contentNode.previousTranslation.x = contentNode.translation.x;
+    contentNode.previousTranslation.y = contentNode.translation.y;
 
     /*Now, this dragging event will trigger the follow up event of activating all potential dropzones.
       To avoid insanely confusing structures, we will ENFORCE that this dragged node cannot be nested inside one of its children/descendents.
@@ -287,7 +288,7 @@ interact('#detachNodeDropZone').dropzone({
         }
 
         //Finally, animate the node back to it's previous position before the drag-and-drop
-        draggedNode.returnToPreviousPosition();
+        draggedNode.returnToPreviousPosition(0.6);
     }
 });
 

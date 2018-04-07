@@ -303,6 +303,7 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
  * @param animateTime
  */
 ContentNode.prototype.returnToPreviousPosition = function(animateTime) {
+    console.log(this.idString+" was asked to move back to it's previous position, which is x = "+this.previousTranslation.x+" y = "+this.previousTranslation.y);
     this.moveNodeTo(this.previousTranslation.x, this.previousTranslation.y, animateTime);
 };
 
