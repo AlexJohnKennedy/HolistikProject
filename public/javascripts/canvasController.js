@@ -439,10 +439,16 @@ HierarchicalRelationship.prototype.addChild = function(node) {
             return;
         }
     }
+
+    //Okay! We are officially going to add a new child.
     this.children.push(node);
 
     //Now, we need to add THIS RELATIONSHIP as a parent reference into the new child's parentList, so that upwards tree traversal is also possible!
     node.parentList.push(this);
+
+    //Next, we need to create a new 'RenderLine', which is handle the logic for drawing the connecting lines between the parent and the new child.
+    let newLine = new RenderLine(this.parentNode, node);
+    this.lineList.push(newLine);
 
     //For now, whenever we add a new child, we will reposition all the children nodes to be underneath the parent
     this.repositionChildren(node);
@@ -503,6 +509,20 @@ HierarchicalRelationship.prototype.removeChild = function(node) {
         else {
             node.parentList.splice(index,1);
         }
+
+        //Delete the line associated with the child. This can be determined by it being the line with 'destNode' equal to the node being removed.
+        //TODO -- refactor the way HierarchicalRelationship stores children & lines to more efficiently locate one when we have the other.
+        //TODO -- at the moment they are stored in separate arrays, and located independently, even though each line is logically associated with a child node.
+        //TODO -- (which is really silly)
+        for (let i=0; i < this.lineList.length; i++) {
+            let line = this.lineList[i];
+            if (line.sourceNode == node) {
+                //Found the right line! Let's delete it.
+                line.deleteLine();
+                this.lineList.splice(i,1);
+                break;
+            }
+        }
     }
 };
 
@@ -550,15 +570,16 @@ function RenderLine(sourceNode, destNode) {
     let svg = document.getElementById("svgObject");
 
     //Create a <line> and store it as a property of this object.
-    let line = document.createElement("line");
-    line.setAttribute("x1", sourceNode.translation.x.toString());
-    line.setAttribute("y1", sourceNode.translation.y.toString());
-    line.setAttribute("x2", destNode.translation.x.toString());
-    line.setAttribute("y2", destNode.translation.y.toString());
+    let line = document.createElementNS('http://www.w3.org/2000/svg', "line");
+    line.setAttribute("x1", (sourceNode.translation.x + 0.5*sourceNode.size.width).toString());
+    line.setAttribute("y1", (sourceNode.translation.y + 0.5*sourceNode.size.height).toString());
+    line.setAttribute("x2", (destNode.translation.x + 0.5*sourceNode.size.width).toString());
+    line.setAttribute("y2", (destNode.translation.y + 0.5*sourceNode.size.height).toString());
+    svg.appendChild(line);
 
     this.line = line;
 
-    console.log("The display type of the line is: "+line);
+    console.log("The display type of the line is: "+line.style.display.toString());
 }
 
 /**
@@ -568,10 +589,10 @@ function RenderLine(sourceNode, destNode) {
  * Then, update the <line> attributes to move the line in accordance to the node positions.
  */
 RenderLine.prototype.update = function() {
-    let x1 = parseFloat(this.sourceHtmlElement.getAttribute('xTranslation'));
-    let y1 = parseFloat(this.sourceHtmlElement.getAttribute('yTranslation'));
-    let x2 = parseFloat(this.destHtmlElement.getAttribute('xTranslation'));
-    let y2 = parseFloat(this.destHtmlElement.getAttribute('yTranslation'));
+    let x1 = parseFloat(this.sourceHtmlElement.getAttribute('xTranslation')) + 0.5*this.sourceNode.size.width;
+    let y1 = parseFloat(this.sourceHtmlElement.getAttribute('yTranslation')) + 0.5*this.sourceNode.size.height;
+    let x2 = parseFloat(this.destHtmlElement.getAttribute('xTranslation')) + 0.5*this.destNode.size.width;
+    let y2 = parseFloat(this.destHtmlElement.getAttribute('yTranslation')) + 0.5*this.destNode.size.height;
 
     this.line.setAttribute("x1", x1.toString());
     this.line.setAttribute("x2", x2.toString());
@@ -585,6 +606,11 @@ RenderLine.prototype.hideLine = function() {
 
 RenderLine.prototype.showLine = function () {
     this.line.style.display = "inline";
+};
+
+RenderLine.prototype.deleteLine = function() {
+    let svg = document.getElementById("svgObject");
+    svg.removeChild(this.line);
 };
 
 
