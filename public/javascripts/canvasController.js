@@ -54,7 +54,7 @@ function createNewContentNode() {
     let newElemDetails = createNewContentNode_HtmlElement(defaultNodePosition.x, defaultNodePosition.y);
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
-    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width);
+    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
     canvasState.contentNodeList.push(newNode);
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
@@ -87,6 +87,9 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
 
+    //Set up an observer for this HTML element, so that we can respond whenever the element is moved
+    let observer = setupElementObserver(newElem);
+
     //Return the html element we just made, and it's id string.
     return {
         elementReference : newElem,
@@ -94,8 +97,25 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
         x                : xPos,
         y                : yPos,
         height           : defaultNodeSize.height,
-        width            : defaultNodeSize.width
+        width            : defaultNodeSize.width,
+        observer         : observer
     };
+}
+
+function setupElementObserver(element) {
+    console.log("Setting up an observer for the HTML element just created!");
+    //Set up the configuration options object, which will determine what DOM changes are listened for by this observer.
+    let config = { attributes : true }//{ attributeFilter : ["xTranslation", "yTranslation"] };   //Only listen for transform updates!
+
+    //TODO: figure out how to use the attribute filter option to only listen for transform changes, not ALL changes
+
+    //Create an observer object, and pass in the callback function it will invoke when a listened event fires.
+    let observer = new MutationObserver(nodeMovedCallback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(element, config);
+
+    return observer;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -152,6 +172,9 @@ function deleteContentNode(node, stitchTree) {
     node.detachFromAllParents();
 
     //Okay. Now we can delete the node completely!
+
+    //Get the node's DOM mutation listener to stop observing.
+    node.mutationObserver.disconnect();
 
     //Remove the html node from the DOM.
     let drawingCanvas = document.getElementById("drawingCanvas");
@@ -246,7 +269,7 @@ function rearrangeNodes(overlappingNodes) {
  *  class.
  * @constructor
  */
-function ContentNode(element, id, x, y, height, width){
+function ContentNode(element, id, x, y, height, width, mutationObserver){
     // --- Object properties ---
     this.htmlElement     = element;
     this.idString        = id;
@@ -271,6 +294,8 @@ function ContentNode(element, id, x, y, height, width){
     this.childrenList    = [];  //Note that this is NOT an array of nodes, it is an array of HierarchicalRelationships, which contain references to child nodes
     this.parentList      = [];
     this.semanticRelList = [];
+
+    this.mutationObserver = mutationObserver;
 }
 
 /**
@@ -560,6 +585,25 @@ HierarchicalRelationship.prototype.deleteRelationship = function() {
     this.lineList = [];
 };
 
+HierarchicalRelationship.prototype.onParentMoved = function() {
+    //Tell all of our lines to update themselves
+    for (let line of this.lineList) {
+        line.update();
+    }
+};
+
+HierarchicalRelationship.prototype.onChildMoved = function(moved) {
+    //Find out which line had this child in it
+    for (let i=0; i < this.lineList.length; i++) {
+        let line = this.lineList[i];
+        if (line.destNode.idString == moved.idString) {
+            //Found the right line! Let's udpate it.
+            line.update();
+            break;
+        }
+    }
+};
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- RenderLine object prototype -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -620,6 +664,35 @@ RenderLine.prototype.deleteLine = function() {
     svg.removeChild(this.line);
 };
 
+/**
+ * This function is being used as the callback for handling DOM Mutation events for all content nodes.
+ * In other words, whenever a node is moved, this will be invoked so that we can update that node's lines.
+ *
+ * See the following for reference of how this stuff works:
+ * https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+ * https://dom.spec.whatwg.org/#mutationobserver
+ * https://dom.spec.whatwg.org/#mutationrecord
+ *
+ * @param mutationsList
+ */
+function nodeMovedCallback(mutationsList) {
+    //console.log("Transform change detected!");
+    //For these observations, we are only listening for attribute updates.
+    //Thus, the mutation.type is always going to 'attributes'
+    //Equally, we are only listening for updates to the 'transform' attribute, thus, it should only fire when a node has moved.
+    for (let mutation of mutationsList) {
+        let movedElement = mutation.target;
+        let movedNode    = getContentNode(movedElement);
+        //Ask all of the node's child relationships to update the line!
+        for (let rel of movedNode.childrenList) {
+            rel.onParentMoved();
+        }
+        //Ask all of the node's parent relationships to update the line!
+        for (let rel of movedNode.parentList) {
+            rel.onChildMoved(movedNode);
+        }
+    }
+}
 
 
 
