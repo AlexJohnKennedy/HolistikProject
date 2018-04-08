@@ -557,6 +557,8 @@ function RenderLine(sourceNode, destNode) {
     line.setAttribute("y2", destNode.translation.y.toString());
 
     this.line = line;
+
+    console.log("The display type of the line is: "+line);
 }
 
 /**
@@ -575,6 +577,14 @@ RenderLine.prototype.update = function() {
     this.line.setAttribute("x2", x2.toString());
     this.line.setAttribute("y1", y1.toString());
     this.line.setAttribute("y2", y2.toString());
+};
+
+RenderLine.prototype.hideLine = function() {
+    this.line.style.display = "none";
+};
+
+RenderLine.prototype.showLine = function () {
+    this.line.style.display = "inline";
 };
 
 
