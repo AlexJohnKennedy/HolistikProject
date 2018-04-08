@@ -274,6 +274,10 @@ function ContentNode(element, id, x, y, height, width){
 }
 
 /**
+ * This method is used for triggering an animation event in order to move a canvas node in an automated fashion.
+ * This method is NOT used for systematically updating state in the logic nodes or for performing individual translation
+ * actions.
+ *
  * Moves or animates a node to a specified translation on screen, then update the tracked state.
  * @param animateTime value to specify how long the 'transition' animation should take. <= 0 results in instantly changing
  */
@@ -283,12 +287,22 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
         this.htmlElement.style.transitionProperty = "transform";
         this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
     }
+
+    //Trigger the CSS animation by setting a new translation.
     this.htmlElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
+    //Update the logical nodes translation state
     this.translation.y = y;
     this.translation.x = x;
+
+    //Update the html element tracking of the translation as well. (used by the interact.js framework)
     this.htmlElement.setAttribute("xTranslation", x.toString());
     this.htmlElement.setAttribute("yTranslation", y.toString());
+
+    //The other thing that needs to be animated is the relationships associated with this node!
+    //The lines will have to animate themselves to follow the node as it moves.
+
+
 
     //NEED TO SET THE TRANSFORM TRANSITION TIME BACK TO ZERO AFTER THE TRANSITION HAS FINISHED.
     //OTHERWISE THIS WILL INTERFERE WITH OTHER THINGS, POTENTIALLY
@@ -410,6 +424,9 @@ function HierarchicalRelationship(label, parentNode) {
 
     this.parentNode = parentNode;
     this.children   = [];   //Start the list empty, and use the adder method to append children
+
+    //We also will be responsible for maintaining a list of SVG lines which will form the visual connections between nodes.
+    this.lineList   = [];   //Array of associated 'RenderLine' prototypes, each of which are associated with a content node.
 }
 
 HierarchicalRelationship.prototype.addChild = function(node) {
@@ -514,4 +531,53 @@ HierarchicalRelationship.prototype.deleteRelationship = function() {
         this.parentNode.childrenList.splice(index,1);
     }
 };
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- RenderLine object prototype -------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+function RenderLine(sourceNode, destNode) {
+    console.log("a new RenderLine was created, from "+sourceNode.idString+" and "+destNode.idString);
+
+    //Store reference to the information we are going to need.
+    this.sourceNode = sourceNode;
+    this.destNode   = destNode;
+
+    this.sourceHtmlElement = sourceNode.htmlElement;
+    this.destHtmlElement   = destNode.htmlElement;
+
+    //When the RenderLine is created, we access the SVG canvas object and add a 'line' to it, spanning from source to destination
+    let svg = document.getElementById("svgObject");
+
+    //Create a <line> and store it as a property of this object.
+    let line = document.createElement("line");
+    line.setAttribute("x1", sourceNode.translation.x.toString());
+    line.setAttribute("y1", sourceNode.translation.y.toString());
+    line.setAttribute("x2", destNode.translation.x.toString());
+    line.setAttribute("y2", destNode.translation.y.toString());
+
+    this.line = line;
+}
+
+/**
+ * This function is intended to be called whenever the source or dest nodes move on screen, so that the line can follow their positions.
+ *
+ * Access the source and destination elements, and directly extract the x and y translation values.
+ * Then, update the <line> attributes to move the line in accordance to the node positions.
+ */
+RenderLine.prototype.update = function() {
+    let x1 = parseFloat(this.sourceHtmlElement.getAttribute('xTranslation'));
+    let y1 = parseFloat(this.sourceHtmlElement.getAttribute('yTranslation'));
+    let x2 = parseFloat(this.destHtmlElement.getAttribute('xTranslation'));
+    let y2 = parseFloat(this.destHtmlElement.getAttribute('yTranslation'));
+
+    this.line.setAttribute("x1", x1.toString());
+    this.line.setAttribute("x2", x2.toString());
+    this.line.setAttribute("y1", y1.toString());
+    this.line.setAttribute("y2", y2.toString());
+};
+
+
+
+
 

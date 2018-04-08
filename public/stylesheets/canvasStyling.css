@@ -18,7 +18,7 @@ html {
     position: absolute;
     top: 0px;   /* Sit in the top left corner */
     left: 0px;
-    z-index: 0;     /* don't let this render on top of nodes */
+    z-index: 1;     /* don't let this render on top of nodes */
 
     height: 22px;
     width:  200px;
@@ -41,6 +41,21 @@ html {
     cursor: pointer;
 }
 
+/* Style the svg object to be overlaid with the drawing canvas */
+#svgObject {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: transparent;
+    z-index: 0;
+}
+
+/* Style the svg LINES that are inside the svgObject */
+#svgObject line {
+    stroke:rgb(255,0,0);
+    stroke-width:2
+}
+
 /* Style the 'drag here to delete' box */
 .utilityDropZone {
     display: inline-block;  /* relavtively positioned inline block */
@@ -48,7 +63,7 @@ html {
     transform-origin: bottom left;
     transform: translate(0px, 446px); /* Sit in the bottom left corner, by translating distance downwards*/
 
-    z-index: 0;     /* don't let this render on top of nodes */
+    z-index: 1;     /* don't let this render on top of nodes */
 
     height: 50px;
     width:  100px;
