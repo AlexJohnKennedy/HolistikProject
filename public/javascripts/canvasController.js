@@ -515,8 +515,9 @@ HierarchicalRelationship.prototype.removeChild = function(node) {
         //TODO -- at the moment they are stored in separate arrays, and located independently, even though each line is logically associated with a child node.
         //TODO -- (which is really silly)
         for (let i=0; i < this.lineList.length; i++) {
+            console.log("We are removing a child, and searching for the corresponding svg line now.");
             let line = this.lineList[i];
-            if (line.sourceNode == node) {
+            if (line.destNode.idString == node.idString) {
                 //Found the right line! Let's delete it.
                 line.deleteLine();
                 this.lineList.splice(i,1);
@@ -531,6 +532,7 @@ HierarchicalRelationship.prototype.removeChild = function(node) {
  * Calling this function will:
  * a) remove reference to this from all children's parentList.
  * b) remove reference to this from the parent's childList.
+ * c) delete all of the svg lines that this relationship object was keeping track of
  */
 HierarchicalRelationship.prototype.deleteRelationship = function() {
     for (let child of this.children) {
@@ -550,6 +552,12 @@ HierarchicalRelationship.prototype.deleteRelationship = function() {
     else {
         this.parentNode.childrenList.splice(index,1);
     }
+
+    //Delete all the SVG lines
+    for (let line of this.lineList) {
+        line.deleteLine();
+    }
+    this.lineList = [];
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -578,8 +586,6 @@ function RenderLine(sourceNode, destNode) {
     svg.appendChild(line);
 
     this.line = line;
-
-    console.log("The display type of the line is: "+line.style.display.toString());
 }
 
 /**
@@ -609,6 +615,7 @@ RenderLine.prototype.showLine = function () {
 };
 
 RenderLine.prototype.deleteLine = function() {
+    console.log("Render line being deleted");
     let svg = document.getElementById("svgObject");
     svg.removeChild(this.line);
 };
