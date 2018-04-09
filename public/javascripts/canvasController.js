@@ -418,14 +418,30 @@ ContentNode.prototype.addChildNoLabel = function(node) {
  * and all nodes that previously had this node as a parent will no longer have those applied.
  */
 ContentNode.prototype.detachFromAllChildren = function() {
+    /* BUGGED - MODIFYING ARRAY WHILE ITERATING
     for (let rel of this.childrenList) {
         rel.deleteRelationship();   //Completely destroy the relationship, as the parent will no longer exist!
+    }
+    */
+
+    //Iterate backwards through the array, since there is a chance we will be deleting elements from the array as we are going!
+    for (let i = this.childrenList.length-1; i >= 0; i--) {
+        let rel = this.childrenList[i];
+        rel.deleteRelationship();
     }
 };
 
 ContentNode.prototype.detachFromAllParents = function() {
     //Remove ourselves from all our parent's child lists.
-    for (let rel of this.parentList) {
+    /* BUGGED - POTENTIALLY MODIFYING THE ARRAY WHILE LOOPING THROUGH IT WHEN RELATIONSHIPS ARE DELETED */
+    /*for (let rel of this.parentList) {
+        console.log("Detach from all parents, one loop cycle completed.");
+        rel.removeChild(this);
+    }*/
+
+    //Iterate backwards through the array, since there is a chance we will be deleting elements from the array as we are going!
+    for (let i = this.parentList.length-1; i >= 0; i--) {
+        let rel = this.parentList[i];
         rel.removeChild(this);
     }
 
