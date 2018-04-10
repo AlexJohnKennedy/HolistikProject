@@ -38,7 +38,7 @@ interact('.draggable').draggable({
 
 
 //Called whenever the user starts dragging an element on the screen.
-let currTopZIndex = 1;      //TODO figure out a non-cancerous overflow-vulnerable way of tracking the 'top' of the render stack
+let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 function onDragStart (event) {
     console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
 
