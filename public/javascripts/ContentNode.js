@@ -11,8 +11,6 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     // --- Object properties ---
     this.htmlElement     = element;
     this.idString        = id;
-    this.isVisible       = true;    //New nodes are always deemed visible (for now)
-    this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have chilren yet anyway
     this.colour          = defaultColour;
     this.translation     = {
         x : x,
@@ -27,7 +25,16 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
         width  : width
     };
     this.titleText       = defaultNodeTitle;
+    this.descriptionText = "";  //TODO
 
+    // --- Properties for managing whether or not a node is shown on the canvas ---
+    this.isVisible       = true;    //New nodes are always deemed visible (for now)
+    this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have children yet anyway.
+    this.numViewedBy     = -1;      //This tracks how many parents are supplying 'visibility' to the node at the current time.
+                                    //-1 indicates that the node is independently visible (i.e. it is not visible based on a parent viewing it)
+                                    //New nodes are always set to be root nodes, thus we can initialise as -1.
+
+    // --- Relationship properties ---
     //Upon creation, new nodes have no defined relationships.
     this.childrenList    = [];  //Note that this is NOT an array of nodes, it is an array of HierarchicalRelationships, which contain references to child nodes
     this.parentList      = [];
@@ -183,4 +190,30 @@ ContentNode.prototype.detachFromAllParents = function() {
 
     //Now, set our parent list to be empty, since of course, we have no parents anymore!
     this.parentList = [];   //Left over relationships should be garbage collected.
+};
+
+
+/**
+ * This method 'collapses' a node, so that it no longer displays it's children.
+ *
+ * Performing a collapse has multiple ramifications on the state of the node's descendants, and the renderLine's associated with this node.
+ *
+ * Firstly, we need to decrement all of our direct children's 'viewed by' counter. If this causes our child's counter to reach zero,
+ * we will hide that node.
+ *
+ * Secondly, we need to inform all of our children relationships to hide their renderLine objects, since now the lines should not be shown!
+ */
+ContentNode.prototype.collapse = function() {
+    //First, let's just update this nodes state trackers.
+    this.isExpanded = false;
+
+    //Now, traverse to all of our DIRECT children and decrement their counter!
+    for (let rel of this.childrenList) {
+        for (let child of rel.children) {
+            child.decrementNumViewedBy(this);   //Pass in reference to the guy who stopped viewing, incase the tracking is based on storing references to viewers.
+        }
+
+        //Now, traverse to all of our child relationships and inform it to hide all of their lines.
+        rel.hideAllRelationshipLines();
+    }
 };

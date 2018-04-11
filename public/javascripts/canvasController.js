@@ -292,11 +292,13 @@ function addNewRootNode(node) {
     canvasState.rootNodes.push(node);
 
     //Now, collapse the node, so that it's children do not clutter the screen, and the counters can reset.
-    node.collapseChildrenViewing();
+    node.collapse();
 
     //Now, make the node VISIBLE. This should always be the case because it is a root node!
     node.showOnCanvas();
 }
+
+
 
 
 //----------------------------------------------------------------------------------------------------------------------

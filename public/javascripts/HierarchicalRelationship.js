@@ -17,6 +17,8 @@ function HierarchicalRelationship(label, parentNode) {
 
     //We also will be responsible for maintaining a list of SVG lines which will form the visual connections between nodes.
     this.lineList   = [];   //Array of associated 'RenderLine' prototypes, each of which are associated with a content node.
+
+    this.isVisible  = false;
 }
 
 HierarchicalRelationship.prototype.addChild = function(node) {
@@ -167,4 +169,12 @@ HierarchicalRelationship.prototype.onChildMoved = function(moved) {
             break;
         }
     }
+};
+
+HierarchicalRelationship.prototype.hideAllRelationshipLines = function() {
+    for (let line of this.lineList) {
+        line.hideLine();
+    }
+
+    this.isVisible = false;
 };
