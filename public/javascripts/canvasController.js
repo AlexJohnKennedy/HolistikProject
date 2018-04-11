@@ -56,7 +56,7 @@ function createNewContentNode() {
     //Use the returned details to create a new logical object representing the HTML element, and store it.
     let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
     canvasState.contentNodeList.push(newNode);
-    canvasState.rootNodes.push(newNode);
+    addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
@@ -106,7 +106,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
 function setupElementObserver(element) {
     console.log("Setting up an observer for the HTML element just created!");
     //Set up the configuration options object, which will determine what DOM changes are listened for by this observer.
-    let config = { attributes : true } //{ attributeFilter : ["xTranslation", "yTranslation"] };   //Only listen for transform updates!
+    let config = { attributes : true }; //{ attributeFilter : ["xTranslation", "yTranslation"] };   //Only listen for transform updates!
 
     //TODO: figure out how to use the attribute filter option to only listen for transform changes, not ALL changes
 
@@ -259,6 +259,43 @@ function rearrangeAllNodes() {
 
 function rearrangeNodes(overlappingNodes) {
     //TODO
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+//--- Visibility management and context switching ----------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * This function simply adds a passed content node to the root node collection.
+ *
+ * Being a root node on the given canvas context ENSURES that the node is visible. Thus, whenever a node is added as a
+ * root node, it is automatically made 'visible' as well. Furthermore, the descendants of root nodes are determined as
+ * visible if their parent is expanded, vsiible, and they are not greater than the 'view depth' steps from the root node.
+ *
+ * Thus, to avoid cluttering the interface, any node that has just recently been added to the canvas state should be
+ * 'collapsed' proir to being added.
+ *
+ * If the passed node was already a root node, this function has no effect.
+ *
+ * @param node
+ */
+function addNewRootNode(node) {
+    //Okay. Firstly, we need to check if the node was already a root node in teh given context.
+    let index = canvasState.rootNodes.indexOf(node);
+    if (index === -1) {
+        //Was already in the root node list! Do nothing.
+        return;
+    }
+
+    //Alright. Let's push this node into the root node list
+    canvasState.rootNodes.push(node);
+
+    //Now, collapse the node, so that it's children do not clutter the screen, and the counters can reset.
+    node.collapseChildrenViewing();
+
+    //Now, make the node VISIBLE. This should always be the case because it is a root node!
+    node.showOnCanvas();
 }
 
 
