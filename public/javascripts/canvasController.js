@@ -294,11 +294,59 @@ function addNewRootNode(node) {
     //Now, collapse the node, so that it's children do not clutter the screen, and the counters can reset.
     node.collapse();
 
-    //Now, make the node VISIBLE. This should always be the case because it is a root node!
-    node.showOnCanvas();
+    //Now that hte state has changed, we should rebuild the visibility
+    rebuildVisibility();
 }
 
+/**
+ * This method is invoked whenever the node state/structure is updated. It rebuilds an understanding of what nodes are
+ * visible on the canvas, and which nodes are not, FROM SCRATCH, whenever it is invoked.
+ *
+ * Advantage of doing this over the state-tracking method is much easier, encapsulated logic.
+ * Disadvantage of this method is that we have to do 2 full scans of all nodes which exist. O(n) could be slow for every
+ * single node change.
+ */
+function rebuildVisibility() {
+    let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
+    // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
+    for (node of canvasState.contentNodeList) {
+        node.isVisible = false;
+    }
+
+    // Searching from all roots, explore their children so long as we don't exceed the view depth. From this, determine visible nodes!
+    for (let root of canvasState.rootNodes) {
+        //Begin a recursive depth first search from this root. Each node we reach will be set as 'visible'.
+        //The search will ONLY recurse if the viewDepth is greater than zero, and if the current node is expanded.
+        traverseForVisibility(root, canvasState.viewDepth);
+    }
+
+    //Okay, by now, all the nodes in existence should have their 'isVisible' flag set correctly. Thus, we can iterate
+    //through all of the nodes and set their visibility accordingly. Equally, we can tell every node to render it's
+    //parent-lines if and only if each parent is visible and expanded!
+    for (node of canvasState.contentNodeList) {
+        if (node.isVisible) {
+            node.makeVisible();     //Show the node!
+        }
+        else {
+            node.makeInvisible();   //Hide the node!
+        }
+    }
+}
+
+function traverseForVisibility(curr, depth) {
+    curr.isVisible = true;
+
+    //If the depth is not zero yet, and the current node is 'expanded' then keep searching deeper.
+    if (depth > 0 && curr.isExpanded) {
+        for (let rel of curr.childrenList) {
+            for (let child of rel.children) {
+                //Recurse within this child
+                traverseForVisibility(child, depth - 1);
+            }
+        }
+    }
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------

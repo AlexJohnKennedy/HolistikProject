@@ -178,3 +178,12 @@ HierarchicalRelationship.prototype.hideAllRelationshipLines = function() {
 
     this.isVisible = false;
 };
+
+HierarchicalRelationship.prototype.showLinesIfChildVisible = function() {
+    for (let line of this.lineList) {
+        if (line.destNode.isVisible) {
+            line.showLine();
+        }
+    }
+};
+
