@@ -168,6 +168,22 @@ function deleteContentNode(node, stitchTree) {
         }
     }
 
+    //Remove the logical node from the rootNode list, if it is there.
+    index = canvasState.rootNodes.indexOf(node);
+    if (index != -1) {
+        canvasState.rootNodes.splice(index,1);
+
+        //Now, if the node that was just deleted was a root node, then we should add the children of that root node as new
+        //root nodes, so long as it was already visible. This ensures that children don't randomly disappear.
+        for (let rel of node.childrenList) {
+            for (let child of rel.children) {
+                if (child.isVisible && canvasState.rootNodes.indexOf(child) === -1) {
+                    canvasState.rootNodes.push(child);
+                }
+            }
+        }
+    }
+
     //Okay, now let's just directly delete this node and make all of it's children rootNodes of the current context!
     node.detachFromAllChildren();
     node.detachFromAllParents();
@@ -190,11 +206,7 @@ function deleteContentNode(node, stitchTree) {
         canvasState.contentNodeList.splice(index,1);    //Delete one element, from the 'index' position
     }
 
-    //Remove the logical node from the rootNode list, if it is there
-    index = canvasState.rootNodes.indexOf(node);
-    if (index != -1) {
-        canvasState.rootNodes.splice(index,1);
-    }
+    rebuildVisibility();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
