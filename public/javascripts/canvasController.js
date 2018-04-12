@@ -268,6 +268,7 @@ function getContentNode(element) {
 
     //We didn't find it...
     alert("Could not find a matching node object with id: "+id);
+    console.trace("Could not find a matching node object with id: "+id);
     return null;
 }
 
@@ -509,7 +510,14 @@ function zoomContextOut() {
  */
 function zoomContextIn(event) {
     //Gain access to the node, then context switch to it!
-    let node = getContentNode(event.target);
+    let node = getContentNode(event.currentTarget);     //NOTE: using currentTarget instead of target because we only want to access the element the
+                                                        //listener is ATTATCHED TO (i.e. the node div itself) rather than the element which triggered the
+                                                        //the event!
+    //We DO NOT want to zoom if the item clicked is not the outer node element itself. This is becuase if the double click ocurred on one of the
+    //utility buttons, we don't want to also zoom. That would be confusing.
+    if (event.target !== event.currentTarget) {
+        return;
+    }
 
     switchContext(node);
 }
