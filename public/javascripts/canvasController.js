@@ -8,7 +8,8 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 3           //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 3,          //The current maximum view depth to be displayed on the canvas.
+    hierarchyLines : []
 };
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
@@ -364,6 +365,9 @@ function rebuildVisibility() {
     for (let node of canvasState.contentNodeList) {
         node.isVisible = false;
     }
+    for (let line of canvasState.hierarchyLines) {
+        line.isVisible = false;
+    }
 
     // Searching from all roots, explore their children so long as we don't exceed the view depth. From this, determine visible nodes!
     for (let root of canvasState.rootNodes) {
@@ -383,6 +387,14 @@ function rebuildVisibility() {
             node.makeInvisible();   //Hide the node!
         }
     }
+    for (let line of canvasState.hierarchyLines) {
+        if (line.isVisible) {
+            line.showLine();
+        }
+        else {
+            line.hideLine();
+        }
+    }
 }
 
 function traverseForVisibility(curr, depth) {
@@ -391,9 +403,15 @@ function traverseForVisibility(curr, depth) {
     //If the depth is not zero yet, and the current node is 'expanded' then keep searching deeper.
     if (depth > 0 && curr.isExpanded) {
         for (let rel of curr.childrenList) {
+            //Recurse for all children, making them visible
             for (let child of rel.children) {
                 //Recurse within this child
                 traverseForVisibility(child, depth - 1);
+            }
+
+            //We just made all of this node's children visible, thus those lines should be visible!
+            for (let line of rel.lineList) {
+                line.isVisible = true;
             }
         }
     }

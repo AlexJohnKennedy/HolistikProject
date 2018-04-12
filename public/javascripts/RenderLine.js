@@ -24,6 +24,13 @@ function RenderLine(sourceNode, destNode) {
     svg.appendChild(line);
 
     this.line = line;
+
+    //The line objects will also have a 'isVisible' flag which we can use to determine visibility in the same way
+    //as the nodes.
+    this.isVisible = true;  //Default to being visible
+
+    //Add this line to the global collection of lines, so that we can reference it in the visibilty calculations.
+    canvasState.hierarchyLines.push(this);
 }
 
 /**

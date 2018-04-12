@@ -163,7 +163,7 @@ HierarchicalRelationship.prototype.onChildMoved = function(moved) {
     //Find out which line had this child in it
     for (let i=0; i < this.lineList.length; i++) {
         let line = this.lineList[i];
-        if (line.destNode.idString == moved.idString) {
+        if (line.destNode.idString === moved.idString) {
             //Found the right line! Let's udpate it.
             line.update();
             break;
