@@ -171,6 +171,7 @@ HierarchicalRelationship.prototype.onChildMoved = function(moved) {
     }
 };
 
+//DEPRECEATED
 HierarchicalRelationship.prototype.hideAllRelationshipLines = function() {
     for (let line of this.lineList) {
         line.hideLine();
@@ -179,6 +180,7 @@ HierarchicalRelationship.prototype.hideAllRelationshipLines = function() {
     this.isVisible = false;
 };
 
+//DEPRECEATED
 HierarchicalRelationship.prototype.showLinesIfChildVisible = function() {
     for (let line of this.lineList) {
         if (line.destNode.isVisible) {

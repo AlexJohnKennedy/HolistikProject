@@ -239,9 +239,9 @@ ContentNode.prototype.decrementNumViewedBy = function(parent) {
 
 ContentNode.prototype.collapse = function() {
     //No matter what visibility calculations are to follow, we know that we will need to hide our child relationship lines!
-    for (let rel of this.childrenList) {
-        rel.hideAllRelationshipLines();
-    }
+    //for (let rel of this.childrenList) {
+    //    rel.hideAllRelationshipLines();
+    //}
 
     //Update the isExpanded state flag, so that the recalculation callback will correctly handle the new state!
     this.isExpanded = false;
@@ -262,11 +262,11 @@ ContentNode.prototype.expand = function() {
     rebuildVisibility();
 
     //NOW we can check if we need to show our children lines again!
-    if (this.isVisible) {
-        for (let rel of this.childrenList) {
-            rel.showLinesIfChildVisible();
-        }
-    }
+    //if (this.isVisible) {
+    //    for (let rel of this.childrenList) {
+    //        rel.showLinesIfChildVisible();
+    //    }
+    //}
 };
 
 ContentNode.prototype.makeVisible = function() {
@@ -274,11 +274,11 @@ ContentNode.prototype.makeVisible = function() {
     this.htmlElement.style.display = "block";
 
     //Now, if we are expanded, we should render our child lines.
-    if (this.isExpanded) {
-        for (let rel of this.childrenList) {
-            rel.showLinesIfChildVisible();
-        }
-    }
+    //if (this.isExpanded) {
+    //    for (let rel of this.childrenList) {
+    //        rel.showLinesIfChildVisible();
+    //    }
+    //}
 };
 
 ContentNode.prototype.makeInvisible = function() {
