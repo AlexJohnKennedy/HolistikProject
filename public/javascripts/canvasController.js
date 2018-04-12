@@ -417,6 +417,86 @@ function traverseForVisibility(curr, depth) {
     }
 }
 
+/**
+ * This function will switch the context of the view canvas, and 'reset' the view.
+ *
+ * This happens whenever a node is 'zoomed into' or 'zoomed out of'; the passed node becomes the 'context'
+ * of the view canvas, and the direct descendants of the context node become the new root nodes.
+ *
+ * If the context node is null, we interpret this as 'global context' - I.e. we are zoomed out as far as we can go.
+ * In this case, all parentless nodes will become root nodes of the global context.
+ *
+ * So, when this function is call, we will simply wipe the root node list, set the new context node, then rebuild the
+ * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
+ * render the new context.
+ *
+ * TODO: also invoke node repositioning, once that is implemented.
+ *
+ * @param newContextNode the new node object to become the new context, OR null, to imply global context.
+ */
+function switchContext(newContextNode) {
+    //Attain access to the context display object.
+    let contextBox = document.getElementById("contextIndicatorBox");
+    let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
+    let contextText = document.getElementById("contextNameTextBox");
+
+    //Set the context node in the canvas state to be whatever was just passed in!
+    canvasState.contextNode = newContextNode;
+
+    //If the passed node is null, switch to global context.
+    if (newContextNode === null) {
+        //Hide the back button since we cannot zoom out any more..
+        backButton.style.display = "none";
+
+        //Set the context text to be 'global context'
+        contextText.innerText = "Global context";
+
+        //Okay, reset the root nodes to all nodes which have no parents.
+        canvasState.rootNodes = [];
+        for (let node of canvasState.contentNodeList) {
+            if (node.parentList.length === 0) {
+                //This node has no parents! thus, we should make it a root node.
+                canvasState.rootNodes.push(node);
+            }
+        }
+    }
+    //If the passed node is not null, then it becomes the new context!
+    else {
+        backButton.style.display = "inline";
+        contextText.innerText = newContextNode.titleText;
+
+        //Okay, reset the root nodes to all nodes which are children of the new context node.
+        canvasState.rootNodes = [];
+        for (let rel of newContextNode.childrenList) {
+            for (let child of rel.children) {
+                canvasState.rootNodes.push(child);
+            }
+        }
+    }
+
+    //Now, we just need to rebuild the visibility!!
+    rebuildVisibility();
+}
+
+/** invoked to zoom out the context. For safety, performs a null check even though it should never be called with null. */
+function zoomContextOut() {
+    if (canvasState.contextNode === null) { return; }
+
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+
+    //For now, i'm just going to pick the first parent in the list, although this is a bad solution. I'm doing this just
+    //to facilitate further development of features and not get stuck.
+    if (canvasState.contextNode.parentList.length === 0) {
+        //The current context has no parent! Thus, we should move to global context.
+        switchContext(null);
+    }
+    else {
+        switchContext(canvasState.contextNode.parentList[0].parentNode);
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //--- Additional callback functions ------------------------------------------------------------------------------------
