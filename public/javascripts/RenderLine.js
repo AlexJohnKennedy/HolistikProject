@@ -16,11 +16,15 @@ function RenderLine(sourceNode, destNode) {
     let svg = document.getElementById("svgObject");
 
     //Create a <line> and store it as a property of this object.
-    let line = document.createElementNS('http://www.w3.org/2000/svg', "line");
-    line.setAttribute("x1", (sourceNode.translation.x + 0.5*sourceNode.size.width).toString());
-    line.setAttribute("y1", (sourceNode.translation.y + 0.5*sourceNode.size.height).toString());
-    line.setAttribute("x2", (destNode.translation.x + 0.5*sourceNode.size.width).toString());
-    line.setAttribute("y2", (destNode.translation.y + 0.5*sourceNode.size.height).toString());
+    let line = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
+    //cancerous string concatenation to form points object of x,y pairs
+    let x1 = (sourceNode.translation.x + 0.5*sourceNode.size.width).toString();
+    let y1 = (sourceNode.translation.y + 0.5*sourceNode.size.height).toString();
+    let x2 = (destNode.translation.x + 0.5*sourceNode.size.width).toString();
+    let y2 = (destNode.translation.y + 0.5*sourceNode.size.height).toString();
+    let pointsString = x1+","+y1+" "+((x1+x2)/2)+","+((y1+y2)/2)+" "+x2+","+y2;
+    line.setAttribute("points", pointsString);
+    line.setAttribute("marker-mid", "url(#Triangle)");
     svg.appendChild(line);
 
     this.line = line;
@@ -45,10 +49,14 @@ RenderLine.prototype.update = function() {
     let x2 = parseFloat(this.destHtmlElement.getAttribute('xTranslation')) + 0.5*this.destNode.size.width;
     let y2 = parseFloat(this.destHtmlElement.getAttribute('yTranslation')) + 0.5*this.destNode.size.height;
 
-    this.line.setAttribute("x1", x1.toString());
-    this.line.setAttribute("x2", x2.toString());
-    this.line.setAttribute("y1", y1.toString());
-    this.line.setAttribute("y2", y2.toString());
+    let pointsString = (x1.toString())+","+
+                       (y1.toString())+" "+
+                       ((x1+x2)/2).toString()+","+
+                       ((y1+y2)/2).toString()+" "+
+                       (x2.toString())+","+
+                       (y2.toString());
+    this.line.setAttribute("points", pointsString);
+    this.line.setAttribute("marker-mid", "url(#Triangle)");
 };
 
 RenderLine.prototype.hideLine = function() {

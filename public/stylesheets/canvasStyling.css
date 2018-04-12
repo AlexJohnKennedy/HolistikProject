@@ -51,7 +51,7 @@ html {
 }
 
 /* Style the svg LINES that are inside the svgObject */
-#svgObject line {
+#svgObject polyline {
     stroke:rgb(255,0,0);
     stroke-width:2
 }
