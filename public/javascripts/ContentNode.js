@@ -137,6 +137,10 @@ ContentNode.prototype.addChild = function(node, relationshipLabel) {
         if (rel.compareLabel(relationshipLabel)) {
             //MATCH! No need to create a new relationship object.
             rel.addChild(node);
+
+            //Still need to rebuild the visibility, none the less
+            rebuildVisibility();
+
             return;
         }
     }
