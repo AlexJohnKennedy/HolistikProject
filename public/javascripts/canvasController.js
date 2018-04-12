@@ -88,6 +88,9 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
 
+    //Add the expand children button
+    addExpandChildrenHTMLButton(newElem);
+
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
     let observer = setupElementObserver(newElem);
 
@@ -101,6 +104,42 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
         width            : defaultNodeSize.width,
         observer         : observer
     };
+}
+
+function addExpandChildrenHTMLButton(elem) {
+    //This function adds a button to the nodes that will be used to expand/collapse (show hide children)
+    //Create a new div.
+    let button = document.createElement("div");
+
+    //Add styling class
+    button.classList.add("expandChildrenButton");               //General button styling.
+    button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
+
+    //Add an onclick listener to the button.
+    button.addEventListener("click", expandChildrenButtonClickedCallback);
+
+    elem.appendChild(button);
+}
+function expandChildrenButtonClickedCallback(event) {
+    console.log("expand button clicked");
+
+    //Access the html element which was clicked, then traverse to the direct parent in order to find the HTML node element.
+    let nodeElem = event.target.parentNode;
+
+    //Find the logical node object which corresponds to this.
+    let node = getContentNode(nodeElem);
+
+    //Toggle the isExpanded state! Equally, apply visual styling changes to the button element to reflect the change.
+    if (node.isExpanded) {
+        node.collapse();
+        event.target.classList.remove("expandChildrenButton_expanded");
+        event.target.classList.add("expandChildrenButton_collapsed");
+    }
+    else {
+        node.expand();
+        event.target.classList.remove("expandChildrenButton_collapsed");
+        event.target.classList.add("expandChildrenButton_expanded");
+    }
 }
 
 function setupElementObserver(element) {
@@ -169,8 +208,8 @@ function deleteContentNode(node, stitchTree) {
     }
 
     //Remove the logical node from the rootNode list, if it is there.
-    index = canvasState.rootNodes.indexOf(node);
-    if (index != -1) {
+    let index = canvasState.rootNodes.indexOf(node);
+    if (index !== -1) {
         canvasState.rootNodes.splice(index,1);
 
         //Now, if the node that was just deleted was a root node, then we should add the children of that root node as new
@@ -198,8 +237,8 @@ function deleteContentNode(node, stitchTree) {
     drawingCanvas.removeChild(node.htmlElement);
 
     //Remove the logical node from all canvasState memory
-    let index = canvasState.contentNodeList.indexOf(node);
-    if (index == -1) {
+    index = canvasState.contentNodeList.indexOf(node);
+    if (index === -1) {
         alert("CRITICAL ERROR: attempted to delete a node that wasn't even stored in the contentNodeList!");
     }
     else {
@@ -218,7 +257,7 @@ function getContentNode(element) {
     let id = element.getAttribute("id");
 
     for (let node of canvasState.contentNodeList) {
-        if (node.idString == id) {
+        if (node.idString === id) {
             return node;
         }
     }
@@ -295,16 +334,14 @@ function rearrangeNodes(overlappingNodes) {
 function addNewRootNode(node) {
     //Okay. Firstly, we need to check if the node was already a root node in teh given context.
     let index = canvasState.rootNodes.indexOf(node);
-    if (index === -1) {
+    if (index !== -1) {
         //Was already in the root node list! Do nothing.
         return;
     }
+    console.log("ADDING A NEW ROOT!");
 
     //Alright. Let's push this node into the root node list
     canvasState.rootNodes.push(node);
-
-    //Now, collapse the node, so that it's children do not clutter the screen, and the counters can reset.
-    node.collapse();
 
     //Now that hte state has changed, we should rebuild the visibility
     rebuildVisibility();
@@ -319,10 +356,12 @@ function addNewRootNode(node) {
  * single node change.
  */
 function rebuildVisibility() {
-    let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
+    //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
+
+    console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
 
     // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
-    for (node of canvasState.contentNodeList) {
+    for (let node of canvasState.contentNodeList) {
         node.isVisible = false;
     }
 
@@ -336,7 +375,7 @@ function rebuildVisibility() {
     //Okay, by now, all the nodes in existence should have their 'isVisible' flag set correctly. Thus, we can iterate
     //through all of the nodes and set their visibility accordingly. Equally, we can tell every node to render it's
     //parent-lines if and only if each parent is visible and expanded!
-    for (node of canvasState.contentNodeList) {
+    for (let node of canvasState.contentNodeList) {
         if (node.isVisible) {
             node.makeVisible();     //Show the node!
         }
@@ -393,7 +432,4 @@ function nodeMovedCallback(mutationsList) {
         }
     }
 }
-
-
-
 

@@ -20,6 +20,7 @@
 interact('.draggable').draggable({
     inertia : true,     //Enable inertia for the draggable elements
     autoScroll : true,  //Dragging items to edge of the screen will scroll the page
+    ignoreFrom: '.expandChildrenButton',    //Don't want to be able to drag the node when pressing the utility buttons.
     restrict: {
         restriction: "parent",  //Keep the moveable object within the boundaries of it's HTML parent element
         endOnly: true,
