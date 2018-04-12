@@ -15,9 +15,9 @@ function RenderLine(sourceNode, destNode) {
     //When the RenderLine is created, we access the SVG canvas object and add a 'line' to it, spanning from source to destination
     let svg = document.getElementById("svgObject");
 
-    //Create a <line> and store it as a property of this object.
+    //Create a <polyline> and store it as a property of this object.
     let line = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
-    //cancerous string concatenation to form points object of x,y pairs
+    //string concatenation to for a line with a point in the middle to allow for a mid-line svg object
     let x1 = (sourceNode.translation.x + 0.5*sourceNode.size.width).toString();
     let y1 = (sourceNode.translation.y + 0.5*sourceNode.size.height).toString();
     let x2 = (destNode.translation.x + 0.5*sourceNode.size.width).toString();
