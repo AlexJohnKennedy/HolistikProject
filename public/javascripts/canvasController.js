@@ -92,6 +92,9 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //Add the expand children button
     addExpandChildrenHTMLButton(newElem);
 
+    //Add a double click listener to invoke the 'zoom in' functionality.
+    newElem.addEventListener("dblclick", zoomContextIn);
+
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
     let observer = setupElementObserver(newElem);
 
@@ -496,6 +499,19 @@ function zoomContextOut() {
     else {
         switchContext(canvasState.contextNode.parentList[0].parentNode);
     }
+}
+
+/**
+ * This is a callback invoked by the nodes that have been double clicked. For now, this will be how we invoke the 'zoom
+ * into node' functionality.
+ *
+ * @param event MouseDoubleClick DOM event
+ */
+function zoomContextIn(event) {
+    //Gain access to the node, then context switch to it!
+    let node = getContentNode(event.target);
+
+    switchContext(node);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
