@@ -122,6 +122,31 @@ html {
     color : cornsilk;   /* test colour for the nodes name at this time */
 }
 
+
+/* Style the expand/collapse icon */
+.expandChildrenButton {
+    position: relative;
+    transform: translate(6px, 15px);
+
+    background: url("../images/expand-button.svg") no-repeat;
+    background-size: cover;
+    rotation-point:50% 50%;
+    width: 15px;
+    height: 15px;
+    transition: transform 0.25s;
+}
+.expandChildrenButton:hover {
+    cursor : pointer;
+}
+.expandChildrenButton_expanded {
+    transform : translate(6px, 15px) rotate(0deg);
+}
+.expandChildrenButton_collapsed {
+    transform: translate(6px, 15px) rotate(-90deg);
+}
+
+
+
 /* ------------------------------------------------------------------------------------------------------------------ */
 /* --- DYNAMICALLY APPLIED STYLES ----------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------ */

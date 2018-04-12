@@ -20,6 +20,7 @@
 interact('.draggable').draggable({
     inertia : true,     //Enable inertia for the draggable elements
     autoScroll : true,  //Dragging items to edge of the screen will scroll the page
+    ignoreFrom: '.expandChildrenButton',    //Don't want to be able to drag the node when pressing the utility buttons.
     restrict: {
         restriction: "parent",  //Keep the moveable object within the boundaries of it's HTML parent element
         endOnly: true,
@@ -229,6 +230,12 @@ function onElementDropped(event) {
     let dropped = getContentNode(beingDragged);
     let parent  = getContentNode(dropzone);
 
+    //If this node was previously a root node, now it is not! Since we just nested it inside some visible node.
+    let index = canvasState.rootNodes.indexOf(dropped);
+    if (index != -1) {
+        canvasState.rootNodes.splice(index,1);
+    }
+
     parent.addChildNoLabel(dropped);
 }
 
@@ -286,13 +293,14 @@ interact('#detachNodeDropZone').dropzone({
     ondrop: function(event) {
         let draggedNode = getContentNode(event.relatedTarget);
 
-        //Simply detach this node from all of it's parents!
-        draggedNode.detachFromAllParents();
-
+        //Nodes that are actively detached via the interface will be defined as a new root node, so that it
+        //doesn't just 'disappear' confusingly.
         //Add as a root node to the canvas state, if it wasn't already there.
         if (canvasState.rootNodes.indexOf(draggedNode) === -1) {
             canvasState.rootNodes.push(draggedNode);
         }
+        //Simply detach this node from all of it's parents!
+        draggedNode.detachFromAllParents();
 
         //Finally, animate the node back to it's previous position before the drag-and-drop
         draggedNode.returnToPreviousPosition(0.2);

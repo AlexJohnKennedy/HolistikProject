@@ -8,7 +8,8 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 3           //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 3,          //The current maximum view depth to be displayed on the canvas.
+    hierarchyLines : []
 };
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
@@ -56,7 +57,7 @@ function createNewContentNode() {
     //Use the returned details to create a new logical object representing the HTML element, and store it.
     let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
     canvasState.contentNodeList.push(newNode);
-    canvasState.rootNodes.push(newNode);
+    addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
@@ -88,6 +89,12 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
 
+    //Add the expand children button
+    addExpandChildrenHTMLButton(newElem);
+
+    //Add a double click listener to invoke the 'zoom in' functionality.
+    newElem.addEventListener("dblclick", zoomContextIn);
+
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
     let observer = setupElementObserver(newElem);
 
@@ -103,10 +110,46 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     };
 }
 
+function addExpandChildrenHTMLButton(elem) {
+    //This function adds a button to the nodes that will be used to expand/collapse (show hide children)
+    //Create a new div.
+    let button = document.createElement("div");
+
+    //Add styling class
+    button.classList.add("expandChildrenButton");               //General button styling.
+    button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
+
+    //Add an onclick listener to the button.
+    button.addEventListener("click", expandChildrenButtonClickedCallback);
+
+    elem.appendChild(button);
+}
+function expandChildrenButtonClickedCallback(event) {
+    console.log("expand button clicked");
+
+    //Access the html element which was clicked, then traverse to the direct parent in order to find the HTML node element.
+    let nodeElem = event.target.parentNode;
+
+    //Find the logical node object which corresponds to this.
+    let node = getContentNode(nodeElem);
+
+    //Toggle the isExpanded state! Equally, apply visual styling changes to the button element to reflect the change.
+    if (node.isExpanded) {
+        node.collapse();
+        event.target.classList.remove("expandChildrenButton_expanded");
+        event.target.classList.add("expandChildrenButton_collapsed");
+    }
+    else {
+        node.expand();
+        event.target.classList.remove("expandChildrenButton_collapsed");
+        event.target.classList.add("expandChildrenButton_expanded");
+    }
+}
+
 function setupElementObserver(element) {
     console.log("Setting up an observer for the HTML element just created!");
     //Set up the configuration options object, which will determine what DOM changes are listened for by this observer.
-    let config = { attributes : true } //{ attributeFilter : ["xTranslation", "yTranslation"] };   //Only listen for transform updates!
+    let config = { attributes : true }; //{ attributeFilter : ["xTranslation", "yTranslation"] };   //Only listen for transform updates!
 
     //TODO: figure out how to use the attribute filter option to only listen for transform changes, not ALL changes
 
@@ -168,6 +211,22 @@ function deleteContentNode(node, stitchTree) {
         }
     }
 
+    //Remove the logical node from the rootNode list, if it is there.
+    let index = canvasState.rootNodes.indexOf(node);
+    if (index !== -1) {
+        canvasState.rootNodes.splice(index,1);
+
+        //Now, if the node that was just deleted was a root node, then we should add the children of that root node as new
+        //root nodes, so long as it was already visible. This ensures that children don't randomly disappear.
+        for (let rel of node.childrenList) {
+            for (let child of rel.children) {
+                if (child.isVisible && canvasState.rootNodes.indexOf(child) === -1) {
+                    canvasState.rootNodes.push(child);
+                }
+            }
+        }
+    }
+
     //Okay, now let's just directly delete this node and make all of it's children rootNodes of the current context!
     node.detachFromAllChildren();
     node.detachFromAllParents();
@@ -182,19 +241,15 @@ function deleteContentNode(node, stitchTree) {
     drawingCanvas.removeChild(node.htmlElement);
 
     //Remove the logical node from all canvasState memory
-    let index = canvasState.contentNodeList.indexOf(node);
-    if (index == -1) {
+    index = canvasState.contentNodeList.indexOf(node);
+    if (index === -1) {
         alert("CRITICAL ERROR: attempted to delete a node that wasn't even stored in the contentNodeList!");
     }
     else {
         canvasState.contentNodeList.splice(index,1);    //Delete one element, from the 'index' position
     }
 
-    //Remove the logical node from the rootNode list, if it is there
-    index = canvasState.rootNodes.indexOf(node);
-    if (index != -1) {
-        canvasState.rootNodes.splice(index,1);
-    }
+    rebuildVisibility();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -206,13 +261,14 @@ function getContentNode(element) {
     let id = element.getAttribute("id");
 
     for (let node of canvasState.contentNodeList) {
-        if (node.idString == id) {
+        if (node.idString === id) {
             return node;
         }
     }
 
     //We didn't find it...
     alert("Could not find a matching node object with id: "+id);
+    console.trace("Could not find a matching node object with id: "+id);
     return null;
 }
 
@@ -263,6 +319,210 @@ function rearrangeNodes(overlappingNodes) {
 
 
 //----------------------------------------------------------------------------------------------------------------------
+//--- Visibility management and context switching ----------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * This function simply adds a passed content node to the root node collection.
+ *
+ * Being a root node on the given canvas context ENSURES that the node is visible. Thus, whenever a node is added as a
+ * root node, it is automatically made 'visible' as well. Furthermore, the descendants of root nodes are determined as
+ * visible if their parent is expanded, vsiible, and they are not greater than the 'view depth' steps from the root node.
+ *
+ * Thus, to avoid cluttering the interface, any node that has just recently been added to the canvas state should be
+ * 'collapsed' proir to being added.
+ *
+ * If the passed node was already a root node, this function has no effect.
+ *
+ * @param node
+ */
+function addNewRootNode(node) {
+    //Okay. Firstly, we need to check if the node was already a root node in teh given context.
+    let index = canvasState.rootNodes.indexOf(node);
+    if (index !== -1) {
+        //Was already in the root node list! Do nothing.
+        return;
+    }
+    console.log("ADDING A NEW ROOT!");
+
+    //Alright. Let's push this node into the root node list
+    canvasState.rootNodes.push(node);
+
+    //Now that hte state has changed, we should rebuild the visibility
+    rebuildVisibility();
+}
+
+/**
+ * This method is invoked whenever the node state/structure is updated. It rebuilds an understanding of what nodes are
+ * visible on the canvas, and which nodes are not, FROM SCRATCH, whenever it is invoked.
+ *
+ * Advantage of doing this over the state-tracking method is much easier, encapsulated logic.
+ * Disadvantage of this method is that we have to do 2 full scans of all nodes which exist. O(n) could be slow for every
+ * single node change.
+ */
+function rebuildVisibility() {
+    //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
+
+    console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
+
+    // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
+    for (let node of canvasState.contentNodeList) {
+        node.isVisible = false;
+    }
+    for (let line of canvasState.hierarchyLines) {
+        line.isVisible = false;
+    }
+
+    // Searching from all roots, explore their children so long as we don't exceed the view depth. From this, determine visible nodes!
+    for (let root of canvasState.rootNodes) {
+        //Begin a recursive depth first search from this root. Each node we reach will be set as 'visible'.
+        //The search will ONLY recurse if the viewDepth is greater than zero, and if the current node is expanded.
+        traverseForVisibility(root, canvasState.viewDepth);
+    }
+
+    //Okay, by now, all the nodes in existence should have their 'isVisible' flag set correctly. Thus, we can iterate
+    //through all of the nodes and set their visibility accordingly. Equally, we can tell every node to render it's
+    //parent-lines if and only if each parent is visible and expanded!
+    for (let node of canvasState.contentNodeList) {
+        if (node.isVisible) {
+            node.makeVisible();     //Show the node!
+        }
+        else {
+            node.makeInvisible();   //Hide the node!
+        }
+    }
+    for (let line of canvasState.hierarchyLines) {
+        if (line.isVisible) {
+            line.showLine();
+        }
+        else {
+            line.hideLine();
+        }
+    }
+}
+
+function traverseForVisibility(curr, depth) {
+    curr.isVisible = true;
+
+    //If the depth is not zero yet, and the current node is 'expanded' then keep searching deeper.
+    if (depth > 0 && curr.isExpanded) {
+        for (let rel of curr.childrenList) {
+            //Recurse for all children, making them visible
+            for (let child of rel.children) {
+                //Recurse within this child
+                traverseForVisibility(child, depth - 1);
+            }
+
+            //We just made all of this node's children visible, thus those lines should be visible!
+            for (let line of rel.lineList) {
+                line.isVisible = true;
+            }
+        }
+    }
+}
+
+/**
+ * This function will switch the context of the view canvas, and 'reset' the view.
+ *
+ * This happens whenever a node is 'zoomed into' or 'zoomed out of'; the passed node becomes the 'context'
+ * of the view canvas, and the direct descendants of the context node become the new root nodes.
+ *
+ * If the context node is null, we interpret this as 'global context' - I.e. we are zoomed out as far as we can go.
+ * In this case, all parentless nodes will become root nodes of the global context.
+ *
+ * So, when this function is call, we will simply wipe the root node list, set the new context node, then rebuild the
+ * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
+ * render the new context.
+ *
+ * TODO: also invoke node repositioning, once that is implemented.
+ *
+ * @param newContextNode the new node object to become the new context, OR null, to imply global context.
+ */
+function switchContext(newContextNode) {
+    //Attain access to the context display object.
+    let contextBox = document.getElementById("contextIndicatorBox");
+    let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
+    let contextText = document.getElementById("contextNameTextBox");
+
+    //Set the context node in the canvas state to be whatever was just passed in!
+    canvasState.contextNode = newContextNode;
+
+    //If the passed node is null, switch to global context.
+    if (newContextNode === null) {
+        //Hide the back button since we cannot zoom out any more..
+        backButton.style.display = "none";
+
+        //Set the context text to be 'global context'
+        contextText.innerText = "Global context";
+
+        //Okay, reset the root nodes to all nodes which have no parents.
+        canvasState.rootNodes = [];
+        for (let node of canvasState.contentNodeList) {
+            if (node.parentList.length === 0) {
+                //This node has no parents! thus, we should make it a root node.
+                canvasState.rootNodes.push(node);
+            }
+        }
+    }
+    //If the passed node is not null, then it becomes the new context!
+    else {
+        backButton.style.display = "inline";
+        contextText.innerText = newContextNode.titleText;
+
+        //Okay, reset the root nodes to all nodes which are children of the new context node.
+        canvasState.rootNodes = [];
+        for (let rel of newContextNode.childrenList) {
+            for (let child of rel.children) {
+                canvasState.rootNodes.push(child);
+            }
+        }
+    }
+
+    //Now, we just need to rebuild the visibility!!
+    rebuildVisibility();
+}
+
+/** invoked to zoom out the context. For safety, performs a null check even though it should never be called with null. */
+function zoomContextOut() {
+    if (canvasState.contextNode === null) { return; }
+
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+    //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
+
+    //For now, i'm just going to pick the first parent in the list, although this is a bad solution. I'm doing this just
+    //to facilitate further development of features and not get stuck.
+    if (canvasState.contextNode.parentList.length === 0) {
+        //The current context has no parent! Thus, we should move to global context.
+        switchContext(null);
+    }
+    else {
+        switchContext(canvasState.contextNode.parentList[0].parentNode);
+    }
+}
+
+/**
+ * This is a callback invoked by the nodes that have been double clicked. For now, this will be how we invoke the 'zoom
+ * into node' functionality.
+ *
+ * @param event MouseDoubleClick DOM event
+ */
+function zoomContextIn(event) {
+    //Gain access to the node, then context switch to it!
+    let node = getContentNode(event.currentTarget);     //NOTE: using currentTarget instead of target because we only want to access the element the
+                                                        //listener is ATTATCHED TO (i.e. the node div itself) rather than the element which triggered the
+                                                        //the event!
+    //We DO NOT want to zoom if the item clicked is not the outer node element itself. This is becuase if the double click ocurred on one of the
+    //utility buttons, we don't want to also zoom. That would be confusing.
+    if (event.target !== event.currentTarget) {
+        return;
+    }
+
+    switchContext(node);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 //--- Additional callback functions ------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 /**
@@ -294,7 +554,4 @@ function nodeMovedCallback(mutationsList) {
         }
     }
 }
-
-
-
 

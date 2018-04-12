@@ -11,8 +11,6 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     // --- Object properties ---
     this.htmlElement     = element;
     this.idString        = id;
-    this.isVisible       = true;    //New nodes are always deemed visible (for now)
-    this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have chilren yet anyway
     this.colour          = defaultColour;
     this.translation     = {
         x : x,
@@ -27,7 +25,16 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
         width  : width
     };
     this.titleText       = defaultNodeTitle;
+    this.descriptionText = "";  //TODO
 
+    // --- Properties for managing whether or not a node is shown on the canvas ---
+    this.isVisible       = true;    //New nodes are always deemed visible (for now)
+    this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have children yet anyway.
+    this.numViewedBy     = -1;      //This tracks how many parents are supplying 'visibility' to the node at the current time.
+    //DEPRECEATED                  //-1 indicates that the node is independently visible (i.e. it is not visible based on a parent viewing it)
+                                    //New nodes are always set to be root nodes, thus we can initialise as -1.
+
+    // --- Relationship properties ---
     //Upon creation, new nodes have no defined relationships.
     this.childrenList    = [];  //Note that this is NOT an array of nodes, it is an array of HierarchicalRelationships, which contain references to child nodes
     this.parentList      = [];
@@ -130,6 +137,10 @@ ContentNode.prototype.addChild = function(node, relationshipLabel) {
         if (rel.compareLabel(relationshipLabel)) {
             //MATCH! No need to create a new relationship object.
             rel.addChild(node);
+
+            //Still need to rebuild the visibility, none the less
+            rebuildVisibility();
+
             return;
         }
     }
@@ -139,6 +150,9 @@ ContentNode.prototype.addChild = function(node, relationshipLabel) {
     let rel = new HierarchicalRelationship(relationshipLabel, this);    //Assign this node to be the parent, of course!
     this.childrenList.push(rel);    //Add the new relationship object to the list of children aggregators.
     rel.addChild(node);
+
+    //Rebuild the visibility since the node structure has now changed!
+    rebuildVisibility();
 };
 
 /**
@@ -165,6 +179,9 @@ ContentNode.prototype.detachFromAllChildren = function() {
         let rel = this.childrenList[i];
         rel.deleteRelationship();
     }
+
+    //Rebuild the visibility since the node structure has now changed!
+    rebuildVisibility();
 };
 
 ContentNode.prototype.detachFromAllParents = function() {
@@ -183,4 +200,92 @@ ContentNode.prototype.detachFromAllParents = function() {
 
     //Now, set our parent list to be empty, since of course, we have no parents anymore!
     this.parentList = [];   //Left over relationships should be garbage collected.
+
+    //Rebuild the visibility since the node structure has now changed!
+    rebuildVisibility();
+};
+
+/** DEPRECEATED VERSION: THIS METHOD WAS WRITTEN WHEN WE WERE GOING TO DO THE 'COUNTER' METHOD FOR CONTROLLING VISIBILITY.
+ *                       NOW, WE WILL SIMPLY REBUILD THE VISIBILITY STATE WITH A 'REBUILD' CALLBACK WHENEVER A NODE STATE
+ *                       CHANGES.
+ * This method 'collapses' a node, so that it no longer displays it's children.
+ *
+ * Performing a collapse has multiple ramifications on the state of the node's descendants, and the renderLine's associated with this node.
+ *
+ * Firstly, we need to decrement all of our direct children's 'viewed by' counter. If this causes our child's counter to reach zero,
+ * we will hide that node.
+ *
+ * Secondly, we need to inform all of our children relationships to hide their renderLine objects, since now the lines should not be shown!
+ */
+ContentNode.prototype.collapseOLD = function() {
+    //First, let's just update this nodes state trackers.
+    this.isExpanded = false;
+
+    //We only need to decrement our children counters
+
+    //Now, traverse to all of our DIRECT children and decrement their counter!
+    for (let rel of this.childrenList) {
+        for (let child of rel.children) {
+            child.decrementNumViewedBy(this);   //Pass in reference to the guy who stopped viewing, incase the tracking is based on storing references to viewers.
+        }
+        //Now, traverse to all of our child relationships and inform it to hide all of their lines.
+        rel.hideAllRelationshipLines();
+    }
+};
+
+/**
+ * This function is invoked by this node's parent when it stops 'viewing' it.
+ * @param parent
+ */
+ContentNode.prototype.decrementNumViewedBy = function(parent) {
+    //DEPRECEATED TECHNIQUE
+};
+
+ContentNode.prototype.collapse = function() {
+    //No matter what visibility calculations are to follow, we know that we will need to hide our child relationship lines!
+    //for (let rel of this.childrenList) {
+    //    rel.hideAllRelationshipLines();
+    //}
+
+    //Update the isExpanded state flag, so that the recalculation callback will correctly handle the new state!
+    this.isExpanded = false;
+
+    //Now we have to invoke the callback to tell the canvas state to recalculate and reassign the visibility of all nodes.
+    rebuildVisibility();
+};
+
+ContentNode.prototype.expand = function() {
+    //Set this node's state flag to represent it's expansion
+    this.isExpanded = true;
+
+    //Invoke the rebuild visibility calculation BEFORE we decide which render lines to display.
+    //This needs to be done first because the childRelationship lines should only show if both this node AND
+    //the child node is visible. So, even if this is expanded, the lines may still have to remain hidden:
+    //e.g. if their is a visibility filter hiding the children, or if the children are below the maximum view depth,
+    //then they will still not show.
+    rebuildVisibility();
+
+    //NOW we can check if we need to show our children lines again!
+    //if (this.isVisible) {
+    //    for (let rel of this.childrenList) {
+    //        rel.showLinesIfChildVisible();
+    //    }
+    //}
+};
+
+ContentNode.prototype.makeVisible = function() {
+    //Okay, let's make this node visible!
+    this.htmlElement.style.display = "block";
+
+    //Now, if we are expanded, we should render our child lines.
+    //if (this.isExpanded) {
+    //    for (let rel of this.childrenList) {
+    //        rel.showLinesIfChildVisible();
+    //    }
+    //}
+};
+
+ContentNode.prototype.makeInvisible = function() {
+    //Okay, let's hide all of this.
+    this.htmlElement.style.display = "none";
 };
