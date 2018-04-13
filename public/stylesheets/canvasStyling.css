@@ -53,7 +53,7 @@ html {
 /* Style the svg LINES that are inside the svgObject */
 #svgObject polyline {
     stroke:rgb(255,0,0);
-    stroke-width:2
+    stroke-width: 2px;
 }
 
 /* Style the 'drag here to delete' box */
