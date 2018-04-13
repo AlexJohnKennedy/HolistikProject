@@ -122,10 +122,25 @@ html {
     color : cornsilk;   /* test colour for the nodes name at this time */
 }
 
+/* TODO figure out if this shit actually works
+.rootNode::before {
+    display: block;
+    content: '';
+    position: absolute;
+
+    border-radius: 5px;
+    border-width: 3px;
+    border-color: black;
+    border-style: solid;
+
+    padding: 2px;
+
+} */
+
 
 /* Style the expand/collapse icon */
 .expandChildrenButton {
-    position: relative;
+    position: absolute;
     transform: translate(6px, 15px);
 
     background: url("../images/expand-button.svg") no-repeat;
@@ -145,6 +160,20 @@ html {
     transform: translate(6px, 15px) rotate(-90deg);
 }
 
+/* Style the show info node button */
+.showInfoButton {
+    position: absolute;
+    transform: translate(80px, 15px);
+
+    background: url("../images/Show-information.svg") no-repeat;
+    background-size: cover;
+
+    width: 14px;
+    height: 14px;
+}
+.showInfoButton:hover {
+    cursor: pointer;
+}
 
 
 /* ------------------------------------------------------------------------------------------------------------------ */
