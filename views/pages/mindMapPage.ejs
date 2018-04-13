@@ -21,6 +21,7 @@
     <!-- My custom behaviour scripts: Functions and controller calls -->
     <script src="/javascripts/interactjsFunctionality.js"></script> <!-- integration logic with interact.js library for node behaviour, and funciton callbacks -->
     <script src="/javascripts/canvasController.js"></script> <!-- controller logic for tracking nodes on the canvas -->
+    <script src="/javascripts/sidebarController.js"></script> <!-- controller logic for keeping the sidebar synced to the canvas -->
 
     <!-- My custom behaviour scripts: Class definitions and Prototypes -->
     <script src="/javascripts/ContentNode.js"></script>
@@ -43,11 +44,12 @@
         <h2>ITS TIME TO TEST </h2>
         <p>TEST TEST TEST TEST TEST</p>
 
-        <!-- include the 'sidebar' partial, which forms the list view of all nodes -->
-        <% include ../partials/sidebar.ejs %>
-
-        <!-- include the 'canvas' partial, which forms the main functionality of the application -->
-        <% include ../partials/nodeCanvas.ejs %>
+        <div class="wrapper">
+            <!-- include the 'sidebar' partial, which forms the list view of all nodes -->
+            <% include ../partials/sidebar.ejs %>
+            <!-- include the 'canvas' partial, which forms the main functionality of the application -->
+            <% include ../partials/nodeCanvas.ejs %>
+        </div>
 
     </main>
 
