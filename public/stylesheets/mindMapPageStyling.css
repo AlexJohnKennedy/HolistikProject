@@ -2,4 +2,6 @@
 .wrapper {
     display: grid;
     grid-template-columns: 1fr 2fr;
+    grid-auto-columns: minmax(500px, auto);
+    grid-auto-rows: minmax(500px, auto);
 }

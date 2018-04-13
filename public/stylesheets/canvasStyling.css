@@ -7,9 +7,7 @@ html {
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */
 #drawingCanvas {
     position: relative;
-    height : 500px;
-    width  : 500px;
-    background-color : bisque;
+    background-color : lightgrey;
     /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
 }
 
