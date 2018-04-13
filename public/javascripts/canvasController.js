@@ -89,8 +89,9 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
 
-    //Add the expand children button
+    //Add the expand children button, and the show info button
     addExpandChildrenHTMLButton(newElem);
+    addShowInfoButton(newElem);
 
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
@@ -108,6 +109,19 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
         width            : defaultNodeSize.width,
         observer         : observer
     };
+}
+
+function addShowInfoButton(elem) {
+    let button = document.createElement("div");
+    button.classList.add("showInfoButton");
+    button.addEventListener("click", showInfoButtonCallback);
+    elem.appendChild(button);
+}
+function showInfoButtonCallback(event) {
+    let nodeElem = event.currentTarget.parentNode;
+    let node     = getContentNode(nodeElem);
+
+    
 }
 
 function addExpandChildrenHTMLButton(elem) {
@@ -347,6 +361,9 @@ function addNewRootNode(node) {
 
     //Alright. Let's push this node into the root node list
     canvasState.rootNodes.push(node);
+
+    //Add custom root node styling
+    node.htmlElement.classList.add("rootNode");
 
     //Now that hte state has changed, we should rebuild the visibility
     rebuildVisibility();
