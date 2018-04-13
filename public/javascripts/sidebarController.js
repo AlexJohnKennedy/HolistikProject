@@ -21,3 +21,8 @@ SidebarController.prototype.buildListElements = function(nodeList) {
 SidebarController.prototype.constructTree = function(curr) {
 
 };
+
+SidebarController.prototype.refresh = function() {
+    this.clearList();
+    this.buildListElements();
+};
