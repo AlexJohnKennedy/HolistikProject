@@ -10,6 +10,14 @@ SidebarController.prototype.clearList = function() {
     //sidebar.appendChild(newElem);
 };
 
-SidebarController.prototype.populateList = function() {
+SidebarController.prototype.buildListElements = function(nodeList) {
+    for (let node of nodeList) {
+       if (node.parentList.length === 0) {
+           constructTree(node);
+       }
+    }
+};
+
+SidebarController.prototype.constructTree = function(curr) {
 
 };

@@ -378,8 +378,12 @@ function addNewRootNode(node) {
  * single node change.
  */
 function rebuildVisibility() {
+
+    //sidebar testing
     let sidebar = new SidebarController();
     sidebar.clearList();
+    sidebar.buildListElements(canvasState.contentNodeList);
+
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
     console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
