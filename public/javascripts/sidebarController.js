@@ -21,7 +21,7 @@ SidebarController.prototype.constructTree = function (curr, depth) {
     //define identifier
     let idPrefix = "unorderedListDepth";
 
-    console.log(depth.toString());
+    console.log("current depth: " + depth.toString());
 
     //get the ul corresponding to the current depth, if it doesn't exist, make it!
     let currList = document.getElementById(idPrefix+depth.toString());
@@ -46,7 +46,7 @@ SidebarController.prototype.constructTree = function (curr, depth) {
         //Recurse for all children, making them visible
         for (let child of rel.children) {
             //Recurse within this child
-            this.constructTree(child, depth++);
+            this.constructTree(child, depth+1);
         }
     }
 };
