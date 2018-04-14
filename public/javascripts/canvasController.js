@@ -62,6 +62,16 @@ function createNewContentNode() {
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
+function reinstantiateExistingNode(id, x, y) {
+    for (let node of canvasState.contentNodeList) {
+        if (node.idString === id) {
+           addNewRootNode(node);
+        }
+    }j
+
+    /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
+}
+
 function createNewContentNode_HtmlElement(xPos, yPos) {
     //Access the DOM, and find the drawingCanvas element. We will add the new content node as a DIV nested inside of this
     let drawingCanvas = document.getElementById("drawingCanvas");
