@@ -37,12 +37,9 @@ SidebarController.prototype.constructTree = function (curr, depth) {
             document.getElementById(idPrefix+(depth-1).toString()).appendChild(currList);
         }
     }
-    //dump the current node into the list corresponding to the current depth
-    let newElem = document.createElement("li");
-    newElem.innerText = curr.idString;
-    //give it the draggable class to facilitate the addition of a node that isn't already shown to the canvas
-    newElem.setAttribute("class", "draggable-sidebar-node");
-    document.getElementById(idPrefix+depth.toString()).appendChild(newElem);
+
+    //build a corresponding sidebar element object
+    let newSidebarElem = new SidebarElement(curr.idString, document.getElementById(idPrefix+depth.toString()));
 
     //iterate over children and do the same shit
     for (let rel of curr.childrenList) {
