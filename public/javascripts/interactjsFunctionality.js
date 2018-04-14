@@ -73,6 +73,10 @@ interact('.draggable').draggable({
     //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
     targetElem.style.transitionProperty = "transform";
     targetElem.style.transitionDuration = "0s";
+    targetElem.style.transitionProperty = "height";
+    targetElem.style.transitionDuration = "0s";
+    targetElem.style.transitionProperty = "width";
+    targetElem.style.transitionDuration = "0s";
 }).on('resizemove', function (event) {
     let target = event.target;
 
