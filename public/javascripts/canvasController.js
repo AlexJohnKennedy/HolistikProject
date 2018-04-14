@@ -99,6 +99,16 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
 
+    //Add a 'mouseEnter' listener to activate visibility on the utility elements of the nodes, and a 'mouseLeave' listener to hide them
+    newElem.addEventListener("mouseenter", function(event) {
+        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.display       = "block";
+        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.display = "block";
+    });
+    newElem.addEventListener("mouseleave", function(event) {
+        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.display       = "none";
+        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.display = "none";
+    });
+
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
     let observer = setupElementObserver(newElem);
 
@@ -131,6 +141,7 @@ function addShowInfoButton(elem) {
     button.addEventListener("click", showInfoButtonCallback);
     button.style.left = "80px";
     button.style.top = "33px";
+    button.style.display = "none";
     elem.appendChild(button);
 }
 function showInfoButtonCallback(event) {
@@ -149,6 +160,8 @@ function addExpandChildrenHTMLButton(elem) {
 
     button.style.top = "33px";
     button.style.left = "6px";
+
+    button.style.display = "none";
 
     //Add an onclick listener to the button.
     button.addEventListener("click", expandChildrenButtonClickedCallback);
