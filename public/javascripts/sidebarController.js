@@ -39,6 +39,8 @@ SidebarController.prototype.constructTree = function (curr, depth) {
     //dump the current node into the list corresponding to the current depth
     let newElem = document.createElement("li");
     newElem.innerText = curr.idString;
+    //give it the draggable class to fascilitate adding of a node that isn't already shown to the canvas
+    newElem.setAttribute("class", "draggable");
     document.getElementById(idPrefix+depth.toString()).appendChild(newElem);
 
     //iterate over children and do the same shit

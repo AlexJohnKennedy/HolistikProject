@@ -1,7 +1,7 @@
 /* lets use a css grid to contain the various components of the mind map page! */
 .wrapper {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 5fr;
     grid-auto-columns: minmax(500px, auto);
     grid-auto-rows: minmax(500px, auto);
 }
