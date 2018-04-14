@@ -1,12 +1,15 @@
+//keep track of various sidebar data structures
 const sidebarState = {
     sidebarElements : []
 };
 
+//constructor
 function SidebarController() {
     this.sidebar = document.getElementById("sidebar");
     this.listContainer = document.getElementById("listContainer");
 }
 
+//simple function to fuck off everything from the list container and clear the sidebar elements array
 SidebarController.prototype.clearList = function() {
     //fuck off all of the current list elements
     this.listContainer.innerHTML = null;
@@ -14,6 +17,9 @@ SidebarController.prototype.clearList = function() {
 
 };
 
+/*
+generates the indented lists by looping through the root nodes, and bfsing through the children
+ */
 SidebarController.prototype.buildListElements = function(nodeList) {
     for (let node of nodeList) {
        if (node.parentList.length === 0) {
@@ -22,8 +28,10 @@ SidebarController.prototype.buildListElements = function(nodeList) {
     }
 };
 
-//breadth first search to construct the indented lists. note that nodes may appear more than once since node structure
-//is not a DAG.
+/*
+breadth first search to construct the indented lists. note that nodes may appear more than once since node structure
+is not a DAG.
+*/
 SidebarController.prototype.constructTree = function (curr, depth) {
     //define identifier
     let idPrefix = "unorderedListOfDepth";
@@ -45,7 +53,6 @@ SidebarController.prototype.constructTree = function (curr, depth) {
     //build a corresponding sidebar element object
     let newSidebarElem = new SidebarElement(curr.idString, document.getElementById(idPrefix+depth.toString()));
     sidebarState.sidebarElements.push(newSidebarElem);
-    console.log("sidebvar array length " + sidebarState.sidebarElements.length);
 
     //iterate over children and do the same shit
     for (let rel of curr.childrenList) {
@@ -67,6 +74,7 @@ function getSidebarElement(element) {
     //Find by id.
     let id = element.getAttribute("id");
 
+    //look for the right sidebar element by matching ids
     for (let sidebarElem of sidebarState.sidebarElements) {
         if (sidebarElem.idString === id) {
             return sidebarElem;

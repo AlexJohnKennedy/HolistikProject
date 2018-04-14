@@ -62,12 +62,16 @@ function createNewContentNode() {
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
+/*
+In order to drag a node from the sidebar onto the canvas, we simply find it in the master list and add it.
+ */
 function reinstantiateExistingNode(id, x, y) {
     for (let node of canvasState.contentNodeList) {
         if (node.idString === id) {
            addNewRootNode(node);
+           node.moveNodeTo(x, y, 0)
         }
-    }j
+    }
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
