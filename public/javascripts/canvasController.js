@@ -66,10 +66,12 @@ function createNewContentNode() {
 In order to drag a node from the sidebar onto the canvas, we simply find it in the master list and add it.
  */
 function reinstantiateExistingNode(id, x, y) {
+    //find the node and dump it in
     for (let node of canvasState.contentNodeList) {
         if (node.idString === id) {
            addNewRootNode(node);
            node.moveNodeTo(x, y, 0);
+           return;
         }
     }
 
@@ -441,7 +443,7 @@ function removeRootNode(node) {
  */
 function rebuildVisibility() {
 
-    //sidebar testing
+    //sidebar cancer refresh
     refreshSidebar(canvasState.contentNodeList);
 
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'

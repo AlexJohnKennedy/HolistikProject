@@ -557,4 +557,5 @@ function sidebarOnElementDropped(event) {
     //make a new node for the thing that just got dropped and pass the new x y to dump it where the mouse was
     let dropped = getSidebarElement(beingDragged);
     reinstantiateExistingNode(dropped.idString, dropped.translation.x, dropped.translation.y);
+    refreshSidebar(canvasState.contentNodeList);
 }
