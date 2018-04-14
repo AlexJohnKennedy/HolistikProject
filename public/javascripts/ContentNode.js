@@ -87,7 +87,7 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
 ContentNode.prototype.moveNodeTo_noStateChange = function(x,y,animateTime) {
     if (animateTime > 0.0) {
         //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "transform";
+        this.htmlElement.style.transitionProperty = "width, height, transform";
         this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
     }
 
@@ -115,10 +115,7 @@ ContentNode.prototype.returnToPreviousPosition = function(animateTime) {
 ContentNode.prototype.resizeNode = function(newWidth, newHeight, animateTime) {
     if (animateTime > 0.0) {
         //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "height";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
-
-        this.htmlElement.style.transitionProperty = "width";
+        this.htmlElement.style.transitionProperty = "height, width, transform";
         this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
     }
 
@@ -129,29 +126,18 @@ ContentNode.prototype.resizeNode = function(newWidth, newHeight, animateTime) {
     this.size.height = newHeight;
     this.size.width  = newWidth;
 
-    //Update the html element tracking of the translation as well. (used by the interact.js framework)
-    this.htmlElement.setAttribute("xTranslation", x.toString());
-    this.htmlElement.setAttribute("yTranslation", y.toString());
-
     detectOverlaps(this);
 };
 
 ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, animateTime) {
     if (animateTime > 0.0) {
         //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "height";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
-
-        this.htmlElement.style.transitionProperty = "width";
+        this.htmlElement.style.transitionProperty = "height, width, transform";
         this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
     }
     //Trigger the CSS animation by setting a height and width value.
     this.htmlElement.style.height = newHeight+"px";
     this.htmlElement.style.width  = newWidth+"px";
-
-    //Update the html element tracking of the translation as well. (used by the interact.js framework)
-    this.htmlElement.setAttribute("xTranslation", x.toString());
-    this.htmlElement.setAttribute("yTranslation", y.toString());
 
     detectOverlaps(this);
 };
@@ -373,12 +359,12 @@ ContentNode.prototype.showInfo = function() {
     this.htmlElement.classList.remove("draggable");
 
     //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
-    let height;
-    let width;
+    let height = 400;
+    let width  = 400;
 
     //Okay, calculate the central position of the canvas, based on the current canvas size.
-    let x;
-    let y;
+    let x = 50;
+    let y = 50;
 
     //Now, animate the node to go to that position!
     this.moveNodeTo_noStateChange(x, y, 0.3);
