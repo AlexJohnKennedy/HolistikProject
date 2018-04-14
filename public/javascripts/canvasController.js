@@ -101,12 +101,12 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
 
     //Add a 'mouseEnter' listener to activate visibility on the utility elements of the nodes, and a 'mouseLeave' listener to hide them
     newElem.addEventListener("mouseenter", function(event) {
-        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.display       = "block";
-        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.display = "block";
+        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "1";
+        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "1";
     });
     newElem.addEventListener("mouseleave", function(event) {
-        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.display       = "none";
-        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.display = "none";
+        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "0";
+        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "0";
     });
 
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
@@ -141,7 +141,7 @@ function addShowInfoButton(elem) {
     button.addEventListener("click", showInfoButtonCallback);
     button.style.left = "80px";
     button.style.top = "33px";
-    button.style.display = "none";
+    button.style.opacity = "0";
     elem.appendChild(button);
 }
 function showInfoButtonCallback(event) {
@@ -161,7 +161,7 @@ function addExpandChildrenHTMLButton(elem) {
     button.style.top = "33px";
     button.style.left = "6px";
 
-    button.style.display = "none";
+    button.style.opacity = "0";
 
     //Add an onclick listener to the button.
     button.addEventListener("click", expandChildrenButtonClickedCallback);

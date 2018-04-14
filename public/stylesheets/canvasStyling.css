@@ -131,7 +131,7 @@ html {
     rotation-point:50% 50%;
     width: 15px;
     height: 15px;
-    transition: transform 0.25s;
+    transition: transform 0.25s, opacity 0.35s;
 }
 .expandChildrenButton:hover {
     cursor : pointer;
@@ -152,6 +152,8 @@ html {
 
     width: 14px;
     height: 14px;
+
+    transition: opacity 0.35s;
 }
 .showInfoButton:hover {
     cursor: pointer;
