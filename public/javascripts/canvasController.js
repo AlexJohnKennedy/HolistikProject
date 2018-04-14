@@ -94,6 +94,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //Add the expand children button, and the show info button
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
+    addRootNodeBorderElem(newElem);
 
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
@@ -111,6 +112,17 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
         width            : defaultNodeSize.width,
         observer         : observer
     };
+}
+
+function addRootNodeBorderElem(elem) {
+    let extraBorder = document.createElement("div");
+    extraBorder.classList.add("rootNodeBorderElement");     //Supply static styling elements
+
+    extraBorder.style.height = "58px";      //Initialise dynamic styling
+    extraBorder.style.width  = "108px";
+    extraBorder.style.display = "block";
+
+    elem.appendChild(extraBorder);
 }
 
 function addShowInfoButton(elem) {
@@ -370,6 +382,9 @@ function addNewRootNode(node) {
     //Add custom root node styling
     node.htmlElement.classList.add("rootNode");
 
+    //Make the root node 'border effect' visible by accessing the hidden child element with said border.
+    node.htmlElement.getElementsByClassName('rootNodeBorderElement').item(0).style.display = "block";
+
     //Now that hte state has changed, we should rebuild the visibility
     rebuildVisibility();
 }
@@ -381,6 +396,12 @@ function removeRootNode(node) {
         node.htmlElement.classList.add("rootNode");
         canvasState.rootNodes.splice(index, 1);
     }
+
+    //Remove custom root node styling
+    node.htmlElement.classList.add("rootNode");
+
+    //Make the root node 'border effect' invisible by accessing the hidden child element with said border.
+    node.htmlElement.getElementsByClassName('rootNodeBorderElement').item(0).style.display = "none";
 }
 
 /**
