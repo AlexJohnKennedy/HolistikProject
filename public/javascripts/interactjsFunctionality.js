@@ -5,6 +5,7 @@
  * event listeners are triggered.
  */
 
+let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 
 /**
  * Define 'draggable' behaviour for all HTML elements which have the 'draggable' class associated to them.
@@ -16,6 +17,13 @@
  * On every 'onend' event (triggered when the drag motion finishes) we will send a callback message to the logic
  * controller which tells it to update it's state, and allow it to perform any follow-up operations if the new node
  * translation requires it.
+ *
+ * ----------------------------------------------------------------------------------------------------------------
+ *
+ * Define 'resizeable' behaviour for all node elements as well (chained call below).
+ *
+ * On every 'resizemove' event, a basic callback will be activated to invoke the element change, and additionally
+ * update the logical model 'size' properties to reflect any changes.
  */
 interact('.draggable').draggable({
     inertia : true,     //Enable inertia for the draggable elements
@@ -34,12 +42,79 @@ interact('.draggable').draggable({
 
     // Callback function, triggered on every dragend event.
     onend : onDragMoveFinished
+}).resizable({
+    //Can only resize node from the bottom right.
+    edges: {right: true, bottom: true},
+
+    // keep the edges inside the parent
+    restrictEdges: {
+        outer: 'parent',
+        endOnly: true,
+    },
+
+    //Minimum size for nodes will be equal to the default node size (starting size).
+    restrictSize: {
+        min: {
+            width: 100, height: 50
+        },
+        max: {
+            width: 300, height: 200
+        }
+    },
+
+    //NO intertia for resizing.
+    inertia: true,
+}).on('resizestart', function (event) {
+    console.log("Resize event started on node");
+    let targetElem = event.target;
+    targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
+    currTopZIndex++;
+
+    //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
+    targetElem.style.transitionProperty = "transform";
+    targetElem.style.transitionDuration = "0s";
+}).on('resizemove', function (event) {
+    let target = event.target;
+
+    // update the element's style
+    target.style.width  = event.rect.width + 'px';
+    target.style.height = event.rect.height + 'px';
+
+    //Access the logical node and directly update the size.
+    let node = getContentNode(target);
+    node.size.height = event.rect.height;
+    node.size.width  = event.rect.width;
+
+    //Now, we need to reposition the 'buttons' on the node itself to make sure they stay in the corners.
+    //We also need to resize the 'root node border' sub-element!
+    let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0);     //Should only match one!
+    let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
+    let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
+
+    expandChildrenElem.style.top = (node.size.height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
+    expandChildrenElem.style.left = 6+'px';
+    showInfoElem.style.left = (node.size.width-20)+'px';   //Should always be 20 pixels from the right, and 17 from the bottom
+    showInfoElem.style.top  = (node.size.height-17)+'px';
+    rootNodeBorder.style.width = (node.size.width+8)+'px';  //Border element should always be 8 pixels taller and wider.
+    rootNodeBorder.style.height = (node.size.height+8)+'px';
+
+    //CODE NOT NEEDED FOR NOW, SINCE NOT ALLOWING RESIZE FROM TOP OR LEFT.
+    //let x = (parseFloat(target.getAttribute('xTranslation')) || 0),
+    //let y = (parseFloat(target.getAttribute('yTranslation')) || 0);
+
+    // translate when resizing from top or left edges
+    //x += event.deltaRect.left;
+    //y += event.deltaRect.top;
+
+    //target.style.webkitTransform = target.style.transform =
+    //    'translate(' + x + 'px,' + y + 'px)';
+
+    //target.setAttribute('xTranslation', x);
+   // target.setAttribute('yTranslation', y);
 });
 
 
-
 //Called whenever the user starts dragging an element on the screen.
-let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 function onDragStart (event) {
     console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
 
@@ -128,6 +203,9 @@ function onNodeMoved(elem) {
     contentNode.translation.y = yPos;
     contentNode.translation.x = xPos;
 }
+
+
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- 'Dropzone' functionality ----------------------------------------------------------------------------------------
@@ -231,10 +309,7 @@ function onElementDropped(event) {
     let parent  = getContentNode(dropzone);
 
     //If this node was previously a root node, now it is not! Since we just nested it inside some visible node.
-    let index = canvasState.rootNodes.indexOf(dropped);
-    if (index != -1) {
-        canvasState.rootNodes.splice(index,1);
-    }
+    removeRootNode(dropped);
 
     parent.addChildNoLabel(dropped);
 }
@@ -296,9 +371,8 @@ interact('#detachNodeDropZone').dropzone({
         //Nodes that are actively detached via the interface will be defined as a new root node, so that it
         //doesn't just 'disappear' confusingly.
         //Add as a root node to the canvas state, if it wasn't already there.
-        if (canvasState.rootNodes.indexOf(draggedNode) === -1) {
-            canvasState.rootNodes.push(draggedNode);
-        }
+        addNewRootNode(draggedNode);
+
         //Simply detach this node from all of it's parents!
         draggedNode.detachFromAllParents();
 

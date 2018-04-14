@@ -96,6 +96,8 @@ html {
     top : 0px;
     left : 0px;
 
+    /*box-sizing: border-box;*/
+
     transform-origin: center;
 
     /* Nodes look nicer with rounded corners! */
@@ -120,57 +122,55 @@ html {
     color : cornsilk;   /* test colour for the nodes name at this time */
 }
 
-/* TODO figure out if this shit actually works
-.rootNode::before {
-    display: block;
-    content: '';
-    position: absolute;
-
-    border-radius: 5px;
-    border-width: 3px;
-    border-color: black;
-    border-style: solid;
-
-    padding: 2px;
-
-} */
-
-
 /* Style the expand/collapse icon */
 .expandChildrenButton {
     position: absolute;
-    transform: translate(6px, 15px);
 
     background: url("../images/expand-button.svg") no-repeat;
     background-size: cover;
     rotation-point:50% 50%;
     width: 15px;
     height: 15px;
-    transition: transform 0.25s;
+    transition: transform 0.25s, opacity 0.35s;
 }
 .expandChildrenButton:hover {
     cursor : pointer;
 }
 .expandChildrenButton_expanded {
-    transform : translate(6px, 15px) rotate(0deg);
+    transform : rotate(0deg);
 }
 .expandChildrenButton_collapsed {
-    transform: translate(6px, 15px) rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 /* Style the show info node button */
 .showInfoButton {
     position: absolute;
-    transform: translate(80px, 15px);
 
     background: url("../images/Show-information.svg") no-repeat;
     background-size: cover;
 
     width: 14px;
     height: 14px;
+
+    transition: opacity 0.35s;
 }
 .showInfoButton:hover {
     cursor: pointer;
+}
+
+/* Extra border styling for root nodes on the canvas */
+.rootNodeBorderElement {
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 8px;
+    border-width: 3px;
+
+    background-color: transparent;
+    z-index: -1;    /* Render BEHIND our parent */
 }
 
 
