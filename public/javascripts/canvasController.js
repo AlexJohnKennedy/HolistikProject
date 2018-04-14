@@ -142,11 +142,22 @@ function addShowInfoButton(elem) {
     button.style.left = "80px";
     button.style.top = "33px";
     button.style.opacity = "0";
+
+    //Add an onlick listener to the button.
+    button.addEventListener("click", showInfoButtonCallback);
+
     elem.appendChild(button);
 }
 function showInfoButtonCallback(event) {
     let nodeElem = event.currentTarget.parentNode;
     let node     = getContentNode(nodeElem);
+
+    if (!node.isShowingInfo) {
+        node.showInfo();
+    }
+    else {
+        node.hideInfo();
+    }
 }
 
 function addExpandChildrenHTMLButton(elem) {

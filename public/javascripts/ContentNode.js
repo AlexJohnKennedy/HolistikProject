@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // --- ContentNode 'class' definition (actually a javascript 'prototype') ----------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
+let showingNode = null;     //global reference in this script to manage which node is 'showing' information.
 
 /** This is a definition of a constructor 'function' which defines an object prototype structure, representing a logical
  *  content node, which currently exists on the drawing canvas. Using this we can treat 'ContentNode' as somewhat of a
@@ -30,6 +31,7 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     // --- Properties for managing whether or not a node is shown on the canvas ---
     this.isVisible       = true;    //New nodes are always deemed visible (for now)
     this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have children yet anyway.
+    this.isShowingInfo   = false;
     this.numViewedBy     = -1;      //This tracks how many parents are supplying 'visibility' to the node at the current time.
     //DEPRECEATED                  //-1 indicates that the node is independently visible (i.e. it is not visible based on a parent viewing it)
                                     //New nodes are always set to be root nodes, thus we can initialise as -1.
@@ -82,6 +84,22 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
     detectOverlaps(this);
 };
 
+ContentNode.prototype.moveNodeTo_noStateChange = function(x,y,animateTime) {
+    if (animateTime > 0.0) {
+        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
+        this.htmlElement.style.transitionProperty = "width, height, transform";
+        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+    }
+
+    //Trigger the CSS animation by setting a new translation.
+    this.htmlElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+    //Update the html element tracking of the translation as well. (used by the interact.js framework)
+    this.htmlElement.setAttribute("xTranslation", x.toString());
+    this.htmlElement.setAttribute("yTranslation", y.toString());
+    detectOverlaps(this);
+};
+
 /**
  * Moves or animates the node back to wherever it was prior to the last drag move by the user!
  * @param animateTime
@@ -94,8 +112,62 @@ ContentNode.prototype.returnToPreviousPosition = function(animateTime) {
 /**
  * Used to actively resize nodes and apply visible changes. Should subsequently update the state to the result
  */
-ContentNode.prototype.resizeNode = function(newHeight, newWidth, animate) {
-    //TODO
+ContentNode.prototype.resizeNode = function(newWidth, newHeight, animateTime) {
+    if (animateTime > 0.0) {
+        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
+        this.htmlElement.style.transitionProperty = "height, width, transform";
+        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+    }
+
+    //Trigger the CSS animation by setting a height and width value.
+    this.htmlElement.style.height = newHeight+"px";
+    this.htmlElement.style.width  = newWidth+"px";
+
+    this.size.height = newHeight;
+    this.size.width  = newWidth;
+
+    this.repositionButtons(newWidth, newHeight, animateTime);
+    detectOverlaps(this);
+};
+
+ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, animateTime) {
+    if (animateTime > 0.0) {
+        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
+        this.htmlElement.style.transitionProperty = "height, width, transform";
+        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+    }
+    //Trigger the CSS animation by setting a height and width value.
+    this.htmlElement.style.height = newHeight+"px";
+    this.htmlElement.style.width  = newWidth+"px";
+
+    this.repositionButtons(newWidth, newHeight, animateTime);
+    detectOverlaps(this);
+};
+
+/**
+ * This method uses the current logic state and repositions the utility buttons and the root node border relative to the
+ * node itself. This is intended to be called whenever the node is Re-sized (aka changes sizes) becuase other wise the
+ * button placements will desync.
+ */
+ContentNode.prototype.repositionButtons = function(width, height, animateTime) {
+    let target = this.htmlElement;
+    let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0);     //Should only match one!
+    let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
+    let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
+
+    expandChildrenElem.style.transitionProperty = "top, left";
+    showInfoElem.style.transitionProperty = "top, left";
+    rootNodeBorder.style.transitionProperty = "width, height";
+    expandChildrenElem.style.transitionDuration = animateTime+"s";
+    showInfoElem.style.transitionDuration = animateTime+"s";
+    rootNodeBorder.style.transitionDuration = animateTime+"s";
+
+    expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
+    expandChildrenElem.style.left = 6+'px';
+    showInfoElem.style.left = (width-20)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
+    showInfoElem.style.top  = (height-17)+'px';
+    rootNodeBorder.style.width = (width+8)+'px';  //Border element should always be 8 pixels taller and wider.
+    rootNodeBorder.style.height = (height+8)+'px';
 };
 
 /**
@@ -289,3 +361,53 @@ ContentNode.prototype.makeInvisible = function() {
     //Okay, let's hide all of this.
     this.htmlElement.style.display = "none";
 };
+
+/**
+ * This method makes the node show it's internal information. When called, the following will happen:
+ *      a) The node's html element will remove 'draggable' from it's class list, so that the showing info element becomes
+ *         static and can no longer be dragged - The draggable class will be re added when hideInfo() is called.
+ *      b) The node will physically expand to fill (almost) the size of the canvas, and centre itself on the canvas
+ *      c) The node's text boxes will become editable text entries, allowing the user to edit the node content.
+ *
+ *      (Future) - will show references/names to attatched resources.
+ */
+ContentNode.prototype.showInfo = function() {
+    //Update the internal state, and update the global reference to the 'showing info' node. That way we can ensure only
+    //one node is ever showing information at once.
+    this.isShowingInfo = true;
+    if (showingNode !== null) {
+        showingNode.hideInfo();
+    }
+    showingNode = this;
+
+    this.htmlElement.style.zIndex = currTopZIndex;
+    currTopZIndex++;
+
+    //Remove the draggable attribute so that the showing info node cannot be dragged.
+    this.htmlElement.classList.remove("draggable");
+
+    //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
+    let height = 400;
+    let width  = 400;
+
+    //Okay, calculate the central position of the canvas, based on the current canvas size.
+    let x = 50;
+    let y = 50;
+
+    //Now, animate the node to go to that position!
+    this.moveNodeTo_noStateChange(x, y, 0.3);
+    this.resizeNode_noStateChange(width, height, 0.3);
+};
+
+ContentNode.prototype.hideInfo = function() {
+    this.isShowingInfo = false;
+    showingNode = null;
+
+    //Move the node back to it's 'position', and resize it back to the 'size'
+    this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, 0.2);
+    this.resizeNode_noStateChange(this.size.width, this.size.height, 0.2);
+
+    this.htmlElement.classList.add("draggable");
+};
+
+
