@@ -14,7 +14,7 @@ function mainPageGet(req, res) {
 
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
-    res.render('landingPage', {
+    res.render('pages/landingPage', {
         path : "/"
     });
 }

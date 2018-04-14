@@ -1,9 +1,6 @@
-<!-- This will form the actual WINDOW where nodes and stuff can be added!
-  -->
+<!-- This will form the actual WINDOW where nodes and stuff can be added! -->
 
 <!-- ------------------------------------------------------------------------------------ -->
-
-<button onclick="createNewContentNode()">Create new node - UI Icon for testing</button>
 
 <!-- use an 'absolute' positions div as the drawing canvas container. -->
 <div id="drawingCanvas">
@@ -18,10 +15,14 @@
             Zoom out
         </button>
 
-        <!-- text box indicator, to show the name of the node(s) providing the current convas context. -->
+        <!-- text box indicator, to show the name of the node(s) providing the current canvas context. -->
         <span id="contextNameTextBox">
             Global context
         </span>
+
+        <button onclick="createNewContentNode()">
+            Create new node - UI Icon for testing
+        </button>
     </div>
 
     <!-- Create a box which deletes nodes that are dragged into them. -->
@@ -36,7 +37,7 @@
 
     <!-- Create an SVG canvas, so that we can draw lines between nodes! -->
     <!-- Note that we are creating this svg object to be the same size as the drawing canvas -->
-    <svg id="svgObject" height="500" width="500">
+    <svg id="svgObject" height="100%" width="100%">
         <!-- Test line -- <line x1="0" y1="0" x2="200" y2="200"/> -->
 
         <!-- definition of the marker to denote the direction of parent-child relationships -->
