@@ -52,6 +52,7 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
  * @param animateTime value to specify how long the 'transition' animation should take. <= 0 results in instantly changing
  */
 ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
+    console.log("moving a node to :" + x + ", " + y);
     if (animateTime > 0.0) {
         //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
         this.htmlElement.style.transitionProperty = "transform";

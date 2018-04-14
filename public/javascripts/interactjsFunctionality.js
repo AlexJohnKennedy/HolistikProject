@@ -472,7 +472,6 @@ function sidebarOnDragMove(event) {
 function sidebarOnDragMoveFinished(event) {
     console.log("Drag finished event fired! HTML element is "+event.target.getAttribute('id'));
 
-    //Access the HTMLElement object, so that we can send it back to the logic controller
     let targetElement = event.target;
 
     //Tell the controller to update the logic object representing this html element.
@@ -480,10 +479,6 @@ function sidebarOnDragMoveFinished(event) {
 
     //no longer draggin - fuck off the sidebar dropzone class from the canvas!
     removeSidebarDropzoneClassFromCanvas();
-
-    //return the list element to its previous position
-    let sidebarElem = getSidebarElement(targetElement);
-    sidebarElem.returnSidebarElemToPreviousPosition(0.2);
 }
 
 function onSidebarElementMoved(elem) {
@@ -559,10 +554,7 @@ function sidebarOnElementDropped(event) {
     dropzone.classList.remove("potentialSidebarDropzone");
     dropzone.classList.remove("potentialSidebarDropzoneHasItemHovering");
 
-    //Gain access to both of the logical objects representing these elements.
-    //We need to make the 'beingdragged' node a child of the dropzone node.
+    //make a new node for the thing that just got dropped and pass the new x y to dump it where the mouse was
     let dropped = getSidebarElement(beingDragged);
-
-    //make a new node for the thing that just got dropped, manually adjusting to centre
     reinstantiateExistingNode(dropped.idString, dropped.translation.x, dropped.translation.y);
 }

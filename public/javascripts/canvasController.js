@@ -442,8 +442,7 @@ function removeRootNode(node) {
 function rebuildVisibility() {
 
     //sidebar testing
-    let sidebar = new SidebarController();
-    sidebar.refresh(canvasState.contentNodeList);
+    refreshSidebar(canvasState.contentNodeList);
 
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
