@@ -109,7 +109,7 @@ HierarchicalRelationship.prototype.removeChild = function(node) {
         for (let i=0; i < this.lineList.length; i++) {
             console.log("We are removing a child, and searching for the corresponding svg line now.");
             let line = this.lineList[i];
-            if (line.destNode.idString == node.idString) {
+            if (line.destNode.idString === node.idString) {
                 //Found the right line! Let's delete it.
                 line.deleteLine();
                 this.lineList.splice(i,1);

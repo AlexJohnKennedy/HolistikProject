@@ -82,6 +82,8 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //We will store the translation VALUES as attributes in the HTML DOM object itself, so that the interaction libraries can easily access them!
     newElem.setAttribute("xTranslation", xPos.toString());
     newElem.setAttribute("yTranslation", yPos.toString());
+    newElem.setAttribute("xSize", defaultNodeSize.width.toString());
+    newElem.setAttribute("ySize", defaultNodeSize.height.toString());
 
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
     newElem.innerText    = idString; //defaultNodeTitle;
@@ -92,9 +94,20 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //Add the expand children button, and the show info button
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
+    addRootNodeBorderElem(newElem);
 
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
+
+    //Add a 'mouseEnter' listener to activate visibility on the utility elements of the nodes, and a 'mouseLeave' listener to hide them
+    newElem.addEventListener("mouseenter", function(event) {
+        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "1";
+        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "1";
+    });
+    newElem.addEventListener("mouseleave", function(event) {
+        event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "0";
+        event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "0";
+    });
 
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
     let observer = setupElementObserver(newElem);
@@ -111,17 +124,29 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     };
 }
 
+function addRootNodeBorderElem(elem) {
+    let extraBorder = document.createElement("div");
+    extraBorder.classList.add("rootNodeBorderElement");     //Supply static styling elements
+
+    extraBorder.style.height = "58px";      //Initialise dynamic styling
+    extraBorder.style.width  = "108px";
+    extraBorder.style.display = "block";
+
+    elem.appendChild(extraBorder);
+}
+
 function addShowInfoButton(elem) {
     let button = document.createElement("div");
     button.classList.add("showInfoButton");
     button.addEventListener("click", showInfoButtonCallback);
+    button.style.left = "80px";
+    button.style.top = "33px";
+    button.style.opacity = "0";
     elem.appendChild(button);
 }
 function showInfoButtonCallback(event) {
     let nodeElem = event.currentTarget.parentNode;
     let node     = getContentNode(nodeElem);
-
-    
 }
 
 function addExpandChildrenHTMLButton(elem) {
@@ -132,6 +157,11 @@ function addExpandChildrenHTMLButton(elem) {
     //Add styling class
     button.classList.add("expandChildrenButton");               //General button styling.
     button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
+
+    button.style.top = "33px";
+    button.style.left = "6px";
+
+    button.style.opacity = "0";
 
     //Add an onclick listener to the button.
     button.addEventListener("click", expandChildrenButtonClickedCallback);
@@ -235,7 +265,7 @@ function deleteContentNode(node, stitchTree) {
         for (let rel of node.childrenList) {
             for (let child of rel.children) {
                 if (child.isVisible && canvasState.rootNodes.indexOf(child) === -1) {
-                    canvasState.rootNodes.push(child);
+                    addNewRootNode(child);
                 }
             }
         }
@@ -365,8 +395,26 @@ function addNewRootNode(node) {
     //Add custom root node styling
     node.htmlElement.classList.add("rootNode");
 
+    //Make the root node 'border effect' visible by accessing the hidden child element with said border.
+    node.htmlElement.getElementsByClassName('rootNodeBorderElement').item(0).style.display = "block";
+
     //Now that hte state has changed, we should rebuild the visibility
     rebuildVisibility();
+}
+
+function removeRootNode(node) {
+    let index = canvasState.rootNodes.indexOf(node);
+    if (index !== -1) {
+        //Add custom root node styling
+        node.htmlElement.classList.add("rootNode");
+        canvasState.rootNodes.splice(index, 1);
+    }
+
+    //Remove custom root node styling
+    node.htmlElement.classList.add("rootNode");
+
+    //Make the root node 'border effect' invisible by accessing the hidden child element with said border.
+    node.htmlElement.getElementsByClassName('rootNodeBorderElement').item(0).style.display = "none";
 }
 
 /**
@@ -477,12 +525,15 @@ function switchContext(newContextNode) {
         //Set the context text to be 'global context'
         contextText.innerText = "Global context";
 
-        //Okay, reset the root nodes to all nodes which have no parents.
-        canvasState.rootNodes = [];
+        //Okay, reset the root nodes to all nodes which have no parents. Need to explicitly loop and 'remove' every node so that root node styling also disappears.
+        for (let i=canvasState.rootNodes.length-1; i >=0; i--) {
+            removeRootNode(canvasState.rootNodes[i]);
+        }
+        canvasState.rootNodes = []; //SANITY CHECK
         for (let node of canvasState.contentNodeList) {
             if (node.parentList.length === 0) {
                 //This node has no parents! thus, we should make it a root node.
-                canvasState.rootNodes.push(node);
+                addNewRootNode(node);
             }
         }
     }
@@ -492,10 +543,13 @@ function switchContext(newContextNode) {
         contextText.innerText = newContextNode.titleText;
 
         //Okay, reset the root nodes to all nodes which are children of the new context node.
-        canvasState.rootNodes = [];
+        for (let i=canvasState.rootNodes.length-1; i >=0; i--) {
+            removeRootNode(canvasState.rootNodes[i]);
+        }
+        canvasState.rootNodes = [];     //SANITY CHECK
         for (let rel of newContextNode.childrenList) {
             for (let child of rel.children) {
-                canvasState.rootNodes.push(child);
+                addNewRootNode(child);
             }
         }
     }
