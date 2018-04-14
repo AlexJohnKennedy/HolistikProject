@@ -82,6 +82,8 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //We will store the translation VALUES as attributes in the HTML DOM object itself, so that the interaction libraries can easily access them!
     newElem.setAttribute("xTranslation", xPos.toString());
     newElem.setAttribute("yTranslation", yPos.toString());
+    newElem.setAttribute("xSize", defaultNodeSize.width.toString());
+    newElem.setAttribute("ySize", defaultNodeSize.height.toString());
 
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
     newElem.innerText    = idString; //defaultNodeTitle;
