@@ -93,7 +93,7 @@ interact('.draggable').draggable({
 
     expandChildrenElem.style.top = (node.size.height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
     expandChildrenElem.style.left = 6+'px';
-    showInfoElem.style.left = (node.size.width-20)+'px';   //Should always be 20 pixels from the right, and 17 from the bottom
+    showInfoElem.style.left = (node.size.width-20)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
     showInfoElem.style.top  = (node.size.height-17)+'px';
     rootNodeBorder.style.width = (node.size.width+8)+'px';  //Border element should always be 8 pixels taller and wider.
     rootNodeBorder.style.height = (node.size.height+8)+'px';
@@ -170,6 +170,13 @@ function onDragMoveFinished(event) {
 
     //Access the HTMLElement object, so that we can send it back to the logic controller
     let targetElement = event.target;
+
+    //To avoid weird interpolated rendering, we should round our translation to the nearest whole number of pixels.
+    let x = Math.round(parseFloat(targetElement.getAttribute('xTranslation')) || 0);
+    let y = Math.round(parseFloat(targetElement.getAttribute('yTranslation')) || 0);
+    targetElement.style.webkitTransform = targetElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    targetElement.setAttribute('xTranslation', x);
+    targetElement.setAttribute('yTranslation', y);
 
     //Tell the controller to update the logic object representing this html element.
     onNodeMoved(targetElement);
