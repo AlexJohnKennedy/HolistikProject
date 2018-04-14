@@ -480,6 +480,10 @@ function sidebarOnDragMoveFinished(event) {
 
     //no longer draggin - fuck off the sidebar dropzone class from the canvas!
     removeSidebarDropzoneClassFromCanvas();
+
+    //return the list element to its previous position
+    let sidebarElem = getSidebarElement(targetElement);
+    sidebarElem.returnSidebarElemToPreviousPosition(0.2);
 }
 
 function onSidebarElementMoved(elem) {
@@ -559,6 +563,6 @@ function sidebarOnElementDropped(event) {
     //We need to make the 'beingdragged' node a child of the dropzone node.
     let dropped = getSidebarElement(beingDragged);
 
-    //make a new node for the thing that just got dropped
+    //make a new node for the thing that just got dropped, manually adjusting to centre
     reinstantiateExistingNode(dropped.idString, dropped.translation.x, dropped.translation.y);
 }

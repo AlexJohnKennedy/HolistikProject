@@ -69,7 +69,7 @@ function reinstantiateExistingNode(id, x, y) {
     for (let node of canvasState.contentNodeList) {
         if (node.idString === id) {
            addNewRootNode(node);
-           node.moveNodeTo(x, y, 0)
+           node.moveNodeTo(x, y, 0);
         }
     }
 
