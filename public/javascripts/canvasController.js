@@ -117,13 +117,13 @@ function addShowInfoButton(elem) {
     let button = document.createElement("div");
     button.classList.add("showInfoButton");
     button.addEventListener("click", showInfoButtonCallback);
+    button.style.left = "80px";
+    button.style.top = "33px";
     elem.appendChild(button);
 }
 function showInfoButtonCallback(event) {
     let nodeElem = event.currentTarget.parentNode;
     let node     = getContentNode(nodeElem);
-
-    
 }
 
 function addExpandChildrenHTMLButton(elem) {
@@ -134,6 +134,9 @@ function addExpandChildrenHTMLButton(elem) {
     //Add styling class
     button.classList.add("expandChildrenButton");               //General button styling.
     button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
+
+    button.style.top = "33px";
+    button.style.left = "6px";
 
     //Add an onclick listener to the button.
     button.addEventListener("click", expandChildrenButtonClickedCallback);

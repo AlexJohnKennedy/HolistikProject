@@ -139,7 +139,6 @@ html {
 /* Style the expand/collapse icon */
 .expandChildrenButton {
     position: absolute;
-    transform: translate(6px, 15px);
 
     background: url("../images/expand-button.svg") no-repeat;
     background-size: cover;
@@ -152,16 +151,15 @@ html {
     cursor : pointer;
 }
 .expandChildrenButton_expanded {
-    transform : translate(6px, 15px) rotate(0deg);
+    transform : rotate(0deg);
 }
 .expandChildrenButton_collapsed {
-    transform: translate(6px, 15px) rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 /* Style the show info node button */
 .showInfoButton {
     position: absolute;
-    transform: translate(80px, 15px);
 
     background: url("../images/Show-information.svg") no-repeat;
     background-size: cover;

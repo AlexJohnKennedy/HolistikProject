@@ -82,6 +82,15 @@ interact('.draggable').draggable({
     node.size.height = event.rect.height;
     node.size.width  = event.rect.width;
 
+    //Now, we need to reposition the 'buttons' on the node itself to make sure they stay in the corners.
+    let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0); //Should only match one!
+    let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);       //Should only match one!
+
+    expandChildrenElem.style.top = (node.size.height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
+    expandChildrenElem.style.left = 6+'px';
+    showInfoElem.style.left = (node.size.width-20)+'px';   //Should always be 20 pixels from the right, and 17 from the bottom
+    showInfoElem.style.top  = (node.size.height-17)+'px';
+
     //CODE NOT NEEDED FOR NOW, SINCE NOT ALLOWING RESIZE FROM TOP OR LEFT.
     //let x = (parseFloat(target.getAttribute('xTranslation')) || 0),
     //let y = (parseFloat(target.getAttribute('yTranslation')) || 0);
