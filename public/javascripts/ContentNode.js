@@ -126,6 +126,7 @@ ContentNode.prototype.resizeNode = function(newWidth, newHeight, animateTime) {
     this.size.height = newHeight;
     this.size.width  = newWidth;
 
+    this.repositionButtons(newWidth, newHeight, animateTime);
     detectOverlaps(this);
 };
 
@@ -139,7 +140,34 @@ ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, a
     this.htmlElement.style.height = newHeight+"px";
     this.htmlElement.style.width  = newWidth+"px";
 
+    this.repositionButtons(newWidth, newHeight, animateTime);
     detectOverlaps(this);
+};
+
+/**
+ * This method uses the current logic state and repositions the utility buttons and the root node border relative to the
+ * node itself. This is intended to be called whenever the node is Re-sized (aka changes sizes) becuase other wise the
+ * button placements will desync.
+ */
+ContentNode.prototype.repositionButtons = function(width, height, animateTime) {
+    let target = this.htmlElement;
+    let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0);     //Should only match one!
+    let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
+    let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
+
+    expandChildrenElem.style.transitionProperty = "top, left";
+    showInfoElem.style.transitionProperty = "top, left";
+    rootNodeBorder.style.transitionProperty = "width, height";
+    expandChildrenElem.style.transitionDuration = animateTime+"s";
+    showInfoElem.style.transitionDuration = animateTime+"s";
+    rootNodeBorder.style.transitionDuration = animateTime+"s";
+
+    expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
+    expandChildrenElem.style.left = 6+'px';
+    showInfoElem.style.left = (width-20)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
+    showInfoElem.style.top  = (height-17)+'px';
+    rootNodeBorder.style.width = (width+8)+'px';  //Border element should always be 8 pixels taller and wider.
+    rootNodeBorder.style.height = (height+8)+'px';
 };
 
 /**
@@ -381,3 +409,5 @@ ContentNode.prototype.hideInfo = function() {
 
     this.htmlElement.classList.add("draggable");
 };
+
+
