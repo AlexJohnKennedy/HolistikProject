@@ -240,7 +240,7 @@ function deleteContentNode(node, stitchTree) {
         for (let rel of node.childrenList) {
             for (let child of rel.children) {
                 if (child.isVisible && canvasState.rootNodes.indexOf(child) === -1) {
-                    canvasState.rootNodes.push(child);
+                    addNewRootNode(child);
                 }
             }
         }
@@ -374,6 +374,15 @@ function addNewRootNode(node) {
     rebuildVisibility();
 }
 
+function removeRootNode(node) {
+    let index = canvasState.rootNodes.indexOf(node);
+    if (index !== -1) {
+        //Add custom root node styling
+        node.htmlElement.classList.add("rootNode");
+        canvasState.rootNodes.splice(index, 1);
+    }
+}
+
 /**
  * This method is invoked whenever the node state/structure is updated. It rebuilds an understanding of what nodes are
  * visible on the canvas, and which nodes are not, FROM SCRATCH, whenever it is invoked.
@@ -482,12 +491,15 @@ function switchContext(newContextNode) {
         //Set the context text to be 'global context'
         contextText.innerText = "Global context";
 
-        //Okay, reset the root nodes to all nodes which have no parents.
-        canvasState.rootNodes = [];
+        //Okay, reset the root nodes to all nodes which have no parents. Need to explicitly loop and 'remove' every node so that root node styling also disappears.
+        for (let i=canvasState.rootNodes.length-1; i >=0; i--) {
+            removeRootNode(canvasState.rootNodes[i]);
+        }
+        canvasState.rootNodes = []; //SANITY CHECK
         for (let node of canvasState.contentNodeList) {
             if (node.parentList.length === 0) {
                 //This node has no parents! thus, we should make it a root node.
-                canvasState.rootNodes.push(node);
+                addNewRootNode(node);
             }
         }
     }
@@ -497,10 +509,13 @@ function switchContext(newContextNode) {
         contextText.innerText = newContextNode.titleText;
 
         //Okay, reset the root nodes to all nodes which are children of the new context node.
-        canvasState.rootNodes = [];
+        for (let i=canvasState.rootNodes.length-1; i >=0; i--) {
+            removeRootNode(canvasState.rootNodes[i]);
+        }
+        canvasState.rootNodes = [];     //SANITY CHECK
         for (let rel of newContextNode.childrenList) {
             for (let child of rel.children) {
-                canvasState.rootNodes.push(child);
+                addNewRootNode(child);
             }
         }
     }
