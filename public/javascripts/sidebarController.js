@@ -1,3 +1,4 @@
+//
 function SidebarController() {
     this.sidebar = document.getElementById("sidebar");
     this.listContainer = document.getElementById("listContainer");
@@ -17,11 +18,11 @@ SidebarController.prototype.buildListElements = function(nodeList) {
     }
 };
 
+//breadth first search to construct the indented lists. note that nodes may appear more than once since node structure
+//is not a DAG.
 SidebarController.prototype.constructTree = function (curr, depth) {
     //define identifier
-    let idPrefix = "unorderedListDepth";
-
-    console.log("current depth: " + depth.toString());
+    let idPrefix = "unorderedListOfDepth";
 
     //get the ul corresponding to the current depth, if it doesn't exist, make it!
     let currList = document.getElementById(idPrefix+depth.toString());
@@ -40,7 +41,7 @@ SidebarController.prototype.constructTree = function (curr, depth) {
     let newElem = document.createElement("li");
     newElem.innerText = curr.idString;
     //give it the draggable class to facilitate the addition of a node that isn't already shown to the canvas
-    //newElem.setAttribute("class", "draggable");
+    newElem.setAttribute("class", "draggable-sidebar-node");
     document.getElementById(idPrefix+depth.toString()).appendChild(newElem);
 
     //iterate over children and do the same shit
@@ -53,6 +54,7 @@ SidebarController.prototype.constructTree = function (curr, depth) {
     }
 };
 
+//wrapper function to be called any time something has changed in the canvas
 SidebarController.prototype.refresh = function(nodeList) {
     this.clearList();
     this.buildListElements(nodeList);

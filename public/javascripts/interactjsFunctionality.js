@@ -334,3 +334,55 @@ interact('#deleteNodeDropZone').dropzone({
         deleteContentNode(dropped, true); //splice the tree
     }
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// SidebarController Section
+
+interact('.draggable-sidebar-node').draggable({
+    inertia : true,     //Enable inertia for the draggable elements
+    autoScroll : true,  //Dragging items to edge of the screen will scroll the page
+    ignoreFrom: '.expandChildrenButton',    //Don't want to be able to drag the node when pressing the utility buttons.
+    restrict: {
+        endOnly: true,
+        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+    },
+    // Callback function, triggered when the item first begins to be dragged.
+    onstart : sidebarOnDragStart,
+
+    // Callback function, triggered on every dragmove event.
+    onmove : sidebarOnDragMove,
+
+    // Callback function, triggered on every dragend event.
+    onend : sidebarOnDragMoveFinished
+});
+
+function sidebarOnDragStart (event) {
+    console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
+
+    //Firstly, we want any item that is being dragged by the user to render ON TOP of everything else, so they can
+    //always see what they are doing.
+    let targetElem = event.target;
+    targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
+    currTopZIndex++;
+
+    //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
+    targetElem.style.transitionProperty = "transform";
+    targetElem.style.transitionDuration = "0s";
+
+    /*
+    //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
+    //'previousTranslation' variable. That way, return to previous position funcitonality will work!
+    let contentNode = getContentNode(targetElem);
+    contentNode.previousTranslation.x = contentNode.translation.x;
+    contentNode.previousTranslation.y = contentNode.translation.y;
+    */
+
+    /*Now, this dragging event will trigger the follow up event of activating all potential dropzones.
+      To avoid insanely confusing structures, we will ENFORCE that this dragged node cannot be nested inside one of its children/descendents.
+      Thus, we must dictate HERE that all descendant nodes are no longer potential 'dropzones' for the time being!
+      To do this, we will simply remove the 'dropzone' class from all of this node's descendants. Then, when we are finished dragging this node,
+      we will re-add that class to all descendants, so that they can be seen as dropzones again for other potential nodes.
+    */
+    //Cycle all children, and deactive them as drop zones.
+    removeHtmlClassFromAllDescendants(contentNode, "dropzone");
+}
