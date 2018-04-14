@@ -57,6 +57,9 @@ interact('.draggable').draggable({
         min: {
             width: 100, height: 50
         },
+        max: {
+            width: 300, height: 200
+        }
     },
 
     //NO intertia for resizing.
