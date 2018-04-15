@@ -111,10 +111,6 @@ html {
     /* Future CHANGES to the border should have a graceful transition time */
     transition-property: border-width, border-color, border-style;
     transition-duration: 0.25s;
-
-    /* Nodes should have their title text CENTRED */
-    /* TODO -- make it so that collapsed, small nodes centre their title text, but larger ones have it up the top */
-    text-align: center;
 }
 
 /* Let's implement a default colouring and shit for content nodes, for testing purposes */
@@ -171,6 +167,11 @@ html {
 
     background-color: transparent;
     z-index: -1;    /* Render BEHIND our parent */
+}
+
+/* Node title styling */
+.nodeTitleText {
+    text-align: center;
 }
 
 

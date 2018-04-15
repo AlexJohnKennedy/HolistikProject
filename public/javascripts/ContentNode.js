@@ -380,11 +380,12 @@ ContentNode.prototype.showInfo = function() {
     }
     showingNode = this;
 
+    //Bring to front.
     this.htmlElement.style.zIndex = currTopZIndex;
     currTopZIndex++;
 
-    //Remove the draggable attribute so that the showing info node cannot be dragged.
-    this.htmlElement.classList.remove("draggable");
+    this.htmlElement.classList.remove("draggable");   //Remove the draggable attribute so that the showing info node cannot be dragged.
+    this.htmlElement.getElementsByClassName('nodeTitleText').item(0).style.position = 'static';     //Move title text back to top of node
 
     //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
     let height = 400;
@@ -402,6 +403,11 @@ ContentNode.prototype.showInfo = function() {
 ContentNode.prototype.hideInfo = function() {
     this.isShowingInfo = false;
     showingNode = null;
+
+    //Move title text back to centre if above threshold
+    if (this.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
+        this.htmlElement.getElementsByClassName('nodeTitleText').item(0).style.position = 'relative';
+    }
 
     //Move the node back to it's 'position', and resize it back to the 'size'
     this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, 0.2);

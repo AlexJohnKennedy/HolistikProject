@@ -23,6 +23,11 @@ const defaultNodeSize = {
     height : 50,
     width  : 100
 };
+
+//Define a threshold constant for determining how tall a content node needs to be in order for the title text to
+//appear CENTRED (vertically), as oppossed to sticking at the top of the element!
+const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
+
 const defaultNodeTitle = "New concept";
 const defaultHierarchicalRelationshipLabel = "Child";
 
@@ -86,7 +91,6 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.setAttribute("ySize", defaultNodeSize.height.toString());
 
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
-    newElem.innerText    = idString; //defaultNodeTitle;
     newElem.style.height = defaultNodeSize.height + "px";
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
@@ -95,6 +99,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
     addRootNodeBorderElem(newElem);
+    addTitleTextElem(newElem, idString);
 
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
@@ -122,6 +127,18 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
         width            : defaultNodeSize.width,
         observer         : observer
     };
+}
+
+function addTitleTextElem(elem, name) {
+    //The title of the node will be contained within a separate div, so that we can control it's position and visibility
+    //independently of the node itself!
+    let form = document.createElement("div");
+    form.classList.add("nodeTitleText");
+    form.innerText = name;
+
+    elem.appendChild(form);
+
+    //By default, have text appear centered at the top of the node element.
 }
 
 function addRootNodeBorderElem(elem) {

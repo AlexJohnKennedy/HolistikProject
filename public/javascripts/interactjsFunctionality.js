@@ -93,6 +93,18 @@ interact('.draggable').draggable({
     //We also need to resize the 'root node border' sub-element!
     node.repositionButtons(node.size.width, node.size.height, 0);
 
+    /* This method will ALSO reposition the title text element of the node: if over a certain height threshold, we will
+    * make the text appear centered. If under a certain threshold, then we will make the title text appear at the 'top' of
+    * the node. */
+    let titleTextDiv       = target.getElementsByClassName('nodeTitleText').item(0);            //Should only match one!
+    if (node.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
+        titleTextDiv.style.position = 'relative';
+        titleTextDiv.style.top      = '35%';
+    }
+    else {
+        titleTextDiv.style.position = 'static'; //Default positioning will render it at the top of the element.
+    }
+
     //CODE NOT NEEDED FOR NOW, SINCE NOT ALLOWING RESIZE FROM TOP OR LEFT.
     //let x = (parseFloat(target.getAttribute('xTranslation')) || 0),
     //let y = (parseFloat(target.getAttribute('yTranslation')) || 0);
