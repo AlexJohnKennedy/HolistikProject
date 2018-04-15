@@ -26,7 +26,7 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
         width  : width
     };
     this.titleText       = defaultNodeTitle;
-    this.descriptionText = "";  //TODO
+    this.descriptionText = defaultNodeDesc;
 
     // --- Properties for managing whether or not a node is shown on the canvas ---
     this.isVisible       = true;    //New nodes are always deemed visible (for now)
@@ -154,13 +154,16 @@ ContentNode.prototype.repositionButtons = function(width, height, animateTime) {
     let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0);     //Should only match one!
     let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
     let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
+    let nodeDescription    = target.getElementsByClassName('nodeDescriptionText').item(0);      //Should only match one!
 
     expandChildrenElem.style.transitionProperty = "top, left";
     showInfoElem.style.transitionProperty = "top, left";
     rootNodeBorder.style.transitionProperty = "width, height";
+    nodeDescription.style.transitionProperty = "height";
     expandChildrenElem.style.transitionDuration = animateTime+"s";
     showInfoElem.style.transitionDuration = animateTime+"s";
     rootNodeBorder.style.transitionDuration = animateTime+"s";
+    nodeDescription.style.transitionDuration = animateTime+"s";
 
     expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
     expandChildrenElem.style.left = 6+'px';
@@ -168,6 +171,8 @@ ContentNode.prototype.repositionButtons = function(width, height, animateTime) {
     showInfoElem.style.top  = (height-17)+'px';
     rootNodeBorder.style.width = (width+8)+'px';  //Border element should always be 8 pixels taller and wider.
     rootNodeBorder.style.height = (height+8)+'px';
+
+    nodeDescription.style.height = (height-40)+'px';
 };
 
 /**
@@ -181,8 +186,10 @@ ContentNode.prototype.updateSize = function() {
  * Update the name of a contentNode
  */
 ContentNode.prototype.setTitleText = function(name) {
-    this.titleText = name;
-    this.htmlElement.innerText = name;
+    this.titleText = name.trim();
+
+    let textelem = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+    textelem.innerHTML = name;
 };
 
 /**
@@ -385,7 +392,12 @@ ContentNode.prototype.showInfo = function() {
     currTopZIndex++;
 
     this.htmlElement.classList.remove("draggable");   //Remove the draggable attribute so that the showing info node cannot be dragged.
-    this.htmlElement.getElementsByClassName('nodeTitleText').item(0).style.position = 'static';     //Move title text back to top of node
+
+    let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+    titleText.style.position = 'static';     //Move title text back to top of node
+
+    let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
+    descText.style.display = 'block';
 
     //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
     let height = 400;
@@ -404,10 +416,15 @@ ContentNode.prototype.hideInfo = function() {
     this.isShowingInfo = false;
     showingNode = null;
 
+    let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
+    descText.style.display = 'none';
+
+    let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
     //Move title text back to centre if above threshold
     if (this.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
-        this.htmlElement.getElementsByClassName('nodeTitleText').item(0).style.position = 'relative';
+        titleText.style.position = 'relative';
     }
+    titleText.style.cursor   = '';      //Delete the cursor property so it goes back to not affecting the cursor.
 
     //Move the node back to it's 'position', and resize it back to the 'size'
     this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, 0.2);
@@ -415,5 +432,18 @@ ContentNode.prototype.hideInfo = function() {
 
     this.htmlElement.classList.add("draggable");
 };
+
+/**
+ * This function is called and is passed a node.
+ *
+ * It will build a brand new, clean, pop-up HTML form which basically allows you to enter in node title and description.
+ *
+ * When the user submits the form, it will apply the input changes to the passed node. If the user cancels, then no
+ * changes will be made to the node's content!
+ */
+function editNodeContent(node) {
+    //Build a form element, and render it on top of the canvas.
+
+}
 
 
