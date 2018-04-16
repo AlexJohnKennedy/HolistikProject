@@ -478,6 +478,7 @@ ContentNode.prototype.hideInfo = function() {
 function editNodeContent(node) {
     //Build a form element, and render it on top of the canvas.
 
+
 }
 
 
