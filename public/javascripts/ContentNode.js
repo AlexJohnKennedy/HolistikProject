@@ -475,23 +475,38 @@ ContentNode.prototype.editNodeContent = function() {
     console.log("editNodeContent Called!");
     //Build a form element, and render it on top of the canvas.
 
+    //fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "block";
+
     //make the node editing partial visible - do i need to make it visible at the end?
     let editWindow = document.getElementById("popupEditWindow");
     editWindow.style.display = "block";
 
     //title
-    let titleInput = editWindow.getElementsByClassName("nodeTitleText").item(0);
+    let titleInput = editWindow.getElementById("editTitle");
     titleInput.setAttribute("value", this.titleText);
 
     //desc
-    let descInput = editWindow.getElementsByClassName("nodeDescriptionText").item(0);
+    let descInput = editWindow.getElementById("editDescription");
     descInput.setAttribute("value", this.descriptionText);
 };
 
 /**
  * update the current node when the users saves their changes
  */
-ContentNode.prototype.updateNodeData = function (newTitle, newDesc) {
-   this.titleText = newTitle;
-   this.descriptionText = newDesc;
-};
+function updateNodeData() {
+    let editWindow = document.getElementById("popupEditWindow");
+
+    let titleInput = editWindow.getElementById("editTitle");
+    let descInput = editWindow.getElementById("editDescription");
+
+    let newTitle = titleInput.getAttribute("value");
+    let newDesc = descInput.getAttribute("value");
+
+    //assign new data
+    this.titleText = newTitle;
+    this.descriptionText = newDesc;
+
+    console.log("node has been updated! new title: " + this.titleText + ", new desc: " + this.descriptionText);
+}
