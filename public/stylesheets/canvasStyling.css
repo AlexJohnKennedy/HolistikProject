@@ -4,10 +4,19 @@ html {
   height: 100%;
 }
 
+/* Style the window itself */
+#canvasWindow {
+    position: static;
+    overflow: scroll;
+}
+
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */
 #drawingCanvas {
     position: relative;
     background-color : lightgrey;
+
+    height : 3000px;    /* Make sure we have enough room for a ton of nodes and such! */
+    width :  3000px;
     /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
 }
 
