@@ -170,6 +170,7 @@ ContentNode.prototype.repositionButtons = function(width, height, animate) {
     let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
     let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
     let nodeDescription    = target.getElementsByClassName('nodeDescriptionText').item(0);      //Should only match one!
+    let editButton         = target.getElementsByClassName('editButton').item(0);               //Should only match one!
 
     if (animate) {
         //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
@@ -179,6 +180,8 @@ ContentNode.prototype.repositionButtons = function(width, height, animate) {
         showInfoElem.classList.remove("noTransitions");
         rootNodeBorder.classList.remove("noTransitions");
         nodeDescription.classList.remove("noTransitions");
+        editButton.classList.remove("noTransitions");
+
     }
     else {
         //if animate is set to false, we must ensure the noTransitions override rule IS applied.
@@ -186,23 +189,15 @@ ContentNode.prototype.repositionButtons = function(width, height, animate) {
         showInfoElem.classList.add("noTransitions");
         rootNodeBorder.classList.add("noTransitions");
         nodeDescription.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+        editButton.classList.add("noTransitions");
     }
-
-    /* OLD, but keeping for reference just in case. The animation logic has been refactored to rely on CSS rules to specify timings!
-    expandChildrenElem.style.transitionProperty = "top, left";
-    showInfoElem.style.transitionProperty = "top, left";
-    rootNodeBorder.style.transitionProperty = "width, height";
-    nodeDescription.style.transitionProperty = "height";
-    expandChildrenElem.style.transitionDuration = animateTime+"s";
-    showInfoElem.style.transitionDuration = animateTime+"s";
-    rootNodeBorder.style.transitionDuration = animateTime+"s";
-    nodeDescription.style.transitionDuration = animateTime+"s";
-    */
 
     expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
     expandChildrenElem.style.left = 6+'px';
     showInfoElem.style.left = (width-20)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
     showInfoElem.style.top  = (height-17)+'px';
+    editButton.style.left = (width-40)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
+    editButton.style.top  = (height-17)+'px';
     rootNodeBorder.style.width = (width+8)+'px';  //Border element should always be 8 pixels taller and wider.
     rootNodeBorder.style.height = (height+8)+'px';
 
@@ -431,8 +426,7 @@ ContentNode.prototype.showInfo = function() {
     titleText.style.position = 'static';     //Move title text back to top of node
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
-    descText.style.display = 'block';
-    descText.style.opacity = 1;
+    descText.style.opacity = "1";
 
     //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
     let height = 400;
@@ -445,9 +439,6 @@ ContentNode.prototype.showInfo = function() {
     //Now, animate the node to go to that position!
     this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
     this.resizeNode_noStateChange(width, height, true);
-
-    //dump a button in that launches a popup that the user can edit the text through
-    //make it have 1 opacity
 };
 
 ContentNode.prototype.hideInfo = function() {
@@ -455,10 +446,10 @@ ContentNode.prototype.hideInfo = function() {
     showingNode = null;
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
-    descText.style.display = 'none';
-    descText.style.opacity = 0;
+    descText.style.opacity = "0";
 
     let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+
     //Move title text back to centre if above threshold
     if (this.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
         titleText.style.position = 'relative';
@@ -470,9 +461,6 @@ ContentNode.prototype.hideInfo = function() {
     this.resizeNode_noStateChange(this.size.width, this.size.height, true);
 
     this.htmlElement.classList.add("draggable");
-
-    //fuck off the edit button off the contextNode
-    //make it have zero opacity
 };
 
 /**

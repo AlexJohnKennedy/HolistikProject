@@ -43,6 +43,8 @@ let childrenHorizontalSpacing = 20;   //pixels. Horizontal space between childre
 let verticalSpacing           = 50;   //pixels. Vertical space between un-related nodes. (not including semantic relationships).
 let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
+let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Node creation functionality -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -111,10 +113,12 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.addEventListener("mouseenter", function(event) {
         event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "1";
         event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "1";
+        event.currentTarget.getElementsByClassName("editButton").item(0).style.opacity           = "1";
     });
     newElem.addEventListener("mouseleave", function(event) {
         event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "0";
         event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "0";
+        event.currentTarget.getElementsByClassName("editButton").item(0).style.opacity           = "0";
     });
 
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
@@ -144,7 +148,7 @@ function addTitleTextElem(elem, name, desc) {
     let descriptionText = document.createElement("div");
     descriptionText.classList.add("nodeDescriptionText");
     descriptionText.innerText = desc;
-    descriptionText.style.display = 'none'; //Default to hidden, because we only want it to show up when 'show info' is activated.
+    descriptionText.style.opacity = "0";
 
     elem.appendChild(descriptionText);
 }
@@ -165,7 +169,7 @@ function addEditButton(elem) {
     button.classList.add("editButton");
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
     button.addEventListener("click", editButtonCallback);
-    button.style.left = "80px";
+    button.style.left = "60px";
     button.style.top = "33px";
     button.style.opacity = "0";
 

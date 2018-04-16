@@ -5,7 +5,6 @@
  * event listeners are triggered.
  */
 
-let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 
 /**
  * Define 'draggable' behaviour for all HTML elements which have the 'draggable' class associated to them.

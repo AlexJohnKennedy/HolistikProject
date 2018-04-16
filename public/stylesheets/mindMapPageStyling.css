@@ -1,9 +1,9 @@
 /* lets use a css grid to contain the various components of the mind map page! */
 .wrapper {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr 5fr;
-    grid-auto-columns: minmax(500px, auto);
-    grid-auto-rows: minmax(500px, auto);
+    grid-template-columns: 200px 5fr;
+    grid-auto-rows: minmax(500px, 650px);
 }
 
 /* control the visibility of the popup edit window */
