@@ -471,13 +471,18 @@ ContentNode.prototype.hideInfo = function() {
  * When the user submits the form, it will apply the input changes to the passed node. If the user cancels, then no
  * changes will be made to the node's content!
  */
-function editNodeContent(node) {
+ContentNode.prototype.editNodeContent = function() {
+    console.log("editNodeContent Called!");
     //Build a form element, and render it on top of the canvas.
 
     //make the node editing partial visible
     let editWindow = document.getElementById("popupEditWindow");
-    editWindow.style.visibility = "visible";
+    editWindow.style.display = "block";
 
-}
+    //title
+    let titleInput = this.htmlElement.getElementsByClassName("nodeTitleText");
+    titleInput.innerHTML = this.titleText;
+
+};
 
 
