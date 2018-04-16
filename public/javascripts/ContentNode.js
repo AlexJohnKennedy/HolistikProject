@@ -475,14 +475,23 @@ ContentNode.prototype.editNodeContent = function() {
     console.log("editNodeContent Called!");
     //Build a form element, and render it on top of the canvas.
 
-    //make the node editing partial visible
+    //make the node editing partial visible - do i need to make it visible at the end?
     let editWindow = document.getElementById("popupEditWindow");
     editWindow.style.display = "block";
 
     //title
-    let titleInput = this.htmlElement.getElementsByClassName("nodeTitleText");
-    titleInput.innerHTML = this.titleText;
+    let titleInput = editWindow.getElementsByClassName("nodeTitleText").item(0);
+    titleInput.setAttribute("value", this.titleText);
 
+    //desc
+    let descInput = editWindow.getElementsByClassName("nodeDescriptionText").item(0);
+    descInput.setAttribute("value", this.descriptionText);
 };
 
-
+/**
+ * update the current node when the users saves their changes
+ */
+ContentNode.prototype.updateNodeData = function (newTitle, newDesc) {
+   this.titleText = newTitle;
+   this.descriptionText = newDesc;
+};
