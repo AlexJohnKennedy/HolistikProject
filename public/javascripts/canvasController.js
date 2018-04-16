@@ -100,6 +100,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //Add the expand children button, and the show info button
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
+    addEditButton(newElem);
     addRootNodeBorderElem(newElem);
     addTitleTextElem(newElem, idString, defaultNodeDesc);
 
@@ -157,6 +158,28 @@ function addRootNodeBorderElem(elem) {
     extraBorder.style.display = "block";
 
     elem.appendChild(extraBorder);
+}
+
+function addEditButton(elem) {
+    let button = document.createElement("div");
+    button.classList.add("editButton");
+    button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
+    button.addEventListener("click", editButtonCallback);
+    button.style.left = "80px";
+    button.style.top = "33px";
+    button.style.opacity = "0";
+
+    //Add an onlick listener to the button.
+    button.addEventListener("click", showInfoButtonCallback);
+
+    elem.appendChild(button);
+}
+
+function editButtonCallback(event) {
+    let nodeElem = event.currentTarget.parentNode;
+    let node     = getContentNode(nodeElem);
+
+    node.launchEditPopup();
 }
 
 function addShowInfoButton(elem) {

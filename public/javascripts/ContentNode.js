@@ -432,6 +432,7 @@ ContentNode.prototype.showInfo = function() {
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
     descText.style.display = 'block';
+    descText.style.opacity = 1;
 
     //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
     let height = 400;
@@ -444,6 +445,9 @@ ContentNode.prototype.showInfo = function() {
     //Now, animate the node to go to that position!
     this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
     this.resizeNode_noStateChange(width, height, true);
+
+    //dump a button in that launches a popup that the user can edit the text through
+    //make it have 1 opacity
 };
 
 ContentNode.prototype.hideInfo = function() {
@@ -452,6 +456,7 @@ ContentNode.prototype.hideInfo = function() {
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
     descText.style.display = 'none';
+    descText.style.opacity = 0;
 
     let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
     //Move title text back to centre if above threshold
@@ -465,6 +470,9 @@ ContentNode.prototype.hideInfo = function() {
     this.resizeNode_noStateChange(this.size.width, this.size.height, true);
 
     this.htmlElement.classList.add("draggable");
+
+    //fuck off the edit button off the contextNode
+    //make it have zero opacity
 };
 
 /**
@@ -478,6 +486,9 @@ ContentNode.prototype.hideInfo = function() {
 function editNodeContent(node) {
     //Build a form element, and render it on top of the canvas.
 
+    //make the node editing partial visible
+    let editWindow = document.getElementById("popupEditWindow");
+    editWindow.style.visibility = "visible";
 
 }
 

@@ -138,6 +138,22 @@ html {
     transform: rotate(-90deg);
 }
 
+/* style the edit button */
+.editButton {
+    position: absolute;
+
+    background: url("../images/edit.svg") no-repeat;
+    background-size: cover;
+
+    width: 14px;
+    height: 14px;
+
+    transition: opacity 0.35s, top 0.25s, left 0.25s;
+}
+.editButton:hover {
+    cursor: pointer;
+}
+
 /* Style the show info node button */
 .showInfoButton {
     position: absolute;
@@ -185,7 +201,9 @@ html {
     text-overflow: ellipsis;
     overflow-wrap: break-word;
 
-    transition: height 0.25s;
+    opacity: 0;
+
+    transition: height 0.25s, opacity 1s;
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
