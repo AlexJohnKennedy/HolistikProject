@@ -71,12 +71,8 @@ interact('.draggable').draggable({
     currTopZIndex++;
 
     //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
-    targetElem.style.transitionProperty = "transform";
-    targetElem.style.transitionDuration = "0s";
-    targetElem.style.transitionProperty = "height";
-    targetElem.style.transitionDuration = "0s";
-    targetElem.style.transitionProperty = "width";
-    targetElem.style.transitionDuration = "0s";
+    targetElem.classList.add("noTransitions");
+
 }).on('resizemove', function (event) {
     let target = event.target;
 
@@ -91,21 +87,37 @@ interact('.draggable').draggable({
 
     //Now, we need to reposition the 'buttons' on the node itself to make sure they stay in the corners.
     //We also need to resize the 'root node border' sub-element!
-    node.repositionButtons(node.size.width, node.size.height, 0);
+    node.repositionButtons(node.size.width, node.size.height, false);   //False for no animations, we want the repositioning to occur instantly!
+
+    /* This method will ALSO reposition the title text element of the node: if over a certain height threshold, we will
+    * make the text appear centered. If under a certain threshold, then we will make the title text appear at the 'top' of
+    * the node. */
+    let titleTextDiv       = target.getElementsByClassName('nodeTitleText').item(0);            //Should only match one!
+    if (node.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
+        titleTextDiv.style.position = 'relative';
+        titleTextDiv.style.top      = '35%';
+    }
+    else {
+        titleTextDiv.style.position = 'static'; //Default positioning will render it at the top of the element.
+    }
 
     //CODE NOT NEEDED FOR NOW, SINCE NOT ALLOWING RESIZE FROM TOP OR LEFT.
     //let x = (parseFloat(target.getAttribute('xTranslation')) || 0),
     //let y = (parseFloat(target.getAttribute('yTranslation')) || 0);
-
     // translate when resizing from top or left edges
     //x += event.deltaRect.left;
     //y += event.deltaRect.top;
-
     //target.style.webkitTransform = target.style.transform =
     //    'translate(' + x + 'px,' + y + 'px)';
-
     //target.setAttribute('xTranslation', x);
-   // target.setAttribute('yTranslation', y);
+    //target.setAttribute('yTranslation', y);
+    
+}).on('resizeend', function(event) {
+    //All we want to do here is remove the noTransitions class from the element and it's children, so that we can re-enable the default animations rule
+    event.target.classList.remove("noTransitions");
+    for (let childElem of event.target.children) {
+        childElem.classList.remove("noTransitions");
+    }
 });
 
 
@@ -123,8 +135,7 @@ function onDragStart (event) {
     currTopZIndex++;
 
     //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
-    targetElem.style.transitionProperty = "transform";
-    targetElem.style.transitionDuration = "0s";
+    targetElem.classList.add("noTransitions");
 
     //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
     //'previousTranslation' variable. That way, return to previous position funcitonality will work!
@@ -175,6 +186,9 @@ function onDragMoveFinished(event) {
 
     //Tell the controller to update the logic object representing this html element.
     onNodeMoved(targetElement);
+
+    //Re-enable default transitions
+    targetElement.classList.remove("noTransitions");
 
     //Finally, re-add the 'dropzone' class to this node and all descendants, so that other nodes may use them as dropzones for nesting if they need.
     let contentNode = getContentNode(targetElement);
@@ -379,7 +393,7 @@ interact('#detachNodeDropZone').dropzone({
         draggedNode.detachFromAllParents();
 
         //Finally, animate the node back to it's previous position before the drag-and-drop
-        draggedNode.returnToPreviousPosition(0.2);
+        draggedNode.returnToPreviousPosition(true);
     }
 });
 

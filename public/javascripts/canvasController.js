@@ -23,7 +23,14 @@ const defaultNodeSize = {
     height : 50,
     width  : 100
 };
+
+//Define a threshold constant for determining how tall a content node needs to be in order for the title text to
+//appear CENTRED (vertically), as oppossed to sticking at the top of the element!
+const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
+const MAX_NODE_TITLE_LENGTH                      = 50;
+
 const defaultNodeTitle = "New concept";
+const defaultNodeDesc  = "This box is a 'node', and represents any concept or idea that you wish!\n\nYou can drag a node inside of other nodes to make it a 'child' of that node.\n\nYou can resize a node by dragging the corner, and you can zoom in and out of nodes as well (double click)\n\nWhen you 'zoom into' a node, the 'context' of the viewing canvas changes, and all of this node's children will be displayed.\n\nThe bottom-left button toggles whether or not this node's children are visible.\n\n";
 const defaultHierarchicalRelationshipLabel = "Child";
 
 //Define a counter which will track the current 'id' number to append
@@ -86,7 +93,6 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.setAttribute("ySize", defaultNodeSize.height.toString());
 
     newElem.style.backgroundColor = defaultColour;  //Colour will determine the background colour of the element, since that forms actual 'fill colour'
-    newElem.innerText    = idString; //defaultNodeTitle;
     newElem.style.height = defaultNodeSize.height + "px";
     newElem.style.width  = defaultNodeSize.width  + "px";
     newElem.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
@@ -95,6 +101,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
     addRootNodeBorderElem(newElem);
+    addTitleTextElem(newElem, idString, defaultNodeDesc);
 
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
@@ -124,6 +131,23 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     };
 }
 
+function addTitleTextElem(elem, name, desc) {
+    //The title of the node will be contained within a separate div, so that we can control it's position and visibility
+    //independently of the node itself!
+    let form = document.createElement("div");
+    form.classList.add("nodeTitleText");
+    form.innerText = name;
+
+    elem.appendChild(form);
+
+    let descriptionText = document.createElement("div");
+    descriptionText.classList.add("nodeDescriptionText");
+    descriptionText.innerText = desc;
+    descriptionText.style.display = 'none'; //Default to hidden, because we only want it to show up when 'show info' is activated.
+
+    elem.appendChild(descriptionText);
+}
+
 function addRootNodeBorderElem(elem) {
     let extraBorder = document.createElement("div");
     extraBorder.classList.add("rootNodeBorderElement");     //Supply static styling elements
@@ -138,6 +162,7 @@ function addRootNodeBorderElem(elem) {
 function addShowInfoButton(elem) {
     let button = document.createElement("div");
     button.classList.add("showInfoButton");
+    button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
     button.addEventListener("click", showInfoButtonCallback);
     button.style.left = "80px";
     button.style.top = "33px";
@@ -168,6 +193,7 @@ function addExpandChildrenHTMLButton(elem) {
     //Add styling class
     button.classList.add("expandChildrenButton");               //General button styling.
     button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
+    button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
 
     button.style.top = "33px";
     button.style.left = "6px";
@@ -602,7 +628,8 @@ function zoomContextIn(event) {
                                                         //the event!
     //We DO NOT want to zoom if the item clicked is not the outer node element itself. This is becuase if the double click ocurred on one of the
     //utility buttons, we don't want to also zoom. That would be confusing.
-    if (event.target !== event.currentTarget) {
+    //we also do not want to allow zoom in event if ANY node is showing info
+    if (event.target.classList.contains("utilityButton") || node.isShowingInfo || showingNode != null) {
         return;
     }
 
