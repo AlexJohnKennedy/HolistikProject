@@ -2,55 +2,59 @@
 
 <!-- ------------------------------------------------------------------------------------ -->
 
-<!-- use a 'canvasWindow' to contain the scrollable drawing canvas. Inside of this will be a drawing canvas which
-  -- will hold all of the rendered elements, and can be draggable in of itself. -->
-<div id="canvasWindow">
+<!-- Create a container object to hold all of the canvas elements. These elements are:
+     a) The 'window' which contains the actual canvas object
+     b) The utility buttons and interfaces which should appear within the canvas AREA but stay stationary with
+        respect to the canvas scrolling. -->
+<div id="canvasContainer">
+    <!-- Create a little visual box which simply acts as a 'context' indicator, and provides a button for going back to upper context -->
+    <div id="contextIndicatorBox">
+        <!-- Back button for zooming out to previous context, if context is not currently global -->
+        <button onclick="zoomContextOut()">
+            <!-- TODO: put a little back button in here? -->
+            <!-- For now, just going to use text -->
+            Zoom out
+        </button>
 
-    <!-- use an 'absolute' positions div as the drawing canvas container. -->
-    <div id="drawingCanvas">
-
-        <!-- Create a little visual box which simply acts as a 'context' indicator, and provides a button for going back to upper context -->
-        <div id="contextIndicatorBox">
-
-            <!-- Back button for zooming out to previous context, if context is not currently global -->
-            <button onclick="zoomContextOut()">
-                <!-- TODO: put a little back button in here? -->
-                <!-- For now, just going to use text -->
-                Zoom out
-            </button>
-
-            <!-- text box indicator, to show the name of the node(s) providing the current canvas context. -->
-            <span id="contextNameTextBox">
+        <!-- text box indicator, to show the name of the node(s) providing the current canvas context. -->
+        <span id="contextNameTextBox">
                 Global context
             </span>
 
-            <button onclick="createNewContentNode()">
-                Create new node - UI Icon for testing
-            </button>
+        <button onclick="createNewContentNode()">
+            Create new node - UI Icon for testing
+        </button>
+    </div>
+
+    <!-- Create a box which deletes nodes that are dragged into them. -->
+    <div id="deleteNodeDropZone" class="utilityDropZone">
+        Drag here to delete node
+    </div>
+
+    <!-- Create a box which DETACHES nodes from their parents when dragged into here. -->
+    <div id="detachNodeDropZone" class="utilityDropZone">
+        Drag here to detach node
+    </div>
+
+    <!-- use a 'canvasWindow' to contain the drawing canvas (which is very large) and facilitate scrolling. Inside of this will be a drawing canvas which
+      -- will hold all of the rendered elements, and can be draggable in of itself. -->
+    <div id="canvasWindow">
+
+        <!-- use an 'absolute' positions div as the drawing canvas container. -->
+        <div id="drawingCanvas">
+            <!-- Create an SVG canvas, so that we can draw lines between nodes! -->
+            <!-- Note that we are creating this svg object to be the same size as the drawing canvas -->
+            <svg id="svgObject" height="100%" width="100%">
+                <!-- Test line -- <line x1="0" y1="0" x2="200" y2="200"/> -->
+
+                <!-- definition of the marker to denote the direction of parent-child relationships -->
+                <defs>
+                    <marker id="Triangle" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                    </marker>
+                </defs>
+            </svg>
+
         </div>
-
-        <!-- Create a box which deletes nodes that are dragged into them. -->
-        <div id="deleteNodeDropZone" class="utilityDropZone">
-            Drag here to delete node
-        </div>
-
-        <!-- Create a box which DETACHES nodes from their parents when dragged into here. -->
-        <div id="detachNodeDropZone" class="utilityDropZone">
-            Drag here to detach node
-        </div>
-
-        <!-- Create an SVG canvas, so that we can draw lines between nodes! -->
-        <!-- Note that we are creating this svg object to be the same size as the drawing canvas -->
-        <svg id="svgObject" height="100%" width="100%">
-            <!-- Test line -- <line x1="0" y1="0" x2="200" y2="200"/> -->
-
-            <!-- definition of the marker to denote the direction of parent-child relationships -->
-            <defs>
-                <marker id="Triangle" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                    <path d="M 0 0 L 10 5 L 0 10 z"></path>
-                </marker>
-            </defs>
-        </svg>
-
     </div>
 </div>
