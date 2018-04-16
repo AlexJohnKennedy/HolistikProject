@@ -108,9 +108,8 @@ html {
     border-color: black;
     border-style: solid;
 
-    /* Future CHANGES to the border should have a graceful transition time */
-    transition-property: border-width, border-color, border-style;
-    transition-duration: 0.25s;
+    /* Base animation settings, which can of course be overwritten! */
+    transition: border-width 0.25s, border-color 0.25s, border-style 0.25s, transform 0.3s, width 0.25s, height 0.25s;
 }
 
 /* Let's implement a default colouring and shit for content nodes, for testing purposes */
@@ -127,7 +126,7 @@ html {
     rotation-point:50% 50%;
     width: 15px;
     height: 15px;
-    transition: transform 0.25s, opacity 0.35s;
+    transition: transform 0.25s, opacity 0.35s, top 0.25s, left 0.25s;
 }
 .expandChildrenButton:hover {
     cursor : pointer;
@@ -149,7 +148,7 @@ html {
     width: 14px;
     height: 14px;
 
-    transition: opacity 0.35s;
+    transition: opacity 0.35s, top 0.25s, left 0.25s;
 }
 .showInfoButton:hover {
     cursor: pointer;
@@ -167,6 +166,8 @@ html {
 
     background-color: transparent;
     z-index: -1;    /* Render BEHIND our parent */
+
+    transition: height 0.25s, width 0.25s;
 }
 
 /* Node title styling */
@@ -183,6 +184,8 @@ html {
     overflow: hidden;
     text-overflow: ellipsis;
     overflow-wrap: break-word;
+
+    transition: height 0.25s;
 }
 
 
@@ -213,7 +216,18 @@ html {
     border-width : 5px;
 }
 
+/* ------------------------------------------------------------------------------------------------------------------ */
+/* --- Animation based rules ---------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------ */
 
+/* APPLY THIS TO TEMPORARILY REMOVE ALL ANIMATIONS
+ * Used to faciliate dragging and dropping without CSS transitions affecting it!
+ * Can be applied to an object as soon as we want to move it (via transform), and then once we have finished, we
+ * can remove this style rule from the object to restore it's previously defined transitions.
+ */
+.noTransitions {
+    transition: all 0s; !important;
+}
 
 
 

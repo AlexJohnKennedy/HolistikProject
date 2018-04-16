@@ -51,13 +51,18 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
  * actions.
  *
  * Moves or animates a node to a specified translation on screen, then update the tracked state.
- * @param animateTime value to specify how long the 'transition' animation should take. <= 0 results in instantly changing
+ * @param animate boolean value to specify if the node should use it's animation setting, or move instantly.
  */
-ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
-    if (animateTime > 0.0) {
-        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "transform";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+ContentNode.prototype.moveNodeTo = function(x, y, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
     }
 
     //Trigger the CSS animation by setting a new translation.
@@ -74,21 +79,20 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
     //The other thing that needs to be animated is the relationships associated with this node!
     //The lines will have to animate themselves to follow the node as it moves.
 
-    //NEED TO SET THE TRANSFORM TRANSITION TIME BACK TO ZERO AFTER THE TRANSITION HAS FINISHED.
-    //OTHERWISE THIS WILL INTERFERE WITH OTHER THINGS, POTENTIALLY
-    //Cannot do it here, because then the transition we just instigated will be cancelled out!
-    //this.htmlElement.style.transitionProperty = "transform";
-    //this.htmlElement.style.transitionDuration = "0s";
-
     //Ask the controlling context to detect possible overlaps after this move!
     detectOverlaps(this);
 };
 
-ContentNode.prototype.moveNodeTo_noStateChange = function(x,y,animateTime) {
-    if (animateTime > 0.0) {
-        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "width, height, transform";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+ContentNode.prototype.moveNodeTo_noStateChange = function(x, y, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
     }
 
     //Trigger the CSS animation by setting a new translation.
@@ -104,19 +108,24 @@ ContentNode.prototype.moveNodeTo_noStateChange = function(x,y,animateTime) {
  * Moves or animates the node back to wherever it was prior to the last drag move by the user!
  * @param animateTime
  */
-ContentNode.prototype.returnToPreviousPosition = function(animateTime) {
+ContentNode.prototype.returnToPreviousPosition = function(animate) {
     console.log(this.idString+" was asked to move back to it's previous position, which is x = "+this.previousTranslation.x+" y = "+this.previousTranslation.y);
-    this.moveNodeTo(this.previousTranslation.x, this.previousTranslation.y, animateTime);
+    this.moveNodeTo(this.previousTranslation.x, this.previousTranslation.y, animate);
 };
 
 /**
  * Used to actively resize nodes and apply visible changes. Should subsequently update the state to the result
  */
-ContentNode.prototype.resizeNode = function(newWidth, newHeight, animateTime) {
-    if (animateTime > 0.0) {
-        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "height, width, transform";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+ContentNode.prototype.resizeNode = function(newWidth, newHeight, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
     }
 
     //Trigger the CSS animation by setting a height and width value.
@@ -126,21 +135,27 @@ ContentNode.prototype.resizeNode = function(newWidth, newHeight, animateTime) {
     this.size.height = newHeight;
     this.size.width  = newWidth;
 
-    this.repositionButtons(newWidth, newHeight, animateTime);
+    this.repositionButtons(newWidth, newHeight, animate);
     detectOverlaps(this);
 };
 
-ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, animateTime) {
-    if (animateTime > 0.0) {
-        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "height, width, transform";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
     }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+    }
+
     //Trigger the CSS animation by setting a height and width value.
     this.htmlElement.style.height = newHeight+"px";
     this.htmlElement.style.width  = newWidth+"px";
 
-    this.repositionButtons(newWidth, newHeight, animateTime);
+    this.repositionButtons(newWidth, newHeight, animate);
     detectOverlaps(this);
 };
 
@@ -149,13 +164,31 @@ ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, a
  * node itself. This is intended to be called whenever the node is Re-sized (aka changes sizes) becuase other wise the
  * button placements will desync.
  */
-ContentNode.prototype.repositionButtons = function(width, height, animateTime) {
+ContentNode.prototype.repositionButtons = function(width, height, animate) {
     let target = this.htmlElement;
     let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0);     //Should only match one!
     let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
     let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
     let nodeDescription    = target.getElementsByClassName('nodeDescriptionText').item(0);      //Should only match one!
 
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        expandChildrenElem.classList.remove("noTransitions");
+        showInfoElem.classList.remove("noTransitions");
+        rootNodeBorder.classList.remove("noTransitions");
+        nodeDescription.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        expandChildrenElem.classList.add("noTransitions");
+        showInfoElem.classList.add("noTransitions");
+        rootNodeBorder.classList.add("noTransitions");
+        nodeDescription.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+    }
+
+    /* OLD, but keeping for reference just in case. The animation logic has been refactored to rely on CSS rules to specify timings!
     expandChildrenElem.style.transitionProperty = "top, left";
     showInfoElem.style.transitionProperty = "top, left";
     rootNodeBorder.style.transitionProperty = "width, height";
@@ -164,6 +197,7 @@ ContentNode.prototype.repositionButtons = function(width, height, animateTime) {
     showInfoElem.style.transitionDuration = animateTime+"s";
     rootNodeBorder.style.transitionDuration = animateTime+"s";
     nodeDescription.style.transitionDuration = animateTime+"s";
+    */
 
     expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
     expandChildrenElem.style.left = 6+'px';
@@ -408,8 +442,8 @@ ContentNode.prototype.showInfo = function() {
     let y = 50;
 
     //Now, animate the node to go to that position!
-    this.moveNodeTo_noStateChange(x, y, 0.3);
-    this.resizeNode_noStateChange(width, height, 0.3);
+    this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
+    this.resizeNode_noStateChange(width, height, true);
 };
 
 ContentNode.prototype.hideInfo = function() {
@@ -427,8 +461,8 @@ ContentNode.prototype.hideInfo = function() {
     titleText.style.cursor   = '';      //Delete the cursor property so it goes back to not affecting the cursor.
 
     //Move the node back to it's 'position', and resize it back to the 'size'
-    this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, 0.2);
-    this.resizeNode_noStateChange(this.size.width, this.size.height, 0.2);
+    this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, true);
+    this.resizeNode_noStateChange(this.size.width, this.size.height, true);
 
     this.htmlElement.classList.add("draggable");
 };
