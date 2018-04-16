@@ -47,7 +47,7 @@ function constructTree(curr, depth) {
     }
 
     //build a corresponding sidebar element object
-    let newSidebarElem = new SidebarElement(curr.idString, document.getElementById(idPrefix+depth.toString()));
+    let newSidebarElem = new SidebarElement(curr.idString, document.getElementById(idPrefix+depth.toString()), curr.titleText);
     sidebarState.sidebarElements.push(newSidebarElem);
 
     //Style visible-node list elements differently to invisible ones, for visual indication. Let CSS handle the styling!

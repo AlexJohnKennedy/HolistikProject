@@ -4,15 +4,15 @@
  * @param parentList
  * @constructor
  */
-function SidebarElement(id, parentList) {
+function SidebarElement(id, parentList, nodeName) {
     //make a new list item
     let newElem = document.createElement("li");
-    newElem.innerText = id;
+    newElem.innerText = nodeName;
     //give it the draggable class to facilitate the addition of a node that isn't already shown to the canvas
     //also needs the sidebar-element class to make dragging into a dropzone work
     newElem.setAttribute("class", "draggable-sidebar-node sidebar-element");
     //assign it its id
-    newElem.setAttribute("id", id);
+    newElem.setAttribute("id", id+"_sidebar");
     //add this list item to the parent list
     parentList.appendChild(newElem);
 
@@ -22,7 +22,8 @@ function SidebarElement(id, parentList) {
 
     //save the necessary shit
     this.htmlElement = newElem;
-    this.idString = id;
+    this.idString = id+"_sidebar";
+    this.nodeId   = id;
     this.translation = {
         x : xPos,
         y : yPos

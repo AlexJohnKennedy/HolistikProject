@@ -450,17 +450,22 @@ function sidebarOnDragStart(event) {
 
     //Firstly, we want any item that is being dragged by the user to render ON TOP of everything else, so they can
     //always see what they are doing.
-    let targetElem = event.target;
-    targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
+    let target = event.target;
+    let sidebarElem = getSidebarElement(target);
+    target.style.zIndex = currTopZIndex;   //Sets to be at the front!
     currTopZIndex++;
 
-    //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
-    targetElem.style.transitionProperty = "transform";
-    targetElem.style.transitionDuration = "0s";
+    //Set up the html element
+    target.setAttribute("nodeId", sidebarElem.nodeId);
+    target.setAttribute("xTranslation", target.offsetLeft);
+    target.setAttribute("yTranslation", target.offsetTop);
+
+    let wrapper = document.getElementById("mainAppContainer");
+    wrapper.appendChild(target);
+    target.style.position = 'absolute';
 
     //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
     //'previousTranslation' variable. That way, return to previous position funcitonality will work!
-    let sidebarElem = getSidebarElement(targetElem);
     sidebarElem.previousTranslation.x = sidebarElem.translation.x;
     sidebarElem.previousTranslation.y = sidebarElem.translation.y;
 
@@ -489,24 +494,13 @@ function sidebarOnDragMoveFinished(event) {
 
     let targetElement = event.target;
 
-    //Tell the controller to update the logic object representing this html element.
-    onSidebarElementMoved(targetElement);
+    let wrapper = document.getElementById("mainAppContainer");
+    wrapper.removeChild(targetElement);
 
     //no longer draggin - fuck off the sidebar dropzone class from the canvas!
     removeSidebarDropzoneClassFromCanvas();
-}
 
-function onSidebarElementMoved(elem) {
-    //The movement function stores the x and y movement translation values in the 'xTranslation' and 'yTranslation' attributes of the element.
-    //They therefore store the 'updated' translation values, which we can parse in order to pass back to the contentNode logical object.
-    let xPos  = parseFloat(elem.getAttribute('xTranslation'));
-    let yPos = parseFloat(elem.getAttribute('yTranslation'));
-
-    //Find the logical object representing this element
-    let sidebarElem = getSidebarElement(elem);
-
-    sidebarElem.translation.y = yPos;
-    sidebarElem.translation.x = xPos;
+    refreshSidebar(canvasState.contentNodeList);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -570,7 +564,5 @@ function sidebarOnElementDropped(event) {
     dropzone.classList.remove("potentialSidebarDropzoneHasItemHovering");
 
     //make a new node for the thing that just got dropped and pass the new x y to dump it where the mouse was
-    let dropped = getSidebarElement(beingDragged);
-    reinstantiateExistingNode(dropped.idString, dropped.translation.x, dropped.translation.y);
-    refreshSidebar(canvasState.contentNodeList);
+    reinstantiateExistingNode(beingDragged.getAttribute("nodeId"), parseFloat(beingDragged.getAttribute("xTranslation"))-240, parseFloat(beingDragged.getAttribute("yTranslation"))); //Adjust left by width of canvas
 }
