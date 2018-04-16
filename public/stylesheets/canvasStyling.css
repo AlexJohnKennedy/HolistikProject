@@ -4,18 +4,46 @@ html {
   height: 100%;
 }
 
+#canvasContainer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    width: 100%;
+    height: 100%;
+    grid-column-start: 2;
+}
+/* Style the window itself */
+#canvasWindow {
+    position: absolute;
+    overflow: scroll;
+    top: 0px;
+    left: 0px;
+
+    height: 100%;
+    width:  100%;
+}
+
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */
 #drawingCanvas {
-    position: relative;
+    position: absolute;
     background-color : lightgrey;
+
+    border-color: grey;
+    border-style: solid;
+    border-width: 3px;
+    border-radius: 3px;
+
+    height : 3000px;    /* Make sure we have enough room for a ton of nodes and such! */
+    width :  3000px;
     /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
 }
 
 /* Style the 'context box indicator' (thing which sits in the corner and tells you what the current context is */
 #contextIndicatorBox {
     position: absolute;
-    top: 0px;   /* Sit in the top left corner */
-    left: 0px;
+    top: 6px;   /* Sit in the top left corner */
+    left: 6px;
     z-index: 1;     /* don't let this render on top of nodes */
 
     height: 22px;
@@ -24,7 +52,7 @@ html {
     background-color: darkblue;
 
     border-radius: 3px;
-    border-width: 3px;
+    border-width: 2px;
     border-style: solid;
     border-color: grey;
 }
@@ -37,6 +65,21 @@ html {
 /* Style the button inside the context box indicator */
 #contextIndicatorBox button:hover {
     cursor: pointer;
+}
+
+#newNodeButton {
+    position: absolute;
+    top: 35px;
+    left: 6px;
+    z-index: 1;
+
+    height: 22px;
+    width: 200px;
+
+    border-radius: 3px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: grey;
 }
 
 /* Style the svg object to be overlaid with the drawing canvas */
@@ -58,8 +101,9 @@ html {
 .utilityDropZone {
     display: inline-block;  /* relavtively positioned inline block */
     position: relative;     /* move them relative to the canvas, but not absolute, so they still tile themselves amongst each other */
+
     transform-origin: bottom left;
-    transform: translate(0px, 446px); /* Sit in the bottom left corner, by translating distance downwards*/
+    transform: translate(6px, 573px); /* Sit in the bottom left corner, by translating distance downwards*/
 
     z-index: 1;     /* don't let this render on top of nodes */
 
