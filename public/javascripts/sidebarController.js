@@ -23,8 +23,8 @@ function buildListElements(nodeList) {
     }
 }
 
-/*
-breadth first search to construct the indented lists. note that nodes may appear more than once since node structure
+/**
+depth first search to construct the indented lists. note that nodes may appear more than once since node structure
 is not a DAG.
 */
 function constructTree(curr, depth) {
@@ -50,6 +50,14 @@ function constructTree(curr, depth) {
     let newSidebarElem = new SidebarElement(curr.idString, document.getElementById(idPrefix+depth.toString()));
     sidebarState.sidebarElements.push(newSidebarElem);
 
+    //Style visible-node list elements differently to invisible ones, for visual indication. Let CSS handle the styling!
+    if (curr.isVisible) {
+        newSidebarElem.htmlElement.classList.add("visibleListElem");
+    }
+    else {
+        newSidebarElem.htmlElement.classList.add("invisibleListElem");
+    }
+
     //iterate over children and do the same shit
     for (let rel of curr.childrenList) {
         //Recurse for all children, making them visible
@@ -60,7 +68,16 @@ function constructTree(curr, depth) {
     }
 }
 
-//wrapper function to be called any time something has changed in the canvas
+/**
+ * Public function which rebuilds the entire sidebar list(s) from scratch when invoked.
+ *
+ * This will be called by the canvas controller whenever it calls rebuildVisibility(). This ensures that it
+ * is invoked every time some visual structure of the canvas changes.
+ * NOTE: This must be called AFTER the rebuild visibility function completes (right before returning), so that we have
+ * access to each node's respective 'isVisible' after they have just been recalculated.
+ *
+ * @param nodeList a list of all the content Nodes.
+ */
 function refreshSidebar(nodeList) {
     this.clearList();
     this.buildListElements(nodeList);

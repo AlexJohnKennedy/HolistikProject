@@ -1,3 +1,11 @@
 #sidebar {
     overflow: scroll;
 }
+
+/* Dynamic colour styling for list entries which are referring to visible, or invisible, nodes. */
+.visibleListElem {
+    color: green;
+}
+.invisibleListElem {
+    color: #3c3c3c;
+}
