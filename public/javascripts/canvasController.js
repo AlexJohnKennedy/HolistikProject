@@ -43,6 +43,8 @@ let childrenHorizontalSpacing = 20;   //pixels. Horizontal space between childre
 let verticalSpacing           = 50;   //pixels. Vertical space between un-related nodes. (not including semantic relationships).
 let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
+let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Node creation functionality -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
