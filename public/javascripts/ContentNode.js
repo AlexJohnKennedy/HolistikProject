@@ -484,22 +484,26 @@ ContentNode.prototype.editNodeContent = function() {
     editWindow.style.display = "block";
 
     //title
-    let titleInput = editWindow.getElementById("editTitle");
+    let titleInput = document.getElementById("editTitle");
     titleInput.setAttribute("value", this.titleText);
 
     //desc
-    let descInput = editWindow.getElementById("editDescription");
+    let descInput = document.getElementById("editDescription");
     descInput.setAttribute("value", this.descriptionText);
+
+    //maintain the node id so we can reference it later
+    editWindow.setAttribute("nodeId", node.idString);
 };
 
 /**
  * update the current node when the users saves their changes
  */
 function updateNodeData() {
-    let editWindow = document.getElementById("popupEditWindow");
+    //get the node thats currently being edited
 
-    let titleInput = editWindow.getElementById("editTitle");
-    let descInput = editWindow.getElementById("editDescription");
+
+    let titleInput = document.getElementById("editTitle");
+    let descInput = document.getElementById("editDescription");
 
     let newTitle = titleInput.getAttribute("value");
     let newDesc = descInput.getAttribute("value");
@@ -507,6 +511,9 @@ function updateNodeData() {
     //assign new data
     this.titleText = newTitle;
     this.descriptionText = newDesc;
+
+    //TESTING
+    this.htmlElement.idString = newTitle;
 
     console.log("node has been updated! new title: " + this.titleText + ", new desc: " + this.descriptionText);
 }
