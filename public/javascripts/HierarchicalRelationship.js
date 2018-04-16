@@ -56,7 +56,7 @@ HierarchicalRelationship.prototype.repositionChildren = function(newlyAddedNode)
     let parentYpos = this.parentNode.translation.y;
     let newChildY  = parentYpos + this.parentNode.size.height + childrenVerticalSpacing;
 
-    newlyAddedNode.moveNodeTo(parentXpos, newChildY, 0.35);
+    newlyAddedNode.moveNodeTo(parentXpos, newChildY, true); //True for animations
 };
 
 HierarchicalRelationship.prototype.compareLabel = function(label) {

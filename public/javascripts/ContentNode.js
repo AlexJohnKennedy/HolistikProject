@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // --- ContentNode 'class' definition (actually a javascript 'prototype') ----------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
+let showingNode = null;     //global reference in this script to manage which node is 'showing' information.
 
 /** This is a definition of a constructor 'function' which defines an object prototype structure, representing a logical
  *  content node, which currently exists on the drawing canvas. Using this we can treat 'ContentNode' as somewhat of a
@@ -25,11 +26,12 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
         width  : width
     };
     this.titleText       = defaultNodeTitle;
-    this.descriptionText = "";  //TODO
+    this.descriptionText = defaultNodeDesc;
 
     // --- Properties for managing whether or not a node is shown on the canvas ---
     this.isVisible       = true;    //New nodes are always deemed visible (for now)
     this.isExpanded      = true;    //New nodes are always in the expanded state, as they cannot have children yet anyway.
+    this.isShowingInfo   = false;
     this.numViewedBy     = -1;      //This tracks how many parents are supplying 'visibility' to the node at the current time.
     //DEPRECEATED                  //-1 indicates that the node is independently visible (i.e. it is not visible based on a parent viewing it)
                                     //New nodes are always set to be root nodes, thus we can initialise as -1.
@@ -49,14 +51,18 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
  * actions.
  *
  * Moves or animates a node to a specified translation on screen, then update the tracked state.
- * @param animateTime value to specify how long the 'transition' animation should take. <= 0 results in instantly changing
+ * @param animate boolean value to specify if the node should use it's animation setting, or move instantly.
  */
-ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
-    console.log("moving a node to :" + x + ", " + y);
-    if (animateTime > 0.0) {
-        //Set up a transition on the 'transform' property such that it takes 'animateTime' seconds to animate the object.
-        this.htmlElement.style.transitionProperty = "transform";
-        this.htmlElement.style.transitionDuration = animateTime.toString()+"s";
+ContentNode.prototype.moveNodeTo = function(x, y, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
     }
 
     //Trigger the CSS animation by setting a new translation.
@@ -73,13 +79,28 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
     //The other thing that needs to be animated is the relationships associated with this node!
     //The lines will have to animate themselves to follow the node as it moves.
 
-    //NEED TO SET THE TRANSFORM TRANSITION TIME BACK TO ZERO AFTER THE TRANSITION HAS FINISHED.
-    //OTHERWISE THIS WILL INTERFERE WITH OTHER THINGS, POTENTIALLY
-    //Cannot do it here, because then the transition we just instigated will be cancelled out!
-    //this.htmlElement.style.transitionProperty = "transform";
-    //this.htmlElement.style.transitionDuration = "0s";
-
     //Ask the controlling context to detect possible overlaps after this move!
+    detectOverlaps(this);
+};
+
+ContentNode.prototype.moveNodeTo_noStateChange = function(x, y, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+    }
+
+    //Trigger the CSS animation by setting a new translation.
+    this.htmlElement.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+    //Update the html element tracking of the translation as well. (used by the interact.js framework)
+    this.htmlElement.setAttribute("xTranslation", x.toString());
+    this.htmlElement.setAttribute("yTranslation", y.toString());
     detectOverlaps(this);
 };
 
@@ -87,16 +108,105 @@ ContentNode.prototype.moveNodeTo = function(x, y, animateTime) {
  * Moves or animates the node back to wherever it was prior to the last drag move by the user!
  * @param animateTime
  */
-ContentNode.prototype.returnToPreviousPosition = function(animateTime) {
+ContentNode.prototype.returnToPreviousPosition = function(animate) {
     console.log(this.idString+" was asked to move back to it's previous position, which is x = "+this.previousTranslation.x+" y = "+this.previousTranslation.y);
-    this.moveNodeTo(this.previousTranslation.x, this.previousTranslation.y, animateTime);
+    this.moveNodeTo(this.previousTranslation.x, this.previousTranslation.y, animate);
 };
 
 /**
  * Used to actively resize nodes and apply visible changes. Should subsequently update the state to the result
  */
-ContentNode.prototype.resizeNode = function(newHeight, newWidth, animate) {
-    //TODO
+ContentNode.prototype.resizeNode = function(newWidth, newHeight, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+    }
+
+    //Trigger the CSS animation by setting a height and width value.
+    this.htmlElement.style.height = newHeight+"px";
+    this.htmlElement.style.width  = newWidth+"px";
+
+    this.size.height = newHeight;
+    this.size.width  = newWidth;
+
+    this.repositionButtons(newWidth, newHeight, animate);
+    detectOverlaps(this);
+};
+
+ContentNode.prototype.resizeNode_noStateChange = function(newWidth, newHeight, animate) {
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        this.htmlElement.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        this.htmlElement.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+    }
+
+    //Trigger the CSS animation by setting a height and width value.
+    this.htmlElement.style.height = newHeight+"px";
+    this.htmlElement.style.width  = newWidth+"px";
+
+    this.repositionButtons(newWidth, newHeight, animate);
+    detectOverlaps(this);
+};
+
+/**
+ * This method uses the current logic state and repositions the utility buttons and the root node border relative to the
+ * node itself. This is intended to be called whenever the node is Re-sized (aka changes sizes) becuase other wise the
+ * button placements will desync.
+ */
+ContentNode.prototype.repositionButtons = function(width, height, animate) {
+    let target = this.htmlElement;
+    let expandChildrenElem = target.getElementsByClassName('expandChildrenButton').item(0);     //Should only match one!
+    let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
+    let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
+    let nodeDescription    = target.getElementsByClassName('nodeDescriptionText').item(0);      //Should only match one!
+
+    if (animate) {
+        //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
+        //transitions on the element are allowed to play.
+        //NOTE: If no transition is set with CSS rules for a node, then no animation will play, depsite the animate flag's value!
+        expandChildrenElem.classList.remove("noTransitions");
+        showInfoElem.classList.remove("noTransitions");
+        rootNodeBorder.classList.remove("noTransitions");
+        nodeDescription.classList.remove("noTransitions");
+    }
+    else {
+        //if animate is set to false, we must ensure the noTransitions override rule IS applied.
+        expandChildrenElem.classList.add("noTransitions");
+        showInfoElem.classList.add("noTransitions");
+        rootNodeBorder.classList.add("noTransitions");
+        nodeDescription.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+    }
+
+    /* OLD, but keeping for reference just in case. The animation logic has been refactored to rely on CSS rules to specify timings!
+    expandChildrenElem.style.transitionProperty = "top, left";
+    showInfoElem.style.transitionProperty = "top, left";
+    rootNodeBorder.style.transitionProperty = "width, height";
+    nodeDescription.style.transitionProperty = "height";
+    expandChildrenElem.style.transitionDuration = animateTime+"s";
+    showInfoElem.style.transitionDuration = animateTime+"s";
+    rootNodeBorder.style.transitionDuration = animateTime+"s";
+    nodeDescription.style.transitionDuration = animateTime+"s";
+    */
+
+    expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
+    expandChildrenElem.style.left = 6+'px';
+    showInfoElem.style.left = (width-20)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
+    showInfoElem.style.top  = (height-17)+'px';
+    rootNodeBorder.style.width = (width+8)+'px';  //Border element should always be 8 pixels taller and wider.
+    rootNodeBorder.style.height = (height+8)+'px';
+
+    nodeDescription.style.height = (height-40)+'px';
 };
 
 /**
@@ -110,8 +220,10 @@ ContentNode.prototype.updateSize = function() {
  * Update the name of a contentNode
  */
 ContentNode.prototype.setTitleText = function(name) {
-    this.titleText = name;
-    this.htmlElement.innerText = name;
+    this.titleText = name.trim();
+
+    let textelem = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+    textelem.innerHTML = name;
 };
 
 /**
@@ -290,3 +402,82 @@ ContentNode.prototype.makeInvisible = function() {
     //Okay, let's hide all of this.
     this.htmlElement.style.display = "none";
 };
+
+/**
+ * This method makes the node show it's internal information. When called, the following will happen:
+ *      a) The node's html element will remove 'draggable' from it's class list, so that the showing info element becomes
+ *         static and can no longer be dragged - The draggable class will be re added when hideInfo() is called.
+ *      b) The node will physically expand to fill (almost) the size of the canvas, and centre itself on the canvas
+ *      c) The node's text boxes will become editable text entries, allowing the user to edit the node content.
+ *
+ *      (Future) - will show references/names to attatched resources.
+ */
+ContentNode.prototype.showInfo = function() {
+    //Update the internal state, and update the global reference to the 'showing info' node. That way we can ensure only
+    //one node is ever showing information at once.
+    this.isShowingInfo = true;
+    if (showingNode !== null) {
+        showingNode.hideInfo();
+    }
+    showingNode = this;
+
+    //Bring to front.
+    this.htmlElement.style.zIndex = currTopZIndex;
+    currTopZIndex++;
+
+    this.htmlElement.classList.remove("draggable");   //Remove the draggable attribute so that the showing info node cannot be dragged.
+
+    let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+    titleText.style.position = 'static';     //Move title text back to top of node
+
+    let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
+    descText.style.display = 'block';
+
+    //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
+    let height = 400;
+    let width  = 400;
+
+    //Okay, calculate the central position of the canvas, based on the current canvas size.
+    let x = 50;
+    let y = 50;
+
+    //Now, animate the node to go to that position!
+    this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
+    this.resizeNode_noStateChange(width, height, true);
+};
+
+ContentNode.prototype.hideInfo = function() {
+    this.isShowingInfo = false;
+    showingNode = null;
+
+    let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
+    descText.style.display = 'none';
+
+    let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+    //Move title text back to centre if above threshold
+    if (this.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
+        titleText.style.position = 'relative';
+    }
+    titleText.style.cursor   = '';      //Delete the cursor property so it goes back to not affecting the cursor.
+
+    //Move the node back to it's 'position', and resize it back to the 'size'
+    this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, true);
+    this.resizeNode_noStateChange(this.size.width, this.size.height, true);
+
+    this.htmlElement.classList.add("draggable");
+};
+
+/**
+ * This function is called and is passed a node.
+ *
+ * It will build a brand new, clean, pop-up HTML form which basically allows you to enter in node title and description.
+ *
+ * When the user submits the form, it will apply the input changes to the passed node. If the user cancels, then no
+ * changes will be made to the node's content!
+ */
+function editNodeContent(node) {
+    //Build a form element, and render it on top of the canvas.
+
+}
+
+
