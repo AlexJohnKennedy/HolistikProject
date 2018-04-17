@@ -485,14 +485,14 @@ ContentNode.prototype.editNodeContent = function() {
 
     //title
     let titleInput = document.getElementById("editTitle");
-    titleInput.setAttribute("value", this.titleText);
+    titleInput.setAttribute("placeholder", this.titleText);
 
     //desc
     let descInput = document.getElementById("editDescription");
-    descInput.setAttribute("value", this.descriptionText);
+    descInput.innerHTML = this.descriptionText;
 
     //maintain the node id so we can reference it later
-    editWindow.setAttribute("nodeId", node.idString);
+    editWindow.setAttribute("nodeId", this.idString);
 };
 
 /**
@@ -500,12 +500,20 @@ ContentNode.prototype.editNodeContent = function() {
  */
 function updateNodeData() {
     //get the node thats currently being edited
-
+    let editNode = null;
+    let editNodeId = document.getElementById("popupEditWindow").getAttribute("nodeId");
+    for (let node of canvasState.contentNodeList) {
+        if (node.idString === editNodeId) {
+            console.log("found the node that's being edited!");
+            editNode = node;
+            break;
+        }
+    }
 
     let titleInput = document.getElementById("editTitle");
     let descInput = document.getElementById("editDescription");
 
-    let newTitle = titleInput.getAttribute("value");
+    let newTitle = titleInput.innerText;
     let newDesc = descInput.getAttribute("value");
 
     //assign new data
@@ -513,7 +521,7 @@ function updateNodeData() {
     this.descriptionText = newDesc;
 
     //TESTING
-    this.htmlElement.idString = newTitle;
+    editNode.htmlElement.idString = newTitle;
 
     console.log("node has been updated! new title: " + this.titleText + ", new desc: " + this.descriptionText);
 }

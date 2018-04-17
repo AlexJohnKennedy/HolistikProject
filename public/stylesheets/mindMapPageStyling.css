@@ -11,6 +11,22 @@
     visibility: hidden;
 }
 
+#editTitle {
+    display: block;
+    width: 100%;
+}
+
+#editDescription {
+    display: block;
+    width: 100%;
+    height: 80%;
+}
+
+#saveChanges {
+    display: block;
+    position: center;
+}
+
 /* controls the fade effect when a popup appears */
 .black-overlay {
     display: none;
