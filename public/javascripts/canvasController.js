@@ -670,21 +670,87 @@ function nodeMovedCallback(mutationsList) {
 }
 
 /**
-In order to drag a node from the sidebar onto the canvas, we simply find it in the master list and add it.
+ * This function is used to make an existing node visible on the canvas.
+ *
+ * It will locate a node via it's id. Then, if the node is invisible and UNRELATED to the current context node
+ * (i.e. it is not a descendant nor an ancestor) then we will simply add the node as a new root on the canvas to make
+ * make it visible!.
+ *
+ * However, if the identified node IS related to the context, we will trigger a context switch to that node
+ * instead. This is so that you cannot instantiate two visible trees containing the same nodes.
  */
 function reinstantiateExistingNode(id, x, y) {
     console.log("Sidebar drag is instantiating a node at position x = "+x+" y= "+y);
 
-    //find the node and dump it in
+    //Find the node.
+    let toAdd = null;
     for (let node of canvasState.contentNodeList) {
         if (node.idString === id) {
-            addNewRootNode(node);
-            node.moveNodeTo(x, y, false);
-            return;
+            toAdd = node;
         }
     }
+    if (toAdd == null) {
+        alert("FAILED TO FIND NODE UPON INSTANTIATION. Id we looked for was " + id);
+        console.trace("FAILED TO FIND NODE UPON INSTANTIATION. Id we looked for was " + id);
+        return;
+    }
 
-    alert("FAIL");
+    //Okay, now we need to determine if the node is an ancestor, or descendant, of the context node.
+    if (canvasState.contextNode == null || areHierarchicallyRelated(toAdd, canvasState.contextNode)) {
+        switchContext(toAdd);
+    }
+    else {
+        addNewRootNode(toAdd);
+        toAdd.moveNodeTo(x, y, false);  //No animation
+    }
+
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- HELPER FUNCTIONS ------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Determines if two nodes are related. I.e is node 1 is a descendant or ancestor of node 2 (hierarcically) then
+ * this ill return true. Otherwise, return false
+ */
+function areHierarchicallyRelated(node1, node2) {
+    return (node1 === node2 || searchUp(node1,node2) || searchDown(node1, node2));
+}
+
+function searchUp(node1, node2) {
+    if (node1 === node2) {
+        return true;    //Found a match!
+    }
+    for (let rel of node1.parentList) {
+        if (rel.parentNode) {
+            if (searchUp(rel.parentNode, node2)) {
+                //Found a match, we can just return true!
+                return true;
+            }
+            else {
+                //Keep looking...
+            }
+        }
+    }
+    return false;   //No matches found! We have run out of parents!
+}
+
+function searchDown(node1, node2) {
+    if (node1 === node2) {
+        return true;    //Found a match!
+    }
+    for (let rel of node1.childrenList) {
+        for (let child of rel.children) {
+            if (searchDown(child, node2)) {
+                return true;    //Found a match somewhere down this way!
+            }
+            else {
+                //Keep looking...
+            }
+        }
+    }
+    return false;   //No matches found! We have run out of children!
+}
