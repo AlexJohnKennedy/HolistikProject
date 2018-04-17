@@ -1,9 +1,11 @@
 <!-- ejs to represent the window where the user can edit the title and text of a context node -->
 <div class="white-content" id="popupEditWindow">
 
-    <input id="editTitle" name="titleText" type="text" maxlength="30">
+    <label for="editTitle">Title: </label>
+    <input id="editTitle" type="text" maxlength="30">
     <br>
-    <textarea id="editDescription" name="descriptionText" maxlength="300"></textarea>
+    <label for="editDescription">Description: </label>
+    <textarea id="editDescription" maxlength="300"></textarea>
 
     <button id="saveChanges" onclick="updateNodeData()">
         Save
