@@ -497,10 +497,12 @@ ContentNode.prototype.editNodeContent = function() {
     //fully sick blackout effect
     let blackoutElem = document.getElementById("fade");
     blackoutElem.style.display = "block";
+    blackoutElem.style.opacity = "0.5";
 
     //make the node editing partial visible - do i need to make it visible at the end?
     let editWindow = document.getElementById("popupEditWindow");
     editWindow.style.display = "block";
+    editWindow.style.opacity = "1";
 
     //title
     let titleInput = document.getElementById("editTitle");
@@ -524,10 +526,12 @@ function closeEditWindow() {
     //remove fully sick blackout effect
     let blackoutElem = document.getElementById("fade");
     blackoutElem.style.display = "none";
+    blackoutElem.style.opacity = "0";
 
     //make the popup div invisible
     let editWindow = document.getElementById("popupEditWindow");
     editWindow.style.display = "none";
+    editWindow.style.opacity = "0";
 
     //fuck off the node id from the attributes
     editWindow.removeAttribute("nodeId");

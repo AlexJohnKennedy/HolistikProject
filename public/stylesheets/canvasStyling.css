@@ -112,6 +112,11 @@ html {
     fill: rgb(170,70,52);
 }
 
+#getHelpButton {
+    float: right;
+    z-index: 8998;
+}
+
 /* Style the 'drag here to delete' box */
 .utilityDropZone {
     display: inline-block;  /* relavtively positioned inline block */
@@ -334,3 +339,4 @@ html {
     background-color: rgb(228,226,80);
 }
 
+/*  */

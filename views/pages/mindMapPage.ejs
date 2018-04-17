@@ -29,6 +29,14 @@
     <script src="/javascripts/HierarchicalRelationship.js"></script>
     <script src="/javascripts/RenderLine.js"></script>
     <script src="/javascripts/SidebarElement.js"></script>
+
+    <!-- bootstrap memes below -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <!-- -------------------------------------------------------------- -->
@@ -49,6 +57,8 @@
             <% include ../partials/nodeCanvas.ejs %>
             <!-- include the 'edit window' partial, which the users edit context nodes in -->
             <% include ../partials/popupEditWindow.ejs %>
+            <!-- include the 'help window' partial, which provides the user with a carousel to flick through operations -->
+            <% include ../partials/popupHelpWindow.ejs %>
 
             <!-- this div allows us to create a blackout effect -->
             <div class="black-overlay" id="fade"></div>
