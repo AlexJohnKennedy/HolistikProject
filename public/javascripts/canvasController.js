@@ -68,6 +68,9 @@ function createNewContentNode() {
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
+    //call edit window
+    newNode.editNodeContent();
+
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
