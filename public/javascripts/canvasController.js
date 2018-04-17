@@ -71,25 +71,6 @@ function createNewContentNode() {
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
-/*
-In order to drag a node from the sidebar onto the canvas, we simply find it in the master list and add it.
- */
-function reinstantiateExistingNode(id, x, y) {
-    console.log("Sidebar drag is instantiating a node at position x = "+x+" y= "+y);
-
-    //find the node and dump it in
-    for (let node of canvasState.contentNodeList) {
-        if (node.idString === id) {
-           addNewRootNode(node);
-           node.moveNodeTo(x, y, false);
-           return;
-        }
-    }
-
-    alert("FAIL");
-    /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
-}
-
 function createNewContentNode_HtmlElement(xPos, yPos) {
     //Access the DOM, and find the drawingCanvas element. We will add the new content node as a DIV nested inside of this
     let drawingCanvas = document.getElementById("drawingCanvas");
@@ -122,7 +103,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
     addRootNodeBorderElem(newElem);
-    addTitleTextElem(newElem, idString, defaultNodeDesc);
+    addTitleTextElem(newElem, defaultNodeTitle, defaultNodeDesc);
 
     //Add a double click listener to invoke the 'zoom in' functionality.
     newElem.addEventListener("dblclick", zoomContextIn);
@@ -686,5 +667,24 @@ function nodeMovedCallback(mutationsList) {
             rel.onChildMoved(movedNode);
         }
     }
+}
+
+/**
+In order to drag a node from the sidebar onto the canvas, we simply find it in the master list and add it.
+ */
+function reinstantiateExistingNode(id, x, y) {
+    console.log("Sidebar drag is instantiating a node at position x = "+x+" y= "+y);
+
+    //find the node and dump it in
+    for (let node of canvasState.contentNodeList) {
+        if (node.idString === id) {
+            addNewRootNode(node);
+            node.moveNodeTo(x, y, false);
+            return;
+        }
+    }
+
+    alert("FAIL");
+    /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
