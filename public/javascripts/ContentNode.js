@@ -496,10 +496,13 @@ ContentNode.prototype.editNodeContent = function() {
     //title
     let titleInput = document.getElementById("editTitle");
     titleInput.setAttribute("placeholder", this.titleText);
+    titleInput.setAttribute("value", this.titleText);
+    titleInput.value = this.titleText;
 
     //desc
     let descInput = document.getElementById("editDescription");
     descInput.innerHTML = this.descriptionText;
+    descInput.value = this.descriptionText;
 
     //maintain the node id so we can reference it later
     editWindow.setAttribute("nodeId", this.idString);
