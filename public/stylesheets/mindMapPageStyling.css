@@ -19,7 +19,7 @@ body {
 }
 
 #popupWindow, fieldset {
-    height: 80%;
+    height: 92%;
 }
 
 #editTitle {
@@ -30,7 +30,7 @@ body {
 #editDescription {
     display: block;
     width: 100%;
-    height: 150px;
+    height: 180px;
 }
 
 #saveChanges {
