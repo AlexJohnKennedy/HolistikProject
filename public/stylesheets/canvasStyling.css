@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
 
 html {
   height: 100%;
@@ -9,9 +10,10 @@ html {
     top: 0px;
     left: 0px;
 
-    width: 100%;
+    width: 99.5%;
     height: 100%;
     grid-column-start: 2;
+    border-radius: 10px;
 }
 /* Style the window itself */
 #canvasWindow {
@@ -22,17 +24,17 @@ html {
 
     height: 100%;
     width:  100%;
+    background-color: rgb(223,220,217);
 }
 
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */
 #drawingCanvas {
     position: absolute;
     background-color : lightgrey;
-
-    border-color: grey;
-    border-style: solid;
     border-width: 3px;
     border-radius: 3px;
+
+    padding: 30px;
 
     height : 3000px;    /* Make sure we have enough room for a ton of nodes and such! */
     width :  3000px;
@@ -67,6 +69,12 @@ html {
     cursor: pointer;
 }
 
+#contextNameTextBox{
+    font-family: 'Open Sans', Sans serif;
+    font-size: 0.8em;
+    padding-left:5px;
+}
+
 #newNodeButton {
     position: absolute;
     top: 35px;
@@ -95,13 +103,13 @@ html {
 
 /* Style the svg LINES that are inside the svgObject */
 #svgObject polyline {
-    stroke:rgb(255,0,0);
+    stroke:rgb(170,70,52);
     stroke-width: 2px;
 }
 
 #Triangle {
-    stroke:rgb(255,0,0);
-    fill: rgb(255, 0, 0);
+    stroke:rgb(170,70,52);
+    fill: rgb(170,70,52);
 }
 
 /* Style the 'drag here to delete' box */
@@ -247,6 +255,9 @@ html {
     padding-right: 5px;
 
     pointer-events: none;
+    font-family: Open Sans, sans serif;
+    font-weight:700;
+    color: black;
 }
 
 /* Node description styling */
@@ -262,6 +273,8 @@ html {
     transition: height 0.25s, opacity 0.25s;
 
     pointer-events: none;
+    font-family: "Noto Serif", serif;
+    color: black;
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -314,5 +327,10 @@ html {
     transition: all 0s; !important;
 }
 
-
+#detachNodeDropZone, #deleteNodeDropZone{
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9em;
+    padding-top: 5px;
+    background-color: rgb(228,226,80);
+}
 

@@ -1,35 +1,51 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
 
 html {
   height: 100%;
 }
 
+
 body {
-  background: linear-gradient(rgba(100, 100, 100, 0.2), rgba(0, 0, 0, 1)), url('https://source.unsplash.com/eWw2BKvKX_0/1600x900');
+  background: linear-gradient(rgba(150,150,150,0.5), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
   background-position: center;
   background-size: cover;
 }
 
 h1 {
-  font-family: "Open Sans", cursive;
+  font-family: "Open Sans", sans-serif;
   font-weight: 400;
-  font-size: 8em;
-
+  font-size: 9em;
+  color: rgb(218,219,234);
+  margin: 0.05em;
 }
 
 h2 {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Noto Serif", serif;
   font-weight: 300;
 }
 
 h3 {
-  font-family: "Open Sans", sans-serif;
+  padding-down: 4em;
+  font-family: "Noto Serif", serif;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 1.5em;
+  font-size: 2em;
+  color: rgb(237,237,236)
+
 }
 
 h4 {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 700;
+  color: aliceblue;
+  border-radius: 10px;
+  margin: 5% 40% 0 40%;
+  font-family: 'Open Sans';
+  font-size: 2em;
+  background-color: rgb(229,210,124);
 }
+
+a {
+  text-decoration: none;
+  color: rgb(65,78,85);
+}
+
