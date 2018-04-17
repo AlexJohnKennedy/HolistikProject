@@ -222,6 +222,16 @@ ContentNode.prototype.setTitleText = function(name) {
 };
 
 /**
+ * Update the description of a contentNode
+ */
+ContentNode.prototype.setDescriptionText = function(name) {
+    this.descriptionText = name.trim();
+
+    let textelem = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
+    textelem.innerHTML = name;
+};
+
+/**
  * This function is used to assign a passed node to be a child of the node the method is being invoked on.
  * The function also receives a 'label' which, as a simple string, dictates the 'family' or 'type' of relationship
  * this nesting exists under.
@@ -496,6 +506,22 @@ ContentNode.prototype.editNodeContent = function() {
 };
 
 /**
+ * simple function to hide the popup edit window
+ */
+function closeEditWindow() {
+    //remove fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "none";
+
+    //make the popup div invisible
+    let editWindow = document.getElementById("popupEditWindow");
+    editWindow.style.display = "none";
+
+    //fuck off the node id from the attributes
+    editWindow.removeAttribute("nodeId");
+}
+
+/**
  * update the current node when the users saves their changes
  */
 function updateNodeData() {
@@ -513,15 +539,16 @@ function updateNodeData() {
     let titleInput = document.getElementById("editTitle");
     let descInput = document.getElementById("editDescription");
 
-    let newTitle = titleInput.innerText;
-    let newDesc = descInput.getAttribute("value");
+    let newTitle = titleInput.value;
+    let newDesc = descInput.value;
 
     //assign new data
-    this.titleText = newTitle;
-    this.descriptionText = newDesc;
+    editNode.setTitleText(newTitle);
+    editNode.setDescriptionText(newDesc);
 
-    //TESTING
-    editNode.htmlElement.idString = newTitle;
+    //refresh sidebar
+    refreshSidebar(canvasState.contentNodeList);
 
-    console.log("node has been updated! new title: " + this.titleText + ", new desc: " + this.descriptionText);
+    //get rid of the info window
+    closeEditWindow();
 }

@@ -23,8 +23,11 @@
 }
 
 #saveChanges {
-    display: block;
-    position: center;
+
+}
+
+#cancelChanges {
+
 }
 
 /* controls the fade effect when a popup appears */

@@ -238,6 +238,11 @@ html {
 /* Node title styling */
 .nodeTitleText {
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: none;
+    padding-left: 5px;
+    padding-right: 5px;
 
     pointer-events: none;
 }
