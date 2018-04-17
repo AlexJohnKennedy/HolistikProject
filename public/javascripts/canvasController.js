@@ -15,8 +15,8 @@ const canvasState = {
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
 const defaultNodePosition = {
-    x : 100,     //Corresponding values to CSS 'absolute translation' coordinates.
-    y : 100
+    x : 200,     //Corresponding values to CSS 'absolute translation' coordinates.
+    y : 200
 };
 const defaultColour = "rgb(158, 170, 188)";
 const defaultNodeSize = {
@@ -61,7 +61,13 @@ let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulne
 function createNewContentNode() {
     //Create the HTML element for this node by directly editing the browser DOM.
     //The creation method will return the new html element object, and it's id string.
-    let newElemDetails = createNewContentNode_HtmlElement(defaultNodePosition.x, defaultNodePosition.y);
+
+    //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
+    let canvasWindow = document.getElementById("canvasWindow");
+    let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
+    let ypos = canvasWindow.scrollTop + defaultNodePosition.y;
+
+    let newElemDetails = createNewContentNode_HtmlElement(xpos, ypos);
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
     let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);

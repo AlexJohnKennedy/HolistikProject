@@ -44,7 +44,7 @@ html {
     position: absolute;
     top: 6px;   /* Sit in the top left corner */
     left: 6px;
-    z-index: 1;     /* don't let this render on top of nodes */
+    z-index: 999999999999999999999999999;     /* let this render on top of nodes */
 
     height: 22px;
     width:  200px;
@@ -80,6 +80,8 @@ html {
     border-width: 2px;
     border-style: solid;
     border-color: grey;
+
+    z-index: 999999999999999999999999999;
 }
 
 /* Style the svg object to be overlaid with the drawing canvas */

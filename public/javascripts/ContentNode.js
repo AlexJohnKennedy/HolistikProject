@@ -443,8 +443,17 @@ ContentNode.prototype.showInfo = function() {
     let width  = 400;
 
     //Okay, calculate the central position of the canvas, based on the current canvas size.
-    let x = 50;
-    let y = 50;
+    //Leave the node where it is!
+    let x = this.translation.x - (width - this.size.width)/2;
+
+    //Clamp if off canvas
+    let padding = 50;
+    x = (x < padding) ? (padding) : x;
+    x = (x + width + padding > 3000) ? (3000 - width - padding) : x;
+
+    let y = this.translation.y - (height - this.size.height)/2;
+    y = (y < padding) ? (padding) : y;
+    y = (y + height + padding > 3000) ? (3000 - height - padding) : y;
 
     //Now, animate the node to go to that position!
     this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
@@ -496,10 +505,13 @@ ContentNode.prototype.editNodeContent = function() {
     //title
     let titleInput = document.getElementById("editTitle");
     titleInput.setAttribute("placeholder", this.titleText);
+    titleInput.setAttribute("value", this.titleText);
+    titleInput.value = this.titleText;
 
     //desc
     let descInput = document.getElementById("editDescription");
     descInput.innerHTML = this.descriptionText;
+    descInput.value = this.descriptionText;
 
     //maintain the node id so we can reference it later
     editWindow.setAttribute("nodeId", this.idString);
