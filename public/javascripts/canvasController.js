@@ -18,7 +18,7 @@ const defaultNodePosition = {
     x : 100,     //Corresponding values to CSS 'absolute translation' coordinates.
     y : 100
 };
-const defaultColour = "dodgerblue";
+const defaultColour = "rgb(194, 184, 176)";
 const defaultNodeSize = {
     height : 50,
     width  : 100
