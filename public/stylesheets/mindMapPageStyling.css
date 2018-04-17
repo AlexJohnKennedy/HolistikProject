@@ -65,10 +65,11 @@ body {
 .white-content {
     display: none;
     position: absolute;
-    top: 5%;
+    top: 15% !important;
+    bottom: 15% !important;
     left: 15%;
     width: 70%;
-    height: 90%;
+    height: 70%;
     padding: 16px;
     background-color: white;
     z-index: 9001; /* ITS OVER 9000!!!!!!!!!!!!!!!!!!!!!!!! */

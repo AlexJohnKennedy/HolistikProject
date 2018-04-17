@@ -26,6 +26,7 @@
 
 .navbar-nav {
     display: inline-block;
+    margin-bottom: 0 !important;
 }
 
 .navbar-nav li {
@@ -34,6 +35,8 @@
     padding-right: 5px;
     vertical-align: center;
 }
+
+
 
 /* FONTS AND SHIT */
 
