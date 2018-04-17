@@ -20,7 +20,11 @@
 }
 
 .container-fluid {
-    background-color: rgb(219,229,234);
+    background-color: rgb(219, 229, 234);
+    padding-bottom: 10px;
+}
+
+.navbar {
     padding-bottom: 10px;
 }
 
