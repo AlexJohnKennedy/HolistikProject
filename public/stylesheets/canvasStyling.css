@@ -284,6 +284,16 @@ html {
     border-width : 5px;
 }
 
+.potentialSidebarDropzone {
+    /* potential drop zones will all have dashed borders, which turn dark red (arbitrarily chosen) */
+    border-style: dashed;
+    border-color: darkblue;
+}
+
+.potentialDropzoneHasItemHovering {
+    border-width : 5px;
+}
+
 /* ------------------------------------------------------------------------------------------------------------------ */
 /* --- Animation based rules ---------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -296,7 +306,6 @@ html {
 .noTransitions {
     transition: all 0s; !important;
 }
-
 
 
 
