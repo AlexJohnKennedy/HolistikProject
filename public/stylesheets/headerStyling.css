@@ -70,5 +70,9 @@ h4, .navbar-nav {
 
 .navbar-header{
     background-color: rgb(234,233,226);
-    opacity: 0.4;
+    opacity: 0.9;
+}
+
+.navbar {
+    padding-bottom: 10px;
 }
