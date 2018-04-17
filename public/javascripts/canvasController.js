@@ -20,8 +20,8 @@ const defaultNodePosition = {
 };
 const defaultColour = "#a6cdf2";
 const defaultNodeSize = {
-    height : 50,
-    width  : 100
+    height : 60,
+    width  : 120
 };
 
 //Define a threshold constant for determining how tall a content node needs to be in order for the title text to
@@ -74,8 +74,10 @@ function createNewContentNode() {
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
+    newNode.repositionButtons(defaultNodeSize.width, defaultNodeSize.height, false);
+
     //call edit window TODO: MAKE IT SO THAT THE EDIT WINDOW SUBMIT BUTTON IS WHAT CREATES THE NEW NODE, NOT THE OTHER WAY ROUND
-    //newNode.editNodeContent();
+    newNode.editNodeContent();
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
