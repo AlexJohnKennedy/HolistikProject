@@ -17,10 +17,19 @@ generates the indented lists by looping through the root nodes, and DFSing throu
  */
 function buildListElements(nodeList) {
     //We will need a 'root' list to already exist. All parentless nodes will be attached to this global list!
-    let listContainer = document.getElementById("listContainer");
-    globalList = document.createElement("ul");
+    let globalList = document.createElement("ul");
     globalList.setAttribute("id", "rootList");
+
+    let listContainer = document.getElementById("listContainer");
     listContainer.appendChild(globalList);
+
+    //If the context is global, we will apply a styling to the entire sidebar to indicate that!
+    if (canvasState.contextNode == null) {
+        listContainer.classList.add("globalcontext_sidebarStyling");
+    }
+    else {
+        listContainer.classList.remove("globalcontext_sidebarStyling");
+    }
 
     //Now, loop through all the nodes and find all of them which have NO parents (true roots).
     //For each root, begin constructing a DFS list-tree structure, beginning with the global list.
@@ -50,9 +59,14 @@ function constructTree(curr, depth, parentListElem) {
         newSidebarElem.htmlElement.classList.add("invisibleListElem");
     }
 
+    //If this node is a context node, apply a unique styling which overwrites the previous ones.
+    if (curr === canvasState.contextNode) {
+        newSidebarElem.htmlElement.classList.add("contextListElem");
+    }
+
     //Now, if and only if this node has children, then we need to create a list of our own to represent this node's children!
     if (curr.childrenList.length !== 0) {
-        childListElem = document.createElement("ul");
+        let childListElem = document.createElement("ul");
         childListElem.setAttribute("id", curr.idString+"_ListOfChildren");
 
         //Add the list into the parent list, and then continue traversing!
