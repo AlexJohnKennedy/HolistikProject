@@ -339,4 +339,7 @@ html {
     background-color: rgb(228,226,80);
 }
 
-/*  */
+/* help screen */
+#myCarousel {
+    position: center;
+}
