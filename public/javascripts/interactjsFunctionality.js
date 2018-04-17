@@ -423,3 +423,146 @@ interact('#deleteNodeDropZone').dropzone({
         deleteContentNode(dropped, true); //splice the tree
     }
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Sidebar draggable section
+
+interact('.draggable-sidebar-node').draggable({
+    inertia : true,     //Enable inertia for the draggable elements
+    autoScroll : true,  //Dragging items to edge of the screen will scroll the page
+    ignoreFrom: '.expandChildrenButton',    //Don't want to be able to drag the node when pressing the utility buttons.
+    restrict: {
+        endOnly: true,
+        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+    },
+    // Callback function, triggered when the item first begins to be dragged.
+    onstart : sidebarOnDragStart,
+
+    // Callback function, triggered on every dragmove event.
+    onmove : sidebarOnDragMove,
+
+    // Callback function, triggered on every dragend event.
+    onend : sidebarOnDragMoveFinished
+});
+
+function sidebarOnDragStart(event) {
+    console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
+
+    //Firstly, we want any item that is being dragged by the user to render ON TOP of everything else, so they can
+    //always see what they are doing.
+    let target = event.target;
+    let sidebarElem = getSidebarElement(target);
+    target.style.zIndex = currTopZIndex;   //Sets to be at the front!
+    currTopZIndex++;
+
+    //Set up the html element
+    target.setAttribute("nodeId", sidebarElem.nodeId);
+    target.setAttribute("xTranslation", target.offsetLeft);
+    target.setAttribute("yTranslation", target.offsetTop);
+
+    let wrapper = document.getElementById("mainAppContainer");
+    wrapper.appendChild(target);
+    target.style.position = 'absolute';
+
+    //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
+    //'previousTranslation' variable. That way, return to previous position funcitonality will work!
+    sidebarElem.previousTranslation.x = sidebarElem.translation.x;
+    sidebarElem.previousTranslation.y = sidebarElem.translation.y;
+
+    //finally, make the canvas a dropzone
+    addSidebarDropzoneClassFromCanvas();
+}
+
+function sidebarOnDragMove(event) {
+    let target = event.target,
+        // keep the dragged translation in attributes stored directly in the HTML element object. Allows easier access for interact.js
+        x = (parseFloat(target.getAttribute('xTranslation')) || 0) + event.dx,
+        y = (parseFloat(target.getAttribute('yTranslation')) || 0) + event.dy;
+
+    // translate the element
+    target.style.webkitTransform =
+        target.style.transform =
+            'translate(' + x + 'px, ' + y + 'px)';
+
+    // update the position attributes, so that we can access the new position information later
+    target.setAttribute('xTranslation', x);
+    target.setAttribute('yTranslation', y);
+}
+
+function sidebarOnDragMoveFinished(event) {
+    console.log("Drag finished event fired! HTML element is "+event.target.getAttribute('id'));
+
+    let targetElement = event.target;
+
+    let wrapper = document.getElementById("mainAppContainer");
+    wrapper.removeChild(targetElement);
+
+    //no longer draggin - fuck off the sidebar dropzone class from the canvas!
+    removeSidebarDropzoneClassFromCanvas();
+
+    refreshSidebar(canvasState.contentNodeList);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Sidebar dropzone section
+
+interact('.sidebar-element-dropzone').dropzone({
+    // only accept elements matching this CSS selector
+    accept: '.sidebar-element',
+
+    // Require a 25% element overlap for a drop to be possible
+    overlap: 0.25,
+
+    // --- Event Listeners -----------------------------------
+    // assign callback functions which will listen for dropzone related events:
+    ondropactivate: sidebarOnDropzoneActivate,
+    ondropdeactivate: sidebarOnDropzoneDeactivate,
+
+    ondragenter: sidebarOnElementDraggedIntoDropzone,
+    ondragleave: sidebarOnElementDraggedOutOfDropzone,
+
+    ondrop: sidebarOnElementDropped
+});
+
+function sidebarOnDropzoneActivate(event) {
+    console.log("sidebarOnDropzoneActive event fired! HTML element is "+event.target.getAttribute('id'));
+
+    let dropzone     = event.target;
+
+    //Okay. Let's add some visual feedback to all potential 'dropzones', whenever an item starts being dragged.
+    //To do this, we will simply add a HTML Class to the element, making CSS update the style for that element!
+    dropzone.classList.add("potentialSidebarDropzone");
+}
+
+function sidebarOnDropzoneDeactivate(event) {
+    let dropzone     = event.target;
+
+    //Remove visual feedback for potential drop zones
+    dropzone.classList.remove("potentialSidebarDropzone");
+    dropzone.classList.remove("potentialSidebarDropzoneHasItemHovering");
+}
+
+function sidebarOnElementDraggedIntoDropzone(event) {
+    let dropzone     = event.target;
+
+    dropzone.classList.add("potentialSidebarDropzoneHasItemHovering");
+}
+
+function sidebarOnElementDraggedOutOfDropzone(event) {
+    let dropzone     = event.target;
+
+    dropzone.classList.remove("potentialSidebarDropzoneHasItemHovering");
+}
+
+function sidebarOnElementDropped(event) {
+    let beingDragged = event.relatedTarget;
+    let dropzone     = event.target;
+
+    // Okay, the element was dropped!
+    // Remove the 'potential drop' visual indicators, as they are no longer needed
+    dropzone.classList.remove("potentialSidebarDropzone");
+    dropzone.classList.remove("potentialSidebarDropzoneHasItemHovering");
+
+    //make a new node for the thing that just got dropped and pass the new x y to dump it where the mouse was
+    reinstantiateExistingNode(beingDragged.getAttribute("nodeId"), parseFloat(beingDragged.getAttribute("xTranslation"))-240, parseFloat(beingDragged.getAttribute("yTranslation"))); //Adjust left by width of canvas
+}
