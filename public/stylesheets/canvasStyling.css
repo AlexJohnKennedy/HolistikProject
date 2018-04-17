@@ -97,6 +97,11 @@ html {
     stroke-width: 2px;
 }
 
+#Triangle {
+    stroke:rgb(255,0,0);
+    fill: rgb(255, 0, 0);
+}
+
 /* Style the 'drag here to delete' box */
 .utilityDropZone {
     display: inline-block;  /* relavtively positioned inline block */
@@ -182,6 +187,22 @@ html {
     transform: rotate(-90deg);
 }
 
+/* style the edit button */
+.editButton {
+    position: absolute;
+
+    background: url("../images/edit.svg") no-repeat;
+    background-size: cover;
+
+    width: 14px;
+    height: 14px;
+
+    transition: opacity 0.25s, top 0.25s, left 0.25s;
+}
+.editButton:hover {
+    cursor: pointer;
+}
+
 /* Style the show info node button */
 .showInfoButton {
     position: absolute;
@@ -192,7 +213,7 @@ html {
     width: 14px;
     height: 14px;
 
-    transition: opacity 0.35s, top 0.25s, left 0.25s;
+    transition: opacity 0.25s, top 0.25s, left 0.25s;
 }
 .showInfoButton:hover {
     cursor: pointer;
@@ -217,6 +238,13 @@ html {
 /* Node title styling */
 .nodeTitleText {
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: none;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    pointer-events: none;
 }
 
 /* Node description styling */
@@ -229,9 +257,10 @@ html {
     text-overflow: ellipsis;
     overflow-wrap: break-word;
 
-    transition: height 0.25s;
-}
+    transition: height 0.25s, opacity 0.25s;
 
+    pointer-events: none;
+}
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 /* --- DYNAMICALLY APPLIED STYLES ----------------------------------------------------------------------------------- */
@@ -260,6 +289,16 @@ html {
     border-width : 5px;
 }
 
+.potentialSidebarDropzone {
+    /* potential drop zones will all have dashed borders, which turn dark red (arbitrarily chosen) */
+    border-style: dashed;
+    border-color: darkblue;
+}
+
+.potentialDropzoneHasItemHovering {
+    border-width : 5px;
+}
+
 /* ------------------------------------------------------------------------------------------------------------------ */
 /* --- Animation based rules ---------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------------------------------------ */
@@ -272,7 +311,6 @@ html {
 .noTransitions {
     transition: all 0s; !important;
 }
-
 
 
 

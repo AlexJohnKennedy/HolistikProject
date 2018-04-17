@@ -1,3 +1,35 @@
 #sidebar {
     overflow: scroll;
 }
+
+#listContainer {
+    box-sizing: border-box;
+
+    height: 100%;
+    width:  100%;
+
+    border-style: solid;
+    border-radius: 3px;
+    border-width: 3px;
+}
+
+/* Dynamic colour styling for list entries which are referring to visible, or invisible, or context, nodes. */
+.visibleListElem {
+    font-weight: bold;
+    color: green;
+}
+.invisibleListElem {
+    color: #3c3c3c;
+}
+.contextListElem {
+    font-weight: bolder;
+    color: red;
+}
+
+/* Additional sidebar container styling, which is used if the context is global */
+.listContainer {
+    border-color: transparent;
+}
+.globalcontext_sidebarStyling {
+    border-color: #3c3c3c;  !important;
+}
