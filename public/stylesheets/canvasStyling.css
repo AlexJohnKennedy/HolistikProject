@@ -9,9 +9,10 @@ html {
     top: 0px;
     left: 0px;
 
-    width: 100%;
+    width: 99.5%;
     height: 100%;
     grid-column-start: 2;
+    border-radius: 10px;
 }
 /* Style the window itself */
 #canvasWindow {
@@ -22,6 +23,7 @@ html {
 
     height: 100%;
     width:  100%;
+    background-color: rgb(223,220,217);
 }
 
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */

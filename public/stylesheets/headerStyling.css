@@ -36,7 +36,7 @@
 .brandNameText {
     font-family: "Open Sans", cursive;
     font-weight: 800;
-    font-size: 1.5em;
+    font-size: 2em;
 }
 .container {
     padding: 80px 0;
@@ -66,4 +66,9 @@ h3 {
 h4, .navbar-nav {
     font-family: "Open Sans", sans-serif;
     font-weight: 700;
+}
+
+.navbar-header{
+    background-color: rgb(234,233,226);
+    opacity: 0.4;
 }

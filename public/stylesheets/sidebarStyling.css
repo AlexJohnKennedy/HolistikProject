@@ -1,5 +1,9 @@
+
 #sidebar {
     overflow: scroll;
+    background-color: rgb(195,202,213);
+    border-radius: 6px;
+    margin: 1px;
 }
 
 #listContainer {
@@ -11,6 +15,7 @@
     border-style: solid;
     border-radius: 3px;
     border-width: 3px;
+    opacity: 0.6;
 }
 
 /* Dynamic colour styling for list entries which are referring to visible, or invisible, or context, nodes. */

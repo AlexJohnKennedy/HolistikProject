@@ -1,7 +1,8 @@
 body {
-    background: url('https://source.unsplash.com/oBb-Y26PJgg/1600x900');
+    background: linear-gradient(rgba(255,255,255,0), rgba(0, 0, 0, 0.5)), url(https://source.unsplash.com/oBb-Y26PJgg/1600x900);
     background-position: center;
     background-size: cover;
+    margin:0;
 }
 
 /* lets use a css grid to contain the various components of the mind map page! */
@@ -10,6 +11,7 @@ body {
     display: grid;
     grid-template-columns: 200px 5fr;
     grid-auto-rows: minmax(500px, 650px);
+    grid-gap: 0.3em;
 }
 
 /* control the visibility of the popup edit window */
