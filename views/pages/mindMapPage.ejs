@@ -22,6 +22,7 @@
     <script src="/javascripts/interactjsFunctionality.js"></script> <!-- integration logic with interact.js library for node behaviour, and funciton callbacks -->
     <script src="/javascripts/canvasController.js"></script> <!-- controller logic for tracking nodes on the canvas -->
     <script src="/javascripts/sidebarController.js"></script> <!-- controller logic for keeping the sidebar synced to the canvas -->
+    <script src="/javascripts/helpPageController.js"></script> <!-- controller logic for opening and closing the help window -->
 
     <!-- My custom behaviour scripts: Class definitions and Prototypes -->
     <script src="/javascripts/ContentNode.js"></script>
@@ -48,6 +49,9 @@
             <% include ../partials/nodeCanvas.ejs %>
             <!-- include the 'edit window' partial, which the users edit context nodes in -->
             <% include ../partials/popupEditWindow.ejs %>
+
+            <!-- this div allows us to create a blackout effect -->
+            <div class="black-overlay" id="fade"></div>
         </div>
     </main>
 
