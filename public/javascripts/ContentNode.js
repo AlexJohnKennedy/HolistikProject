@@ -455,7 +455,6 @@ ContentNode.prototype.showInfo = function() {
     y = (y < padding) ? (padding) : y;
     y = (y + height + padding > 3000) ? (3000 - height - padding) : y;
 
-
     //Now, animate the node to go to that position!
     this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
     this.resizeNode_noStateChange(width, height, true);
