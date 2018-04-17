@@ -425,7 +425,8 @@ interact('#deleteNodeDropZone').dropzone({
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Sidebar draggable section
+// --- Sidebar draggable section ---------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 interact('.draggable-sidebar-node').draggable({
     inertia : true,     //Enable inertia for the draggable elements
@@ -503,8 +504,10 @@ function sidebarOnDragMoveFinished(event) {
     refreshSidebar(canvasState.contentNodeList);
 }
 
+
 // ---------------------------------------------------------------------------------------------------------------------
-// Sidebar dropzone section
+// --- Sidebar dropzone section ----------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 interact('.sidebar-element-dropzone').dropzone({
     // only accept elements matching this CSS selector
@@ -566,3 +569,36 @@ function sidebarOnElementDropped(event) {
     //make a new node for the thing that just got dropped and pass the new x y to dump it where the mouse was
     reinstantiateExistingNode(beingDragged.getAttribute("nodeId"), parseFloat(beingDragged.getAttribute("xTranslation"))-240, parseFloat(beingDragged.getAttribute("yTranslation"))); //Adjust left by width of canvas
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Canvas dragging functionality -----------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+interact('#drawingCanvas').draggable({
+    inertia : true,     //Enable inertia for the draggable elements
+    autoScroll : true,  //Dragging items to edge of the screen will scroll the page
+    ignoreFrom: '.node',    //Don't want to be able to drag the node when pressing the utility buttons.
+    restrict: {
+        endOnly: true,
+        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+    },
+    // Callback function, triggered when the item first begins to be dragged.
+    onstart : function() {
+        //Do nothing.
+    },
+
+    // Callback function, triggered on every dragmove event.
+    onmove : function(event) {
+        //Scroll the window element by the moved amount.
+        let windowElem = document.getElementById("canvasWindow");
+
+        //Scroll the window!
+        windowElem.scrollTop -= event.dy;
+        windowElem.scrollLeft -= event.dx;
+    },
+
+    // Callback function, triggered on every dragend event.
+    onend : function() {
+        //Do nothing.
+    }
+});
