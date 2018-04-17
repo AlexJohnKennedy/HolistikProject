@@ -13,12 +13,21 @@ function clearList() {
 }
 
 /*
-generates the indented lists by looping through the root nodes, and bfsing through the children
+generates the indented lists by looping through the root nodes, and DFSing through the children
  */
 function buildListElements(nodeList) {
+    //We will need a 'root' list to already exist. All parentless nodes will be attached to this global list!
+    let listContainer = document.getElementById("listContainer");
+    globalList = document.createElement("ul");
+    globalList.setAttribute("id", "rootList");
+    listContainer.appendChild(globalList);
+
+    //Now, loop through all the nodes and find all of them which have NO parents (true roots).
+    //For each root, begin constructing a DFS list-tree structure, beginning with the global list.
     for (let node of nodeList) {
        if (node.parentList.length === 0) {
-           constructTree(node, 0);
+           //Found a root node!
+           constructTree(node, 0, globalList);
        }
     }
 }
@@ -27,27 +36,10 @@ function buildListElements(nodeList) {
 depth first search to construct the indented lists. note that nodes may appear more than once since node structure
 is not a DAG.
 */
-function constructTree(curr, depth) {
-    //define identifier
-    let idPrefix = "unorderedListOfDepth";
-
-    //get the ul corresponding to the current depth, if it doesn't exist, make it!
-    let currList = document.getElementById(idPrefix+depth.toString());
-    if (currList === null) {
-        currList = document.createElement("ul");
-        currList.setAttribute("id", idPrefix+depth.toString());
-        //add this list as a child of the list of one less depth
-        //if depth is zero, dump the list in the list container
-        if (depth === 0) {
-            let listContainer = document.getElementById("listContainer");
-            listContainer.appendChild(currList);
-        } else {
-            document.getElementById(idPrefix+(depth-1).toString()).appendChild(currList);
-        }
-    }
-
+function constructTree(curr, depth, parentListElem) {
+    //Firstly, we should append a list element corresponding to this node into our parently list!
     //build a corresponding sidebar element object
-    let newSidebarElem = new SidebarElement(curr.idString, document.getElementById(idPrefix+depth.toString()), curr.titleText);
+    let newSidebarElem = new SidebarElement(curr.idString, parentListElem, curr.titleText);
     sidebarState.sidebarElements.push(newSidebarElem);
 
     //Style visible-node list elements differently to invisible ones, for visual indication. Let CSS handle the styling!
@@ -58,12 +50,21 @@ function constructTree(curr, depth) {
         newSidebarElem.htmlElement.classList.add("invisibleListElem");
     }
 
-    //iterate over children and do the same shit
-    for (let rel of curr.childrenList) {
-        //Recurse for all children, making them visible
-        for (let child of rel.children) {
-            //Recurse within this child
-            constructTree(child, depth+1);
+    //Now, if and only if this node has children, then we need to create a list of our own to represent this node's children!
+    if (curr.childrenList.length !== 0) {
+        childListElem = document.createElement("ul");
+        childListElem.setAttribute("id", curr.idString+"_ListOfChildren");
+
+        //Add the list into the parent list, and then continue traversing!
+        parentListElem.appendChild(childListElem);
+
+        //iterate over children and do the same shit
+        for (let rel of curr.childrenList) {
+            //Recurse for all children, making them visible
+            for (let child of rel.children) {
+                //Recurse within this child
+                constructTree(child, depth+1, childListElem);   //Pass in the newly created list instead of the parent
+            }
         }
     }
 }
