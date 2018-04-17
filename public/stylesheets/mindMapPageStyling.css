@@ -1,5 +1,4 @@
 body {
-    background: linear-gradient(rgba(255,255,255,0), rgba(0, 0, 0, 0)), url(https://source.unsplash.com/oBb-Y26PJgg/1600x900);
     background-position: center;
     background-size: cover;
     margin:0;
@@ -11,6 +10,7 @@ body {
     display: grid;
     grid-template-columns: 200px 5fr;
     grid-auto-rows: minmax(500px, 650px);
+    grid-gap: 10px;
 }
 
 /* control the visibility of the popup edit window */
