@@ -19,9 +19,11 @@ router.get('/main', userDataController.mainPageGet);
 //Route for getting user names
 router.get('/users', userDataController.generateUserList);
 
-
 //Route for getting a specific user via id in URL
 router.get('/users/:id', userDataController.userDetail);
+
+//Route for the help page
+router.get('/help', userDataController.helpPageGet);
 
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use

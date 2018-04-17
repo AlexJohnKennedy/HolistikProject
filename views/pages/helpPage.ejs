@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Help page - Holistik</title>
+    <link rel="stylesheet" href="/stylesheets/sidebarStyling.css">
+    <link rel="stylesheet" href="/stylesheets/canvasStyling.css">
+    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/helpPageStyling.css">
+</head>
+<body>
+
+    <header>
+        <% include ../partials/header.ejs %>
+    </header>
+
+    <!-- ejs to represent the popup window where the user can inspect the help page -->
+    <div class="white-content carousel slide" id="popupHelpWindow" data-ride="carousel">
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+            <div id="img1" class="item active">
+                <img src="/images/1.png" alt="CreateNode">
+            </div>
+            <div id="img2" class="item">
+                <img src="/images/2.png" alt="ConnectNodes">
+            </div>
+            <div id="img3" class="item">
+                <img src="/images/3.png" alt="GoToNode">
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER. Will render at the bottom of every page on the website, ideally! -->
+    <footer>
+        <% include ../partials/footer.ejs %>
+    </footer>
+
+</body>
+</html>
+
+
