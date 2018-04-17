@@ -36,8 +36,10 @@
     color: rgb(96,98,109);
 }
 .contextListElem {
-    font-weight: bolder;
-    color: rgb(170,70,52);
+    font-weight: bold;
+    color: #f10000; /* rgb(170,70,52); (the context node should be bright and noticable */
+    border-bottom: rgb(170, 70, 52);
+    border-width: 2px;
 }
 
 /* Additional sidebar container styling, which is used if the context is global */

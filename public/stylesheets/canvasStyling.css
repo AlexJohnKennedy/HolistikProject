@@ -68,6 +68,9 @@ html {
 #contextIndicatorBox button:hover {
     cursor: pointer;
 }
+#contextIndicatorBox button {
+    display: none;  /* invisible to begin with */
+}
 
 #contextNameTextBox{
     font-family: 'Open Sans', Sans serif;

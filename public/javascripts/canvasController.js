@@ -8,7 +8,7 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 3,          //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 2,          //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : []
 };
 
@@ -30,7 +30,7 @@ const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
 const MAX_NODE_TITLE_LENGTH                      = 50;
 
 const defaultNodeTitle = "New concept";
-const defaultNodeDesc  = "This box is a 'node', and represents any concept or idea that you wish!\n\nYou can drag a node inside of other nodes to make it a 'child' of that node.\n\nYou can resize a node by dragging the corner, and you can zoom in and out of nodes as well (double click)\n\nWhen you 'zoom into' a node, the 'context' of the viewing canvas changes, and all of this node's children will be displayed.\n\nThe bottom-left button toggles whether or not this node's children are visible.\n\n";
+const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
 const defaultHierarchicalRelationshipLabel = "Child";
 
 //Define a counter which will track the current 'id' number to append
