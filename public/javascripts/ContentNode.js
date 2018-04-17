@@ -170,6 +170,7 @@ ContentNode.prototype.repositionButtons = function(width, height, animate) {
     let showInfoElem       = target.getElementsByClassName('showInfoButton').item(0);           //Should only match one!
     let rootNodeBorder     = target.getElementsByClassName('rootNodeBorderElement').item(0);    //Should only match one!
     let nodeDescription    = target.getElementsByClassName('nodeDescriptionText').item(0);      //Should only match one!
+    let editButton         = target.getElementsByClassName('editButton').item(0);               //Should only match one!
 
     if (animate) {
         //If we are animating, make sure the 'noTransitions' class is removed from the object, so that any defined CSS
@@ -179,6 +180,8 @@ ContentNode.prototype.repositionButtons = function(width, height, animate) {
         showInfoElem.classList.remove("noTransitions");
         rootNodeBorder.classList.remove("noTransitions");
         nodeDescription.classList.remove("noTransitions");
+        editButton.classList.remove("noTransitions");
+
     }
     else {
         //if animate is set to false, we must ensure the noTransitions override rule IS applied.
@@ -186,23 +189,15 @@ ContentNode.prototype.repositionButtons = function(width, height, animate) {
         showInfoElem.classList.add("noTransitions");
         rootNodeBorder.classList.add("noTransitions");
         nodeDescription.classList.add("noTransitions");    //WILL TEMPORARILY OVERWRITE ALL CSS TRANSITIONS ON THE OBJECT (see the CSS)
+        editButton.classList.add("noTransitions");
     }
-
-    /* OLD, but keeping for reference just in case. The animation logic has been refactored to rely on CSS rules to specify timings!
-    expandChildrenElem.style.transitionProperty = "top, left";
-    showInfoElem.style.transitionProperty = "top, left";
-    rootNodeBorder.style.transitionProperty = "width, height";
-    nodeDescription.style.transitionProperty = "height";
-    expandChildrenElem.style.transitionDuration = animateTime+"s";
-    showInfoElem.style.transitionDuration = animateTime+"s";
-    rootNodeBorder.style.transitionDuration = animateTime+"s";
-    nodeDescription.style.transitionDuration = animateTime+"s";
-    */
 
     expandChildrenElem.style.top = (height-17)+'px';   //Should always be 6 pixels from the left, and 17 from the bottom
     expandChildrenElem.style.left = 6+'px';
     showInfoElem.style.left = (width-20)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
     showInfoElem.style.top  = (height-17)+'px';
+    editButton.style.left = (width-40)+'px';    //Should always be 20 pixels from the right, and 17 from the bottom
+    editButton.style.top  = (height-17)+'px';
     rootNodeBorder.style.width = (width+8)+'px';  //Border element should always be 8 pixels taller and wider.
     rootNodeBorder.style.height = (height+8)+'px';
 
@@ -223,6 +218,16 @@ ContentNode.prototype.setTitleText = function(name) {
     this.titleText = name.trim();
 
     let textelem = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+    textelem.innerHTML = name;
+};
+
+/**
+ * Update the description of a contentNode
+ */
+ContentNode.prototype.setDescriptionText = function(name) {
+    this.descriptionText = name.trim();
+
+    let textelem = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
     textelem.innerHTML = name;
 };
 
@@ -431,7 +436,7 @@ ContentNode.prototype.showInfo = function() {
     titleText.style.position = 'static';     //Move title text back to top of node
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
-    descText.style.display = 'block';
+    descText.style.opacity = "1";
 
     //Okay, calculate the appropriate size for the node to become, based on the current canvas size.
     let height = 400;
@@ -451,9 +456,10 @@ ContentNode.prototype.hideInfo = function() {
     showingNode = null;
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
-    descText.style.display = 'none';
+    descText.style.opacity = "0";
 
     let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
+
     //Move title text back to centre if above threshold
     if (this.size.height >= CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD) {
         titleText.style.position = 'relative';
@@ -475,9 +481,74 @@ ContentNode.prototype.hideInfo = function() {
  * When the user submits the form, it will apply the input changes to the passed node. If the user cancels, then no
  * changes will be made to the node's content!
  */
-function editNodeContent(node) {
+ContentNode.prototype.editNodeContent = function() {
+    console.log("editNodeContent Called!");
     //Build a form element, and render it on top of the canvas.
 
+    //fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "block";
+
+    //make the node editing partial visible - do i need to make it visible at the end?
+    let editWindow = document.getElementById("popupEditWindow");
+    editWindow.style.display = "block";
+
+    //title
+    let titleInput = document.getElementById("editTitle");
+    titleInput.setAttribute("placeholder", this.titleText);
+
+    //desc
+    let descInput = document.getElementById("editDescription");
+    descInput.innerHTML = this.descriptionText;
+
+    //maintain the node id so we can reference it later
+    editWindow.setAttribute("nodeId", this.idString);
+};
+
+/**
+ * simple function to hide the popup edit window
+ */
+function closeEditWindow() {
+    //remove fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "none";
+
+    //make the popup div invisible
+    let editWindow = document.getElementById("popupEditWindow");
+    editWindow.style.display = "none";
+
+    //fuck off the node id from the attributes
+    editWindow.removeAttribute("nodeId");
 }
 
+/**
+ * update the current node when the users saves their changes
+ */
+function updateNodeData() {
+    //get the node thats currently being edited
+    let editNode = null;
+    let editNodeId = document.getElementById("popupEditWindow").getAttribute("nodeId");
+    for (let node of canvasState.contentNodeList) {
+        if (node.idString === editNodeId) {
+            console.log("found the node that's being edited!");
+            editNode = node;
+            break;
+        }
+    }
 
+    let titleInput = document.getElementById("editTitle");
+    let descInput = document.getElementById("editDescription");
+
+    let newTitle = titleInput.value;
+    let newDesc = descInput.value;
+
+    //assign new data
+    editNode.setTitleText(newTitle);
+    editNode.setDescriptionText(newDesc);
+
+    //refresh sidebar
+    refreshSidebar(canvasState.contentNodeList);
+
+    //get rid of the info window
+    closeEditWindow();
+}
