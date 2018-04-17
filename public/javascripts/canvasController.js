@@ -68,6 +68,9 @@ function createNewContentNode() {
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
+    //call edit window
+    newNode.editNodeContent();
+
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
@@ -102,6 +105,7 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     //Add the expand children button, and the show info button
     addExpandChildrenHTMLButton(newElem);
     addShowInfoButton(newElem);
+    addEditButton(newElem);
     addRootNodeBorderElem(newElem);
     addTitleTextElem(newElem, defaultNodeTitle, defaultNodeDesc);
 
@@ -112,10 +116,12 @@ function createNewContentNode_HtmlElement(xPos, yPos) {
     newElem.addEventListener("mouseenter", function(event) {
         event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "1";
         event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "1";
+        event.currentTarget.getElementsByClassName("editButton").item(0).style.opacity           = "1";
     });
     newElem.addEventListener("mouseleave", function(event) {
         event.currentTarget.getElementsByClassName("showInfoButton").item(0).style.opacity       = "0";
         event.currentTarget.getElementsByClassName("expandChildrenButton").item(0).style.opacity = "0";
+        event.currentTarget.getElementsByClassName("editButton").item(0).style.opacity           = "0";
     });
 
     //Set up an observer for this HTML element, so that we can respond whenever the element is moved
@@ -145,7 +151,7 @@ function addTitleTextElem(elem, name, desc) {
     let descriptionText = document.createElement("div");
     descriptionText.classList.add("nodeDescriptionText");
     descriptionText.innerText = desc;
-    descriptionText.style.display = 'none'; //Default to hidden, because we only want it to show up when 'show info' is activated.
+    descriptionText.style.opacity = "0";
 
     elem.appendChild(descriptionText);
 }
@@ -161,11 +167,29 @@ function addRootNodeBorderElem(elem) {
     elem.appendChild(extraBorder);
 }
 
+function addEditButton(elem) {
+    let button = document.createElement("div");
+    button.classList.add("editButton");
+    button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
+    button.addEventListener("click", editButtonCallback); //add a listener for the button
+    button.style.left = "60px";
+    button.style.top = "33px";
+    button.style.opacity = "0";
+
+    elem.appendChild(button);
+}
+
+function editButtonCallback(event) {
+    let nodeElem = event.currentTarget.parentNode;
+    let node     = getContentNode(nodeElem);
+
+    node.editNodeContent();
+}
+
 function addShowInfoButton(elem) {
     let button = document.createElement("div");
     button.classList.add("showInfoButton");
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
-    button.addEventListener("click", showInfoButtonCallback);
     button.style.left = "80px";
     button.style.top = "33px";
     button.style.opacity = "0";
