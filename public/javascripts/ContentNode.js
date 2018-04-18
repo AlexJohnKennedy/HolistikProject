@@ -1,7 +1,6 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // --- ContentNode 'class' definition (actually a javascript 'prototype') ----------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
-let showingNode = null;     //global reference in this script to manage which node is 'showing' information.
 
 /** This is a definition of a constructor 'function' which defines an object prototype structure, representing a logical
  *  content node, which currently exists on the drawing canvas. Using this we can treat 'ContentNode' as somewhat of a
@@ -418,13 +417,13 @@ ContentNode.prototype.makeInvisible = function() {
  *      (Future) - will show references/names to attatched resources.
  */
 ContentNode.prototype.showInfo = function() {
-    //Update the internal state, and update the global reference to the 'showing info' node. That way we can ensure only
-    //one node is ever showing information at once.
     this.isShowingInfo = true;
-    if (showingNode !== null) {
-        showingNode.hideInfo();
+    canvasState.showingNodes.push(this);
+
+    //Make sure we don't have too many nodes showing info concurrently!
+    while (canvasState.showingNodes.length > MAX_NODES_SHOWING_CONCURRENT_INFO) {
+        canvasState.showingNodes[0].hideInfo();
     }
-    showingNode = this;
 
     //Bring to front.
     this.htmlElement.style.zIndex = currTopZIndex;
@@ -447,13 +446,37 @@ ContentNode.prototype.showInfo = function() {
     let x = this.translation.x - (width - this.size.width)/2;
 
     //Clamp if off canvas
-    let padding = 50;
-    x = (x < padding) ? (padding) : x;
-    x = (x + width + padding > 3000) ? (3000 - width - padding) : x;
+    let padding = 25;
 
     let y = this.translation.y - (height - this.size.height)/2;
+
+    //Now, let's make sure we are not overlapping with any OTHER nodes which are showing their info.
+    for (let other of canvasState.showingNodes) {
+        let otherX = other.translation.x - (width - other.size.width)/2;
+        otherX = (otherX < padding) ? (padding) : otherX;
+        otherX = (otherX + width + padding > CANVAS_WIDTH) ? (CANVAS_WIDTH - width - padding) : otherX;
+
+        let otherY = other.translation.y - (width - other.size.height)/2;
+        otherY = (otherY < padding) ? (padding) : otherY;
+        otherY = (otherY + height + padding > CANVAS_HEIGHT) ? (CANVAS_HEIGHT - height - padding) : otherY;
+
+        //Okay, let's make sure that our node is not clipping inside of the other node.
+        if (x < otherX && (x+width+padding) >= otherX && (y < otherY && (y+height+padding) >= otherY || y > otherY && (otherY+height+padding) >= y)) {
+            //Oops, our new node is left of the other one, but it is overlapping!
+            //Move left
+            x = otherX - width - padding;
+        }
+        else if (x > otherX && (otherX+width+padding) >= x  && (y < otherY && (y+height+padding) >= otherY || y > otherY && (otherY+height+padding) >= y)) {
+            //Move right
+            x = otherX + width + padding;
+        }
+    }
+
+    x = (x < padding) ? (padding) : x;
+    x = (x + width + padding > CANVAS_WIDTH) ? (CANVAS_WIDTH - width - padding) : x;
+
     y = (y < padding) ? (padding) : y;
-    y = (y + height + padding > 3000) ? (3000 - height - padding) : y;
+    y = (y + height + padding > CANVAS_HEIGHT) ? (CANVAS_HEIGHT - height - padding) : y;
 
     //Now, animate the node to go to that position!
     this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
@@ -462,7 +485,14 @@ ContentNode.prototype.showInfo = function() {
 
 ContentNode.prototype.hideInfo = function() {
     this.isShowingInfo = false;
-    showingNode = null;
+    let index = canvasState.showingNodes.indexOf(this);
+    if (index === -1) {
+        //alert("CRITICAL ERROR!");
+        console.trace("did not find a showing node in the showing node list when we tried to collapse it: "+this.idString);
+    }
+    else {
+        canvasState.showingNodes.splice(index,1);
+    }
 
     let descText  = this.htmlElement.getElementsByClassName('nodeDescriptionText').item(0);
     descText.style.opacity = "0";

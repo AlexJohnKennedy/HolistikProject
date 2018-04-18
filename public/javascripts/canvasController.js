@@ -9,7 +9,8 @@ const canvasState = {
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
     viewDepth : 2,          //The current maximum view depth to be displayed on the canvas.
-    hierarchyLines : []
+    hierarchyLines : [],
+    showingNodes : []   //List of all content nodes which are currently 'showing' their info (i.e. expanded)
 };
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
@@ -28,6 +29,9 @@ const defaultNodeSize = {
 //appear CENTRED (vertically), as oppossed to sticking at the top of the element!
 const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
 const MAX_NODE_TITLE_LENGTH                      = 50;
+const MAX_NODES_SHOWING_CONCURRENT_INFO          = 4;
+const CANVAS_HEIGHT                              = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!
+const CANVAS_WIDTH                               = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!
 
 const defaultNodeTitle = "New concept";
 const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
