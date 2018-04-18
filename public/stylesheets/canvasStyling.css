@@ -258,7 +258,7 @@ html {
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-wrap: none;
+    white-space: nowrap;
     padding-left: 5px;
     padding-right: 5px;
 

@@ -74,8 +74,6 @@ function createNewContentNode() {
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
-    newNode.repositionButtons(defaultNodeSize.width, defaultNodeSize.height, false);
-
     //call edit window TODO: MAKE IT SO THAT THE EDIT WINDOW SUBMIT BUTTON IS WHAT CREATES THE NEW NODE, NOT THE OTHER WAY ROUND
     newNode.editNodeContent();
 
@@ -168,8 +166,8 @@ function addRootNodeBorderElem(elem) {
     let extraBorder = document.createElement("div");
     extraBorder.classList.add("rootNodeBorderElement");     //Supply static styling elements
 
-    extraBorder.style.height = "58px";      //Initialise dynamic styling
-    extraBorder.style.width  = "108px";
+    extraBorder.style.height = (defaultNodeSize.height+8)+"px";      //Initialise dynamic styling
+    extraBorder.style.width  = (defaultNodeSize.width+8)+"px";
     extraBorder.style.display = "block";
 
     elem.appendChild(extraBorder);
@@ -180,8 +178,8 @@ function addEditButton(elem) {
     button.classList.add("editButton");
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
     button.addEventListener("click", editButtonCallback); //add a listener for the button
-    button.style.left = "60px";
-    button.style.top = "33px";
+    button.style.left = (defaultNodeSize.width-40)+"px";
+    button.style.top = (defaultNodeSize.height-17)+"px";
     button.style.opacity = "0";
 
     elem.appendChild(button);
@@ -198,8 +196,8 @@ function addShowInfoButton(elem) {
     let button = document.createElement("div");
     button.classList.add("showInfoButton");
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
-    button.style.left = "80px";
-    button.style.top = "33px";
+    button.style.left = (defaultNodeSize.width-20)+"px";
+    button.style.top = (defaultNodeSize.height-17)+"px";
     button.style.opacity = "0";
 
     //Add an onlick listener to the button.
@@ -229,7 +227,7 @@ function addExpandChildrenHTMLButton(elem) {
     button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
 
-    button.style.top = "33px";
+    button.style.top = (defaultNodeSize.height-17)+"px";
     button.style.left = "6px";
 
     button.style.opacity = "0";
