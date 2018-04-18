@@ -8,7 +8,7 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 3,          //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 2,          //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : []
 };
 
@@ -20,8 +20,8 @@ const defaultNodePosition = {
 };
 const defaultColour = "#a6cdf2";
 const defaultNodeSize = {
-    height : 50,
-    width  : 100
+    height : 60,
+    width  : 120
 };
 
 //Define a threshold constant for determining how tall a content node needs to be in order for the title text to
@@ -30,7 +30,7 @@ const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
 const MAX_NODE_TITLE_LENGTH                      = 50;
 
 const defaultNodeTitle = "New concept";
-const defaultNodeDesc  = "This box is a 'node', and represents any concept or idea that you wish!\n\nYou can drag a node inside of other nodes to make it a 'child' of that node.\n\nYou can resize a node by dragging the corner, and you can zoom in and out of nodes as well (double click)\n\nWhen you 'zoom into' a node, the 'context' of the viewing canvas changes, and all of this node's children will be displayed.\n\nThe bottom-left button toggles whether or not this node's children are visible.\n\n";
+const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
 const defaultHierarchicalRelationshipLabel = "Child";
 
 //Define a counter which will track the current 'id' number to append
@@ -74,7 +74,7 @@ function createNewContentNode() {
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
-    //call edit window
+    //call edit window TODO: MAKE IT SO THAT THE EDIT WINDOW SUBMIT BUTTON IS WHAT CREATES THE NEW NODE, NOT THE OTHER WAY ROUND
     newNode.editNodeContent();
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
@@ -166,8 +166,8 @@ function addRootNodeBorderElem(elem) {
     let extraBorder = document.createElement("div");
     extraBorder.classList.add("rootNodeBorderElement");     //Supply static styling elements
 
-    extraBorder.style.height = "58px";      //Initialise dynamic styling
-    extraBorder.style.width  = "108px";
+    extraBorder.style.height = (defaultNodeSize.height+8)+"px";      //Initialise dynamic styling
+    extraBorder.style.width  = (defaultNodeSize.width+8)+"px";
     extraBorder.style.display = "block";
 
     elem.appendChild(extraBorder);
@@ -178,8 +178,8 @@ function addEditButton(elem) {
     button.classList.add("editButton");
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
     button.addEventListener("click", editButtonCallback); //add a listener for the button
-    button.style.left = "60px";
-    button.style.top = "33px";
+    button.style.left = (defaultNodeSize.width-40)+"px";
+    button.style.top = (defaultNodeSize.height-17)+"px";
     button.style.opacity = "0";
 
     elem.appendChild(button);
@@ -196,8 +196,8 @@ function addShowInfoButton(elem) {
     let button = document.createElement("div");
     button.classList.add("showInfoButton");
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
-    button.style.left = "80px";
-    button.style.top = "33px";
+    button.style.left = (defaultNodeSize.width-20)+"px";
+    button.style.top = (defaultNodeSize.height-17)+"px";
     button.style.opacity = "0";
 
     //Add an onlick listener to the button.
@@ -227,7 +227,7 @@ function addExpandChildrenHTMLButton(elem) {
     button.classList.add("expandChildrenButton_expanded");      //Styling to supply the correct rotation.
     button.classList.add("utilityButton");  //Indicate that this is some kind of interactable button. Needed to cancel out nested events
 
-    button.style.top = "33px";
+    button.style.top = (defaultNodeSize.height-17)+"px";
     button.style.left = "6px";
 
     button.style.opacity = "0";

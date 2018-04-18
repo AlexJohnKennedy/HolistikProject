@@ -46,7 +46,7 @@ html {
     position: absolute;
     top: 6px;   /* Sit in the top left corner */
     left: 6px;
-    z-index: 999999999999999999999999999;     /* let this render on top of nodes */
+    z-index: 8999;     /* let this render on top of nodes */
 
     height: 22px;
     width:  200px;
@@ -67,6 +67,9 @@ html {
 /* Style the button inside the context box indicator */
 #contextIndicatorBox button:hover {
     cursor: pointer;
+}
+#contextIndicatorBox button {
+    display: none;  /* invisible to begin with */
 }
 
 #contextNameTextBox{
@@ -89,7 +92,7 @@ html {
     border-style: solid;
     border-color: grey;
 
-    z-index: 999999999999999999999999999;
+    z-index: 8998;
 }
 
 /* Style the svg object to be overlaid with the drawing canvas */
@@ -110,6 +113,11 @@ html {
 #Triangle {
     stroke:rgb(170,70,52);
     fill: rgb(170,70,52);
+}
+
+#getHelpButton {
+    float: right;
+    z-index: 8998;
 }
 
 /* Style the 'drag here to delete' box */
@@ -250,7 +258,7 @@ html {
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-wrap: none;
+    white-space: nowrap;
     padding-left: 5px;
     padding-right: 5px;
 
@@ -334,3 +342,7 @@ html {
     background-color: rgb(228,226,80);
 }
 
+/* help screen */
+#myCarousel {
+    position: center;
+}

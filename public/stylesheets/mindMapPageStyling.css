@@ -41,6 +41,11 @@ body {
 
 }
 
+#closeHelpWindowButton {
+    position: center;
+    margin-left: 50%;
+}
+
 /* controls the fade effect when a popup appears */
 .black-overlay {
     display: none;
@@ -51,21 +56,25 @@ body {
     height: 100%;
     background-color: black;
     z-index: 9000; /* seems to be around 9000 */
-    -moz-opacity: 0.8;
-    opacity: .80;
-    filter: alpha(opacity=80);
+    opacity: 0;
+
+    transition: opacity 0.25s;
 }
 
 /* popup window  */
 .white-content {
     display: none;
     position: absolute;
-    top: 25%;
-    left: 25%;
-    width: 50%;
-    height: 50%;
+    top: 15% !important;
+    bottom: 15% !important;
+    left: 15%;
+    width: 70%;
+    height: 70%;
     padding: 16px;
     background-color: white;
     z-index: 9001; /* ITS OVER 9000!!!!!!!!!!!!!!!!!!!!!!!! */
     overflow: auto;
+    opacity: 0;
+
+    transition: opacity 0.25s;
 }

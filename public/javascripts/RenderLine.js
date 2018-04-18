@@ -44,10 +44,10 @@ function RenderLine(sourceNode, destNode) {
  * Then, update the <line> attributes to move the line in accordance to the node positions.
  */
 RenderLine.prototype.update = function() {
-    let x1 = parseFloat(this.sourceHtmlElement.getAttribute('xTranslation')) + 0.5*this.sourceNode.size.width;
-    let y1 = parseFloat(this.sourceHtmlElement.getAttribute('yTranslation')) + 0.5*this.sourceNode.size.height;
-    let x2 = parseFloat(this.destHtmlElement.getAttribute('xTranslation')) + 0.5*this.destNode.size.width;
-    let y2 = parseFloat(this.destHtmlElement.getAttribute('yTranslation')) + 0.5*this.destNode.size.height;
+    let x1 = parseFloat(this.sourceHtmlElement.getAttribute('xTranslation')) + 0.5*parseFloat(this.sourceHtmlElement.style.width);
+    let y1 = parseFloat(this.sourceHtmlElement.getAttribute('yTranslation')) + 0.5*parseFloat(this.sourceHtmlElement.style.height);
+    let x2 = parseFloat(this.destHtmlElement.getAttribute('xTranslation')) + 0.5*parseFloat(this.destHtmlElement.style.width);
+    let y2 = parseFloat(this.destHtmlElement.getAttribute('yTranslation')) + 0.5*parseFloat(this.destHtmlElement.style.height);
 
     let pointsString = (x1.toString())+","+
                        (y1.toString())+" "+

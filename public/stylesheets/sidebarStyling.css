@@ -16,6 +16,13 @@
     list-style-type: none;
 }
 
+/* Stop entries from wrapping */
+#sidebar li {
+    text-wrap: none;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+
 #listContainer {
     box-sizing: border-box;
 
@@ -36,8 +43,8 @@
     color: rgb(96,98,109);
 }
 .contextListElem {
-    font-weight: bolder;
-    color: rgb(170,70,52);
+    font-weight: bold;
+    color: #f10000; /* rgb(170,70,52); (the context node should be bright and noticable */
 }
 
 /* Additional sidebar container styling, which is used if the context is global */

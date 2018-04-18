@@ -19,12 +19,18 @@
     background-color: grey;
 }
 
-.navbar {
+.container-fluid {
+    background-color: rgb(219, 229, 234);
+    padding-bottom: 10px;
+}
 
+.navbar {
+    padding-bottom: 10px;
 }
 
 .navbar-nav {
     display: inline-block;
+    margin-bottom: 0 !important;
 }
 
 .navbar-nav li {
@@ -33,6 +39,8 @@
     padding-right: 5px;
     vertical-align: center;
 }
+
+
 
 /* FONTS AND SHIT */
 
@@ -76,8 +84,4 @@ h4, .navbar-nav {
     opacity: 0.9;
     padding-top: 10px;
     padding-left: 30px;
-}
-
-.navbar {
-    padding-bottom: 10px;
 }

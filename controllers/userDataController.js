@@ -27,6 +27,10 @@ function generateUserList(req, res) {
     });
 }
 
+function helpPageGet(req, res) {
+    res.render('pages/helpPage');
+}
+
 //Define behaviour and access data to get specific user page
 function userDetail(req, res) {
     //-------------------------------------------------------------------------------------------------------------------------------
@@ -69,5 +73,6 @@ module.exports = {
     homeDirectoryGet : homeDirectoryGet,
     generateUserList : generateUserList,
     userDetail : userDetail,
-    mainPageGet : mainPageGet
+    mainPageGet : mainPageGet,
+    helpPageGet : helpPageGet
 }
