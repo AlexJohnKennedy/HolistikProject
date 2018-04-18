@@ -8,7 +8,7 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 2,          //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 50,          //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : [],
     showingNodes : []   //List of all content nodes which are currently 'showing' their info (i.e. expanded)
 };
