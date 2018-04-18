@@ -663,7 +663,7 @@ function zoomContextIn(event) {
     //We DO NOT want to zoom if the item clicked is not the outer node element itself. This is becuase if the double click ocurred on one of the
     //utility buttons, we don't want to also zoom. That would be confusing.
     //we also do not want to allow zoom in event if ANY node is showing info
-    if (event.target.classList.contains("utilityButton") || node.isShowingInfo || showingNode != null) {
+    if (event.target.classList.contains("utilityButton") || node.isShowingInfo || canvasState.showingNodes.length > 0) {
         return;
     }
 
