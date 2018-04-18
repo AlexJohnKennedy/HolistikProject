@@ -34,6 +34,12 @@
 
 }
 
+.sidebar-element {
+    font-family: 'Open Sans', sans;
+    font-weight: 300;
+    font-size: 0.9em;
+}
+
 /* Dynamic colour styling for list entries which are referring to visible, or invisible, or context, nodes. */
 .visibleListElem {
     font-weight: bold;
