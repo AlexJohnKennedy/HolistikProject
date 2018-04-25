@@ -146,10 +146,65 @@ function serializeNodeArrangement_replacer(key, value) {
 /**
  * This function will parse a JSON string containing an array of all structural and semantic data about all nodes,
  * and rebuild them into ContentNode objects.
- * @param jsonString
+ * @param jsonStringS
  */
 function parseAllNodeStatesFromJSON(jsonString) {
-    //First, we should build an Array of 'data packags' containing all of the
+    //Safety check: we should have NO EXISTING CANVAS STATE NODES when this is used! otherwise, we could overwrite ID values
+    //by loading in exisitng ids, creating a complete bunch of fuckery!
+    if (canvasState.contentNodeList.length > 0) {
+        alert("Tried to rebuild nodes from JSON when nodes already existed. This is currently unsafe!! Aborting Parse process!");
+        console.trace("Tried to rebuild nodes from JSON when nodes already existed. This is currently unsafe!! Aborting Parse process!");
+        return;
+    }
+
+    //First, we should build an Array of 'data packages' containing all of the state related data for the current nodes.
+    let stateData_noRels = JSON.parse(jsonString, parseNodeState_reviver);
+
+    //DEBUG
+    console.log(stateData_noRels);
+
+    //Sweet! now we can iterate through the data packages and build ContentNode objects! Note that this will also update the DOM
+    let contentNodes = new Map();
+    for (let data of stateData_noRels) {
+        let newNode = buildContentNode(data.idString);
+        newNode.setTitleText(data.titleText);
+        newNode.setDescriptionText(data.descriptionText);
+        //TODO - newNode.setColour(data.colour);
+        newNode.colour(data.colour);    //TEMPORARY (until above to do get's done)
+
+        contentNodes.set(newNode.idString, newNode);
+    }
+    return contentNodes;
+}
+
+function parseAllNodeArrangmentsFromJSON(jsonString, nodeMap, animate) {
+    let arrangementData = JSON.parse(jsonString, parseNodeArrangment_reviver);
+
+    //Setup all the new positions and sizes and states for each node. A corresponding node should exist in the node map.
+    for (let data of arrangementData) {
+        //Lookup corresponding node.
+        let node = nodeMap.get(data.idString);
+        if (node === undefined) {
+            //CRITICAL ERROR
+            alert("Tried to rebuild node arrangment data, but the passed nodeMap did not contain a corresponding ContentNode object for id "+data.idString);
+            console.trace("Tried to rebuild node arrangment data, but the passed nodeMap did not contain a corresponding ContentNode object for id"+data.idString);
+            return;
+        }
+
+        //Set the arrangement state for this node
+        node.moveNodeTo(data.translation.x, data.translation.y, animate);
+        node.resizeNode(data.size.width, data.size.height, animate);
+        node.isExpanded = data.isExpanded;
+        if (data.isShowingInfo) {
+            node.showInfo();
+        }
+    }
+
+    return nodeMap;
+}
+
+function parseAllNodeRelationshipsFromJSON(jsonString, nodeList) {
+    //TODO
 }
 
 /**

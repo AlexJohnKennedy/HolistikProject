@@ -56,25 +56,23 @@ let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulne
 // to be rendered on the page. Accordingly, the logical models of these elements will be updated in the canvasState
 // object structure as well.
 
-/** This function will simply create a new content node and place it at the specified default location.
- *  Accordingly, the new node will be tracked by the canvasState.
- *  The new node will have an associated HTML div element in the DOM, such that it can be rendered.
- *  The HTML element will have a unique id, and have the associated class types to allow interact.js library to
- *  apply it's drag/drop/resize functionality to the node.
+/**
+ * This function is only invoked by the USER (by pressing a ui element), and creates a brand new node on the current
+ * canvas. This funciton is how they add new nodes to their project.
+ *
+ * Note that this function is not responsible for BUILDING THE OBJECT ITSELF, rather, it invokes buildContentNode()
+ * and then adds the resulting node to the canvas state.
  */
 function createNewContentNode() {
     //Create the HTML element for this node by directly editing the browser DOM.
     //The creation method will return the new html element object, and it's id string.
 
-    //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
-    let canvasWindow = document.getElementById("canvasWindow");
-    let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
-    let ypos = canvasWindow.scrollTop + defaultNodePosition.y;
+    //assign an id for the new element based on the current 'tracking'
+    let idString = idPrefix + currIdNum;
+    currIdNum++;
 
-    let newElemDetails = createNewContentNode_HtmlElement(xpos, ypos);
+    let newNode = buildContentNode(idString);
 
-    //Use the returned details to create a new logical object representing the HTML element, and store it.
-    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
@@ -84,15 +82,32 @@ function createNewContentNode() {
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
-function createNewContentNode_HtmlElement(xPos, yPos) {
+/**
+ * This function will simply create a new content node OBJECT and place it at the specified default location.
+ * Accordingly, the new node will be tracked by the canvasState.
+ * The new node will have an associated HTML div element in the DOM, such that it can be rendered.
+ * The HTML element will have a unique id, and have the associated class types to allow interact.js library to
+ * apply it's drag/drop/resize functionality to the node.
+ */
+function buildContentNode(idString) {
+    //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
+    let canvasWindow = document.getElementById("canvasWindow");
+    let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
+    let ypos = canvasWindow.scrollTop + defaultNodePosition.y;
+
+    let newElemDetails = createNewContentNode_HtmlElement(xpos, ypos, idString);
+
+    //Use the returned details to create a new logical object representing the HTML element, and store it.
+    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
+
+    return newNode;
+}
+
+function createNewContentNode_HtmlElement(xPos, yPos, idString) {
     //Access the DOM, and find the drawingCanvas element. We will add the new content node as a DIV nested inside of this
     let drawingCanvas = document.getElementById("drawingCanvas");
 
     let newElem = document.createElement("div");
-
-    //assign an id for the new element based on the current 'tracking'
-    let idString = idPrefix + currIdNum;
-    currIdNum++;
 
     //Add element as a child of the canvas object!
     drawingCanvas.appendChild(newElem);
