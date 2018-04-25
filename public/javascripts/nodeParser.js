@@ -28,14 +28,14 @@
  */
 function serializeNodeState_replacer(key, value) {
     //DEBUG
-    console.log("JSON REPLACER: Key = "+key+" value = "+value);
+    //console.log("JSON REPLACER: |rel? = "+(this instanceof HierarchicalRelationship)+"| |Key = "+key+"| |value = "+value);
 
     //Inside the replacer function, 'this' is set to the object who's property is reflected by the key currently being serialized.
     if (this instanceof ContentNode) {
-        return contentNode_state_replacer(key, value);
+        return contentNode_state_replacer.call(this, key, value);      //call helper function but preserve the 'this' context!
     }
     else if (this instanceof HierarchicalRelationship) {
-        return hierarchicalRelationship_state_replacer(key, value);
+        return hierarchicalRelationship_state_replacer.call(this, key, value);      //call helper function but preserve the 'this' context.
     }
     //TODO, semantic relationship serialisation
     else {
@@ -68,18 +68,37 @@ function hierarchicalRelationship_state_replacer(key, value) {
     }
     else if (key === 'parentNode') {
         //Return the id string of the parent node, rather than serialising the node object again.
-        return this.parentNode.idString;
+        if (this.parentNode) {
+            return this.parentNode.idString;
+        }
+        else {
+            return null;    //No parent, indicated as null
+        }
     }
     else if (key === 'children') {
-        //Return an array of all the children id strings, rather than serialising the node objects again.
-        let ids = [];
-        for (let n of this.children) {
-            ids.push(n.idString);
+        if (this.children !== null) {
+            //Return an array of all the children id strings, rather than serialising the node objects again.
+            let ids = [];
+            for (let n of this.children) {
+                ids.push(n.idString);
+            }
+            return ids;     //Yo, serialise this array of id strings please!
         }
-        return ids;     //Yo, serialise this array of id strings please!
+        else {
+            return null;
+        }
     }
     else {
         //All other fields should be skipped!
         return undefined;
     }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Debugging functions ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+function printTestSerialistation() {
+    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeState_replacer, 4));
 }
