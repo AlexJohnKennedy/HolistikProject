@@ -245,9 +245,9 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
         }
 
         let buttons = node.htmlElement.getElementsByClassName("utilityButton");
-        buttons.item(0).classList.remove("noTransitions");
-        buttons.item(1).classList.remove("noTransitions");
-        buttons.item(2).classList.remove("noTransitions");
+        for (let i=0; i < buttons.length; i++) {
+            buttons.item(i).classList.remove("noTransitions");
+        }
     }
 
     return nodeMap;
