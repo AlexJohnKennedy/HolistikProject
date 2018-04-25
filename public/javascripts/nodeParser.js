@@ -214,6 +214,23 @@ function parseAllNodeStatesFromJSON(jsonString) {
 
         contentNodes.set(newNode.idString, newNode);
     }
+
+    //Okay, now that all the node objects exist, we can loop through the data again, and set up all of the hierarchical relationships!
+    for (let data of stateData_noRels) {
+        //if this 'data package' has children references, grab all the necessary node objects and start assigning relationships.
+        if (data.childrenList.length > 0) {
+            let parent = contentNodes.get(data.idString);
+            for (let rel of data.childrenList) {
+                for (let childId of rel.children) {
+                    //get the respective child node by id, and add it to the parent under the stored displayed label!
+                    let child = contentNodes.get(childId);
+                    parent.addChild(child, rel.displayedLabel);
+                }
+            }
+        }
+    }
+
+
     return contentNodes;
 }
 
