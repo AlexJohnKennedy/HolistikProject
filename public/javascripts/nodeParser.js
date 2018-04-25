@@ -235,9 +235,19 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
         node.resizeNode(data.size.width, data.size.height, animate);
         node.moveNodeTo(data.translation.x, data.translation.y, animate);
         node.isExpanded = data.isExpanded;
+        if (!data.isExpanded) {
+            let expandButton = node.htmlElement.getElementsByClassName("expandChildrenButton").item(0);
+            expandButton.classList.remove("expandChildrenButton_expanded");
+            expandButton.classList.add("expandChildrenButton_collapsed");
+        }
         if (data.isShowingInfo) {
             node.showInfo();
         }
+
+        let buttons = node.htmlElement.getElementsByClassName("utilityButton");
+        buttons.item(0).classList.remove("noTransitions");
+        buttons.item(1).classList.remove("noTransitions");
+        buttons.item(2).classList.remove("noTransitions");
     }
 
     return nodeMap;
@@ -293,6 +303,9 @@ function printTestSerialistation() {
 let stateJSON = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode2","contentNode3"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode3"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]}]';
 let arrangmentJSON = '[{"idString":"contentNode0","translation":{"x":212,"y":327},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":486,"y":346},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":232,"y":544},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":300,"y":472.79998779296875},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
 
+let stateJSON_2 = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode3","contentNode2","contentNode4"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode0"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]},{"idString":"contentNode4","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[]}]';
+let arrangmentJSON_2 = '[{"idString":"contentNode0","translation":{"x":779,"y":491},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":false,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":486,"y":338},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":634,"y":770},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":82,"y":571},"size":{"height":200,"width":268.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode4","translation":{"x":370,"y":712},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
+
 function TEST_REBUILD_FROM_HARDCODED_JSON() {
-    fullyRebuildCanvasStateFromJSON(stateJSON, arrangmentJSON, null);
+    fullyRebuildCanvasStateFromJSON(stateJSON_2, arrangmentJSON_2, null);
 }
