@@ -147,7 +147,39 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     //Clear the current canvas state, and FULLY rebuild from scratch
     clearCanvasState();
 
+    //Okay, the current state should be clear. Now, let us rebuild the state!
+    let newNodeMap = parseAllNodeStatesFromJSON(nodeStateJSON);
 
+    //Reassign the arrangment from JSON as well
+    newNodeMap     = parseAllNodeArrangmentsFromJSON(nodeArrangementJSON, newNodeMap, false);   //NO animate flag
+
+    //Assign the context node to the canvasState
+    canvasState.contextNode = newNodeMap.get(contextNodeId);
+
+    //Place all of the contentNodes we rebuilt into the canvas state
+    let maxIdSoFar = 0;   //Need to determine the new 'starting point' for generating html ids, so we don't overlap with one's from the
+                          //parsed state...
+    let itr = newNodeMap.values();
+    while (!itr.done) {
+        let n = itr.next().value;
+        canvasState.contentNodeList.push(n);
+
+        let idStr = n.idString.replace(/[^0-9]/g, '');  //Strip all non numeric characters from the idString, and leave original unchanged
+        let idNum = parseInt(idStr);
+
+        //DEBUG
+        console.log("Parsed an id from a node we just rebuilt, it was "+idNum+", and the idString we parsed it from was "+n.idString);
+
+        if (idNum > maxIdSoFar) {
+            maxIdSoFar = idNum;
+        }
+    }
+    //Okay, we have tracked the maximum id suffix number. Now, for new nodes that the user creates, we need to ensure the
+    //id suffix is always greater than the max suffix currently in existence..
+    currIdNum = maxIdSoFar + 1;
+
+    //Alright, everything is rebuilt. Let's rebuild the canvas visibility to reveal it all!
+    rebuildVisibility();
 }
 
 /**
@@ -185,7 +217,7 @@ function parseAllNodeStatesFromJSON(jsonString) {
 }
 
 function parseAllNodeRelationshipsFromJSON(jsonString, nodeList) {
-
+    //TODO
 }
 
 function parseAllNodeArrangmentsFromJSON(jsonString, nodeMap, animate) {
