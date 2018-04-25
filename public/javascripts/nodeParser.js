@@ -123,17 +123,22 @@ function hierarchicalRelationship_state_replacer(key, value) {
  * @param value the value that will be the serialized value of this key.
  */
 function serializeNodeArrangement_replacer(key, value) {
-    if (    key === 'idString'
-        ||  key === 'translation'
-        ||  key === 'size'
-        ||  key === 'isExpanded'
-        ||  key === 'isShowingInfo') {
+    if (this instanceof ContentNode) {
+        if (    key === 'idString'
+            ||  key === 'translation'
+            ||  key === 'size'
+            ||  key === 'isExpanded'
+            ||  key === 'isShowingInfo') {
 
-        return value;   //Serialize as normal!
+            return value;   //Serialize as normal!
+        }
+        else {
+            //Don't want to serialise anything else here
+            return undefined;   //Returning undefined makes the JSON.stringify() skip this property!
+        }
     }
     else {
-        //Don't want to serialise anything else here
-        return undefined;   //Returning undefined makes the JSON.stringify() skip this property!
+        return value;
     }
 }
 
@@ -143,5 +148,9 @@ function serializeNodeArrangement_replacer(key, value) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 function printTestSerialistation() {
+    console.log('/* Node state and structure serialisation -------------------------------- */');
     console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeState_replacer, 4));
+
+    console.log('/* Arrangement and visibility serialisation ------------------------------ */');
+    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeArrangement_replacer, 4));
 }
