@@ -5,7 +5,7 @@
  */
 
 // ---------------------------------------------------------------------------------------------------------------------
-// --- State Serialisation ---------------------------------------------------------------------------------------------
+// --- Serialisation ---------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -99,10 +99,6 @@ function hierarchicalRelationship_state_replacer(key, value) {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// --- Visibility and Arrangement Serialisation ------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
-
 /**
  * This is a 'replacer' function, which is used by the JSON.stringify() call intending to serialize all the
  * ContentNode's ARRANGEMENT and VISIBILITY into JSON.
@@ -140,6 +136,60 @@ function serializeNodeArrangement_replacer(key, value) {
     else {
         return value;
     }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Parsing/Re-building functions -----------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * This function will parse a JSON string containing an array of all structural and semantic data about all nodes,
+ * and rebuild them into ContentNode objects.
+ * @param jsonString
+ */
+function parseAllNodeStatesFromJSON(jsonString) {
+    //First, we should build an Array of 'data packags' containing all of the
+}
+
+/**
+ * Reviver to be used with JSON.parse(), which creates objects containing preliminary information to be used to
+ * rebuild ContentNodes, but DOES NOT rebuild relationships.
+ * This is becuase we cannot rebuild relationships safely until all the content node objects themselves are sure to exist.
+ * Relationships will therefore be rebuilt with a subsequent parse() call, using a different reviver function.
+ *
+ * This function does not directly build ContentNode objects. Instead, it will be used to create 'packages' of data
+ * which will then be looped through to rebuild ContentNode objects via the canvasController's 'rebuildContentNode'
+ * function.
+ *
+ * Equally, this function DOES NOT re-build node positions or arrangement information, since that data is stored in
+ * separate JSON strings than the one's with the state related data!
+ * @param key
+ * @param value
+ */
+function parseNodeState_reviver(key, value) {
+    if (key === 'idString'
+        ||  key === 'titleText'
+        ||  key === 'descriptionText'
+        ||  key === 'colour') {
+
+        return value;
+    }
+    else {
+        return undefined;
+    }
+}
+
+/**
+ * Reviver to be used with JSON.parse() on JSON strings representing the arrangment of nodes.
+ *
+ * This will create temporary data packages which represent the translation, size, and visual status of nodes.
+ * Then, those packages can be used to update the arrangement state of the real ContentNodes on the canvas state!
+ * @param key
+ * @param value
+ */
+function parseNodeArrangment_reviver(key, value) {
+    return value;   //This reviver does not actually need customised behaviour for now..
 }
 
 
