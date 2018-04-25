@@ -153,14 +153,6 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     //Reassign the arrangment from JSON as well
     newNodeMap     = parseAllNodeArrangementsFromJSON(nodeArrangementJSON, newNodeMap, false);   //NO animate flag
 
-    //Assign the context node to the canvasState
-    if (contextNodeId != null) {
-        canvasState.contextNode = newNodeMap.get(contextNodeId);
-    }
-    else {
-        canvasState.contextNode = null;
-    }
-
     //Place all of the contentNodes we rebuilt into the canvas state
     let maxIdSoFar = 0;   //Need to determine the new 'starting point' for generating html ids, so we don't overlap with one's from the
                           //parsed state...
@@ -182,14 +174,19 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     //id suffix is always greater than the max suffix currently in existence..
     currIdNum = maxIdSoFar + 1;
 
-    //Alright, everything is rebuilt. Let's rebuild the canvas visibility to reveal it all!
-    rebuildVisibility();
+    //Assign the context node to the canvasState
+    if (contextNodeId != null) {
+        switchContext(newNodeMap.get(contextNodeId));
+    }
+    else {
+        switchContext(null);
+    }
 }
 
 /**
  * This function will parse a JSON string containing an array of all structural and semantic data about all nodes,
  * and rebuild them into ContentNode objects.
- * @param jsonStringS
+ * @param jsonString
  */
 function parseAllNodeStatesFromJSON(jsonString) {
     //Safety check: we should have NO EXISTING CANVAS STATE NODES when this is used! otherwise, we could overwrite ID values
@@ -235,8 +232,8 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
         }
 
         //Set the arrangement state for this node
-        node.moveNodeTo(data.translation.x, data.translation.y, animate);
         node.resizeNode(data.size.width, data.size.height, animate);
+        node.moveNodeTo(data.translation.x, data.translation.y, animate);
         node.isExpanded = data.isExpanded;
         if (data.isShowingInfo) {
             node.showInfo();
@@ -294,7 +291,7 @@ function printTestSerialistation() {
 }
 
 let stateJSON = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode2","contentNode3"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode3"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]}]';
-let arrangmentJSON = '[{"idString":"contentNode0","translation":{"x":212,"y":327},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":486,"y":346},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":232,"y":544},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":212,"y":472.79998779296875},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
+let arrangmentJSON = '[{"idString":"contentNode0","translation":{"x":212,"y":327},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":486,"y":346},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":232,"y":544},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":300,"y":472.79998779296875},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
 
 function TEST_REBUILD_FROM_HARDCODED_JSON() {
     fullyRebuildCanvasStateFromJSON(stateJSON, arrangmentJSON, null);
