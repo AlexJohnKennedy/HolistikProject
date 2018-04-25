@@ -805,3 +805,29 @@ function searchDown(node1, node2) {
     }
     return false;   //No matches found! We have run out of children!
 }
+
+/**
+ * This function will completely clear the entire canvas state, and the entire HTML DOM of Content Nodes.
+ */
+function clearCanvasState() {
+    canvasState.rootNodes = [];
+    canvasState.showingNodes = [];
+    canvasState.contextNode = null;
+
+    //Delete every node from the DOM
+    let drawingCanvas = document.getElementById("drawingCanvas");
+    for (let node of canvasState.contentNodeList) {
+        drawingCanvas.removeChild(node.htmlElement);
+
+        //Get the node's DOM mutation listener to stop observing.
+        node.mutationObserver.disconnect();
+    }
+    canvasState.contentNodeList = [];
+
+    //Delete every SVG line from the DOM
+    let svg = document.getElementById("svgObject");
+    for (let line of canvasState.hierarchyLines) {
+        svg.removeChild(line.line);
+    }
+    canvasState.hierarchyLines = [];
+}
