@@ -151,17 +151,21 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     let newNodeMap = parseAllNodeStatesFromJSON(nodeStateJSON);
 
     //Reassign the arrangment from JSON as well
-    newNodeMap     = parseAllNodeArrangmentsFromJSON(nodeArrangementJSON, newNodeMap, false);   //NO animate flag
+    newNodeMap     = parseAllNodeArrangementsFromJSON(nodeArrangementJSON, newNodeMap, false);   //NO animate flag
 
     //Assign the context node to the canvasState
-    canvasState.contextNode = newNodeMap.get(contextNodeId);
+    if (contextNodeId != null) {
+        canvasState.contextNode = newNodeMap.get(contextNodeId);
+    }
+    else {
+        canvasState.contextNode = null;
+    }
 
     //Place all of the contentNodes we rebuilt into the canvas state
     let maxIdSoFar = 0;   //Need to determine the new 'starting point' for generating html ids, so we don't overlap with one's from the
                           //parsed state...
     let itr = newNodeMap.values();
-    while (!itr.done) {
-        let n = itr.next().value;
+    for (let [id, n] of newNodeMap) {
         canvasState.contentNodeList.push(n);
 
         let idStr = n.idString.replace(/[^0-9]/g, '');  //Strip all non numeric characters from the idString, and leave original unchanged
@@ -209,18 +213,14 @@ function parseAllNodeStatesFromJSON(jsonString) {
         newNode.setTitleText(data.titleText);
         newNode.setDescriptionText(data.descriptionText);
         //TODO - newNode.setColour(data.colour);
-        newNode.colour(data.colour);    //TEMPORARY (until above to do get's done)
+        newNode.colour = data.colour;    //TEMPORARY (until above to do get's done)
 
         contentNodes.set(newNode.idString, newNode);
     }
     return contentNodes;
 }
 
-function parseAllNodeRelationshipsFromJSON(jsonString, nodeList) {
-    //TODO
-}
-
-function parseAllNodeArrangmentsFromJSON(jsonString, nodeMap, animate) {
+function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
     let arrangementData = JSON.parse(jsonString, parseNodeArrangment_reviver);
 
     //Setup all the new positions and sizes and states for each node. A corresponding node should exist in the node map.
@@ -262,28 +262,10 @@ function parseAllNodeArrangmentsFromJSON(jsonString, nodeMap, animate) {
  * @param value
  */
 function parseNodeState_reviver(key, value) {
-    if (key === 'idString'
-        ||  key === 'titleText'
-        ||  key === 'descriptionText'
-        ||  key === 'colour') {
+    //DEBUG
+    console.log("Reviving node state: key = "+key+", value = "+value);
 
-        return value;
-    }
-    else {
-        return undefined;
-    }
-}
-function parseNodeRelationships_reviver(key, value) {
-    if (key === 'idString'
-        ||  key === 'titleText'
-        ||  key === 'descriptionText'
-        ||  key === 'colour') {
-
-        return undefined;
-    }
-    else {
-        return value;
-    }
+    return value;
 }
 
 /**
@@ -313,3 +295,7 @@ function printTestSerialistation() {
 
 let stateJSON = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode2","contentNode3"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode3"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]}]';
 let arrangmentJSON = '[{"idString":"contentNode0","translation":{"x":212,"y":327},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":486,"y":346},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":232,"y":544},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":212,"y":472.79998779296875},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
+
+function TEST_REBUILD_FROM_HARDCODED_JSON() {
+    fullyRebuildCanvasStateFromJSON(stateJSON, arrangmentJSON, null);
+}
