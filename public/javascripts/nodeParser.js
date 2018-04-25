@@ -162,7 +162,7 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     let newNodeMap = parseAllNodeStatesFromJSON(nodeStateJSON);
 
     //Reassign the arrangment from JSON as well
-    parseAllNodeArrangementsFromJSON(nodeArrangementJSON, newNodeMap, false);   //NO animate flag
+    parseAllNodeArrangementsFromJSON(nodeArrangementJSON, newNodeMap, false);   //no animations when fully rebuilding from scratch.
 
     //Place all of the contentNodes we rebuilt into the canvas state
     let maxIdSoFar = 0;   //Need to determine the new 'starting point' for generating html ids, so we don't overlap with one's from the
