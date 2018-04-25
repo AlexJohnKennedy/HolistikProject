@@ -4,6 +4,10 @@
  * from the server.
  */
 
+// ---------------------------------------------------------------------------------------------------------------------
+// --- State Serialisation ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
 /**
  * This is a 'replacer' function, which is used by the JSON.stringify() call intending to serialize all the
  * ContentNode's STATE and STRUCTURE into JSON.
@@ -91,6 +95,45 @@ function hierarchicalRelationship_state_replacer(key, value) {
     else {
         //All other fields should be skipped!
         return undefined;
+    }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Visibility and Arrangement Serialisation ------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * This is a 'replacer' function, which is used by the JSON.stringify() call intending to serialize all the
+ * ContentNode's ARRANGEMENT and VISIBILITY into JSON.
+ *
+ * In other words, this is the replacer defined which serializes the following aspects of a ContentNode:
+ *      - translation of the node
+ *      - size of the node
+ *      - isExpanded
+ *      - isShowingInfo
+ *
+ * Note that this replacer does not serialize anything related to the SEMANTICS or STRUCTURE of the nodes on the
+ * canvas, instead, it only saves the current positions, sizes, and arrangements
+ *
+ * IMPORTANT NOTE: THE CONTEXT NODE WILL HAVE TO BE SAVED AND LOADED IN CONJUNCTION WITH THIS: BUT THIS REPLACER FUNC
+ *                 HAS NOTHING TO DO WITH THAT.
+ *
+ * @param key name of the property is currently about to be serialized
+ * @param value the value that will be the serialized value of this key.
+ */
+function serializeNodeArrangement_replacer(key, value) {
+    if (    key === 'idString'
+        ||  key === 'translation'
+        ||  key === 'size'
+        ||  key === 'isExpanded'
+        ||  key === 'isShowingInfo') {
+
+        return value;   //Serialize as normal!
+    }
+    else {
+        //Don't want to serialise anything else here
+        return undefined;   //Returning undefined makes the JSON.stringify() skip this property!
     }
 }
 
