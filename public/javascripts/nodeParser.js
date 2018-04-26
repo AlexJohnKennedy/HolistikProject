@@ -18,7 +18,7 @@
  *      - node description text
  *      - node colour
  *      - list of node children as relationship objects
- *          - each relationship object will be serialized to contain id references to the parent & children nodes
+ *      - each relationship object will be serialized to contain id references to the parent & children nodes
  *      - list of semantic relationships (Once those are implemented) TODO - Semantic relationship serializing/parsing, once semantic relationships are added to the app.
  *
  * Note that this replacer does not serialize anything related to the ARRANGEMENT or VISIBILITY of the nodes on the
@@ -32,7 +32,7 @@
  */
 function serializeNodeState_replacer(key, value) {
     //DEBUG
-    //console.log("JSON REPLACER: |rel? = "+(this instanceof HierarchicalRelationship)+"| |Key = "+key+"| |value = "+value);
+    console.log("JSON REPLACER: |rel? = "+(this instanceof HierarchicalRelationship)+"| |Key = "+key+"| |value = "+value);
 
     //Inside the replacer function, 'this' is set to the object who's property is reflected by the key currently being serialized.
     if (this instanceof ContentNode) {
@@ -385,10 +385,10 @@ function parseNodeArrangment_reviver(key, value) {
 
 function printTestSerialistation() {
     console.log('/* Node state and structure serialisation -------------------------------- */');
-    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeState_replacer));
+    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeState_replacer, 4));
 
     console.log('/* Arrangement and visibility serialisation ------------------------------ */');
-    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeArrangement_replacer));
+    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeArrangement_replacer, 4));
 }
 
 let stateJSON = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode2","contentNode3"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode3"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]}]';
