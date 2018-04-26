@@ -1,20 +1,8 @@
-const faker = require('faker');
-
-let randomName = faker.name.findName(); // Rowan Nikolaus
-let randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
-let randomCard = faker.helpers.createCard(); // random contact card containing many properties
-
-let users = [];
-
-for (let i=0; i<100; i++) {
-    let obj = {
-        firstName : faker.name.firstName(),
-        lastName : faker.name.lastName(),
-        id : i
-    }
-    users.push(obj);
+//Include Mongoose and open a connection to our database
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://Jaiden:HelloWorld123@ds061474.mlab.com:61474/holistik-prod');
+if (err) {
+   console.log("Failed to connect to mLab") ;
+} else {
+    console.log("Successfully connected to mLab");
 }
-
-module.exports = {
-    users
-};
