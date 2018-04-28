@@ -158,8 +158,8 @@ class AjaxProjectLoader {
      * This sends data to the server, and will fully replace what is returned when 'load project to server' is called
      */
     saveProjectToServer() {
-        let stateBody = '{ "projectId": ' + this.projectId + ', "data": '+serialiseNodeState()+' }';
-        let arrangementBody = '{ "projectId": ' + this.projectId + ', "data": '+serialiseNodeArrangement()+' }';
+        let stateBody = '{ "projectId": ' + this.projectId + ', "contentNodes": '+serialiseNodeState()+' }';
+        let arrangementBody = '{ "projectId": ' + this.projectId + ', "contentNodeArrangement": '+serialiseNodeArrangement()+' }';
 
         this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_SAVE_URL, stateBody, function(response) {
             console.log("Got response from server after saving project structure:");

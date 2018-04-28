@@ -4,6 +4,7 @@
  */
 
 const db = require('../models/db.js');
+const projectSchema = require('../models/projectSchema.js');
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -53,10 +54,25 @@ function loadArrangement(req, res) {
 }
 
 function projectStructureSave(req, res) {
-    //TODO -- REAL DATABASE WITH MONGOOSE
     console.log("Got a proj structure save request, with req.body:");
     console.log(req.body);
 
+    //construct a Mongoose model with the request body
+    let structure = new projectSchema.structureModel(req.body);
+
+    //write to the database
+    structure.save(function (err, structure) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("Saved structure. ID: " + structure.projectId);
+        }
+    });
+
+    //indicate back to the client what was saved!
+    res.send(req.body);
+
+    /*
     //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
     //(in the real app, we will parse the information into a mongoose shcema and save it to the database!)
     setTimeout(
@@ -68,13 +84,29 @@ function projectStructureSave(req, res) {
         },
         1500
     );
+    */
 }
 
 function projectArrangementSave(req, res) {
-    //TODO -- REAL DATABASE WITH MONGOOSE
     console.log("Got a proj arrangement save request, with req.body:");
     console.log(req.body);
 
+    //construct a Mongoose model with the request body
+    let arrangement = new projectSchema.arrangementModel(req.body);
+
+    //write to the database
+    arrangement.save(function (err, arrangement) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("Saved arrangement. ID: " + arrangement.projectId);
+        }
+    });
+
+    //indicate back to the client what was saved!
+    res.send(req.body);
+
+    /*
     //NOTE: request body arrives already parsed by our body-parser which the framework is using!!
 
     //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
@@ -88,6 +120,7 @@ function projectArrangementSave(req, res) {
         },
         1200
     );
+    */
 }
 
 function saveArrangement(req, res) {

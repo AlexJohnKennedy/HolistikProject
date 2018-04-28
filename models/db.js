@@ -1,8 +1,18 @@
 //Include Mongoose and open a connection to our database
 const mongoose = require('mongoose');
-//let err = mongoose.connect('mongodb://jaidenkf:HelloWorld123@ds061474.mlab.com:61474/holistik-prod');
 
+//database user credentials
+const username = "Jaiden";
+const password = "meme";
 
+//attempt to connect to the remote mLab Mongodb database
+mongoose.connect('mongodb://'+username+':'+password+'@ds061474.mlab.com:61474/holistik-prod', function(err) {
+    if (err) {
+        console.log("Error connecting to mLab.");
+    } else {
+        console.log("Successfully connect to mLab.");
+    }
+});
 
 //For client side AJAX testing, we are using hardcoded JSON in the server side for now.
 let stateJSON_2 = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode0","contentNode2"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"SUppity Bup","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[]}]';
