@@ -51,9 +51,13 @@ function HttpClientWrapper() {
     this.sendJsonPostRequest = function(url, bodyString, callbackFunc) {
         let request = new XMLHttpRequest();
 
+        //Define a callback for when the request state changes
         request.onreadystatechange = function() {
             if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
                 callbackFunc(request.responseText);
+            }
+            else if (request.readyState === XMLHttpRequest.DONE) {
+                console.trace("POST REQUEST FAILED: URL was "+url+", RESPONSE CODE: "+request.status);
             }
         };
 
@@ -94,8 +98,11 @@ class ajaxProjectLoader {
     // --- Methods --------------------------------------------------------------------
 
     /**
+     * Used to FULLY load a project from the server. Usually this should probably only be called when the page first
+     * loads, if the user was loading an existing project.
+     *
      * Makes simple 'load structure' and 'load arrangement' requests and then re-builds the project from scratch when
-     * the server returns the resulting JSON.
+     * the server returns both of the resulting JSON.
      */
     loadProjectFromServer() {
         let structureJSON = null;
@@ -107,7 +114,7 @@ class ajaxProjectLoader {
             pendingRequestCount--;
 
             if (pendingRequestCount <= 0) {
-                fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON, contextNodeId);
+                fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
             }
         });
 
@@ -116,10 +123,28 @@ class ajaxProjectLoader {
             pendingRequestCount--;
 
             if (pendingRequestCount <= 0) {
-                fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON, contextNodeId);
+                fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
             }
         });
+    }
 
+    /**
+     * Used to update the current project nodes with a pre-saved arrangement from the server.
+     *
+     * Usually, this request will follow from the server sending us a set of available options with associated ids,
+     * and the user choosing one of them.
+     *
+     * @param arrangementId the server-side id of the arrangement we want, with respect to the current project
+     * @param hideMissingNodes flag: if true, nodes missing from the saved arrangement data will be set to invisible
+     * @param animate flag: if true, current nodes will animate when they move to the new arrangement
+     * @param switchContext flag: if true, we will let the arrangement data change the current context node
+     */
+    loadSavedArrangementFromServer(arrangementId, hideMissingNodes, animate, switchContext) {
+        let msgBody = JSON.stringify({ projectId: this.projectId, arrangementId: arrangementId });
+
+        this.httpClient.sendJsonPostRequest(LOAD_ARRANGEMENT_URL, msgBody, function(response) {
+            updateArrangementFromJSON(response, hideMissingNodes, animate, switchContext);
+        });
     }
 
 }
