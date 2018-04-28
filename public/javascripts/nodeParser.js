@@ -322,9 +322,10 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
  * Finally, the caller can specify whether the nodes should be animated to their parsed positions or not.
  * @param jsonString
  * @param hideMissingNodesFlag
- * @param animate
+ * @param animate flag to determine if we should animate to the new arrangement or not
+ * @param contextSwitch flag to determine if we should apply a context switch in this update
  */
-function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate) {
+function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate, contextSwitch) {
     //First, place all the content nodes into a map structure so that the parser function can recieve it.
     let nodeMap = new Map();
     for (let node of canvasState.contentNodeList) {
@@ -335,11 +336,13 @@ function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate) {
     let result = parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate);
     let updateNodes = result.updatedNodes;
 
-    if (result.contextNodeId != null) {
-        switchContext(nodeMap.get(result.contextNodeId));
-    }
-    else {
-        switchContext(null);
+    if (contextSwitch) {
+        if (result.contextNodeId != null) {
+            switchContext(nodeMap.get(result.contextNodeId));
+        }
+        else {
+            switchContext(null);
+        }
     }
 
     //If we need to hideMissingNodes, then do so. PREPARE FOR CANCER NESTING!! (>:O)
