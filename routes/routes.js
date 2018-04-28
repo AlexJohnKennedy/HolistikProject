@@ -36,9 +36,9 @@ const PROJECT_STRUCTURE_SAVE_URL   = "/saveProjectStructure";
 const PROJECT_ARRANGEMENT_SAVE_URL = "/saveProjectArrangement";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
-router.post(PROJECT_STRUCTURE_LOAD_URL,   userDataController.APIcontroller.projectStructureLoad);
-router.post(PROJECT_ARRANGEMENT_LOAD_URL, userDataController.APIcontroller.projectArrangementLoad);
-router.post(LOAD_ARRANGEMENT_URL,         userDataController.APIcontroller.loadArrangement);
+router.post(PROJECT_STRUCTURE_LOAD_URL,   userDataController.apiController.projectStructureLoad);
+router.post(PROJECT_ARRANGEMENT_LOAD_URL, userDataController.apiController.projectArrangementLoad);
+router.post(LOAD_ARRANGEMENT_URL,         userDataController.apiController.loadArrangement);
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()

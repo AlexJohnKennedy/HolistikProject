@@ -84,7 +84,7 @@ function HttpClientWrapper() {
  * This syntactic-sugar-'class' specifies an object prototype which will encapsulate AJAX request functionality for a
  * given project.
  */
-class ajaxProjectLoader {
+class AjaxProjectLoader {
 
     //Constructor. All we need to pass in to any instantiated project loader object is the project id which we will use
     //to tell the server which project we are loading/saving to/from

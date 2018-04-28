@@ -417,5 +417,6 @@ function printTestSerialistation() {
 
 
 function TEST_REBUILD_FROM_HARDCODED_JSON() {
-    fullyRebuildCanvasStateFromJSON(stateJSON_2, arrangmentJSON_2, null);
+    let ajaxHandler = new AjaxProjectLoader(5 /* arbitrary, since project id is not implmeented yet..*/);
+    ajaxHandler.loadProjectFromServer();
 }

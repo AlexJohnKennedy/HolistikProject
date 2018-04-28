@@ -1,5 +1,6 @@
-//Use the 'importing' functionality of 'require' call to access our database (which currently is just another local JS code)
+//Use the 'importing' functionality of 'require' call to access our database
 const db = require('../models/db.js');
+const apiController = require('./apiController.js');
 
 
 //In this controller file, we are going to define the 'functions' which generate the responses to certain requests.
@@ -74,5 +75,6 @@ module.exports = {
     generateUserList : generateUserList,
     userDetail : userDetail,
     mainPageGet : mainPageGet,
-    helpPageGet : helpPageGet
-}
+    helpPageGet : helpPageGet,
+    apiController : apiController
+};

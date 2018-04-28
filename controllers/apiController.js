@@ -1,0 +1,52 @@
+/*
+ * This file contains and defines the fucntionality for the server API controller. In other words, controller logic for
+ * how the server handles project save and load data requests (AJAX from the front end) is contained here!
+ */
+
+const db = require('../models/db.js');
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Functions which will be invoked by the router. ------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+function projectStructureLoad(req, res) {
+    //TODO -- REAL DATABASE
+
+    //For now, we will literally just wait 4 seconds, then send back the hard coded JSON
+    setTimeout(
+        function() {
+            res.send(db.testState);
+        },
+        4000
+    );
+}
+
+function projectArrangementLoad(req, res) {
+    //TODO -- REAL DATABASE
+
+    //For now, we will literally just wait 5 seconds, then send back the hard coded JSON
+    setTimeout(
+        function() {
+            res.send(db.testArrangement);
+        },
+        5000
+    );
+}
+
+function loadArrangement(req, res) {
+    //TODO -- REAL DATABASE
+
+    //For now, we will literally just wait 5 seconds, then send back the hard coded JSON
+    setTimeout(
+        function() {
+            res.send(db.testArrangement);
+        },
+        2500
+    );
+}
+
+module.exports = {
+    projectStructureLoad: projectStructureLoad,
+    projectArrangementLoad: projectArrangementLoad,
+    loadArrangement: loadArrangement
+};
