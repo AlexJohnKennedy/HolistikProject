@@ -11,29 +11,10 @@
 <body>
 
 <!-- ejs to present the profile page which shows the information about the user and the notes created by the user -->
-<nav class="navbar navbar-default" role="navigation">
-    <!-- use a simple div to 'contain' the nav bar elements -->
-    <div class="container-fluid" id="generalHeader">
-        <div class="navbar-header">
-            <!-- The x of the nav bar will be a 'brand name' element, also serving as a hyperlink to the homepage? -->
-            <a class="navbar-brand brandNameText" href="/main">
-                Holistik
-            </a>
-            <!-- List of remaining nav bar elements -->
-            <ul class="nav navbar-nav">
-                <li>
-                    <name>User Name</name>
-                </li>
-                <li>
-                    |
-                </li>
-                <li>
-                    <a title="sign-out to landing page">Sign out</a> <!--<a href="/profile">Profile</a>-->
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+
+<header>
+    <% include ../partials/header.ejs %>
+</header>
 
 <div class="wrapper">
 
@@ -61,20 +42,6 @@
         </div>
 
         <div class="divisionLine"></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         <!-- render all the notebooks into an unordered list -->

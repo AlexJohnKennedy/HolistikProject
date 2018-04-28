@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Help page - Holistik</title>
+    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/sidebarStyling.css">
     <link rel="stylesheet" href="/stylesheets/canvasStyling.css">
-    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/footerStyling.css">
     <link rel="stylesheet" href="/stylesheets/helpPageStyling.css">
+    <meta name="viewport" content="width=device-width", initial-scale="1">
 </head>
 <body>
-    <h1>
-        Help page
-    </h1>
+
+    <header>
+        <% include ../partials/header.ejs %>
+    </header>
 
     <!-- ejs to represent the popup window where the user can inspect the help page -->
     <div class="white-content carousel slide" id="popupHelpWindow" data-ride="carousel">

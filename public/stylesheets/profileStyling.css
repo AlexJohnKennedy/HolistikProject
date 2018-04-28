@@ -5,15 +5,6 @@ body {
     margin: 0;
 }
 
-.navbar-nav {
-    float: right;
-    margin-right: 12%;
-}
-
-name {
-    font-weight: 400;
-}
-
 .wrapper {
     position: relative;
     display: grid;
