@@ -25,6 +25,9 @@ router.get('/users/:id', userDataController.userDetail);
 //Route for the help page
 router.get('/help', userDataController.helpPageGet);
 
+//Route for the profile page
+router.get('/profile', userDataController.profilePageGet);
+
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()

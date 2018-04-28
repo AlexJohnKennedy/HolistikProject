@@ -36,12 +36,12 @@ h3 {
 }
 
 h4 {
-  color: aliceblue;
-  border-radius: 10px;
-  margin: 5% 40% 0 40%;
+  border-radius: 5px;
+  margin: 5% 43% 0 43%;
   font-family: 'Open Sans';
+  font-weight: 400;
   font-size: 2em;
-  background-color: rgb(229,210,124);
+  background-color: rgb(223,204,123);
 }
 
 a {

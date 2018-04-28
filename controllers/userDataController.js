@@ -29,7 +29,11 @@ function generateUserList(req, res) {
 
 function helpPageGet(req, res) {
     res.render('pages/helpPage');
-}
+};
+
+function profilePageGet(req,res) {
+    res.render('pages/profilePage');
+};
 
 //Define behaviour and access data to get specific user page
 function userDetail(req, res) {
@@ -74,5 +78,6 @@ module.exports = {
     generateUserList : generateUserList,
     userDetail : userDetail,
     mainPageGet : mainPageGet,
-    helpPageGet : helpPageGet
-}
+    helpPageGet : helpPageGet,
+    profilePageGet: profilePageGet
+};

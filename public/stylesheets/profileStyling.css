@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+
+body {
+    margin: 0;
+}
+
+.navbar-nav {
+    float: right;
+    margin-right: 12%;
+}
+
+name {
+    font-weight: 400;
+}
+
+.wrapper {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(500px, 650px);
+    position: relative;
+    padding: 0;
+    background-color: rgb(237,237,237);
+    width: 99.5%;
+    height: 100%;
+}
+
+#contentHolder {
+    margin: 0 12% 0 12%;
+}
+
+.searchBox {
+    position: fixed;
+    top: 84px;
+    right: 12%;
+    border: 1px solid rgb(223,220,217);
+}
+
+#searchIconBox {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    right: 3px;
+}
+
+i {
+    font-size: 16px;
+}
+
+input[name="searchNotebook"] {
+    width: 250px;
+    height: 32px;
+
+}
+
+#headerText {
+    font-size: 35px;
+}
+
+#notebookTabs a:link {
+    text-decoration: none;
+    color: black;
+    font-family: "Open Sans";
+    font-size: 18px;
+}
+
+#notebookTabs {
+    display: inline-block;
+}
+
+.notebookTab {
+    margin-right: 40px;
+    padding-top: 11px;
+}
+
+#notebookTabPanel {
+    height: 47px;
+    display: block;
+}
+
+.divisionLine {
+    display: block;
+    border: 1px solid black;
+}

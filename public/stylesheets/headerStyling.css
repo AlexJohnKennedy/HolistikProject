@@ -19,7 +19,7 @@
     background-color: grey;
 }
 
-.container-fluid {
+#generalHeader {
     background-color: rgb(219, 229, 234);
     padding-bottom: 10px;
 }
