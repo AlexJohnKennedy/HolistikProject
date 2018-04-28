@@ -187,7 +187,7 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
         let idNum = parseInt(idStr);
 
         //DEBUG
-        console.log("Parsed an id from a node we just rebuilt, it was "+idNum+", and the idString we parsed it from was "+n.idString);
+        //console.log("Parsed an id from a node we just rebuilt, it was "+idNum+", and the idString we parsed it from was "+n.idString);
 
         if (idNum > maxIdSoFar) {
             maxIdSoFar = idNum;
@@ -226,7 +226,7 @@ function parseAllNodeStatesFromJSON(jsonString) {
     let stateData_noRels = JSON.parse(jsonString, parseNodeState_reviver);
 
     //DEBUG
-    console.log(stateData_noRels);
+    //console.log(stateData_noRels);
 
     //Sweet! now we can iterate through the data packages and build ContentNode objects! Note that this will also update the DOM
     let contentNodes = new Map();
@@ -385,7 +385,7 @@ function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate, co
  */
 function parseNodeState_reviver(key, value) {
     //DEBUG
-    console.log("Reviving node state: key = "+key+", value = "+value);
+    //console.log("Reviving node state: key = "+key+", value = "+value);
 
     return value;
 }
@@ -408,11 +408,11 @@ function parseNodeArrangment_reviver(key, value) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 function printTestSerialistation() {
-    console.log('/* Node state and structure serialisation -------------------------------- */');
-    console.log(serialiseNodeState());
+    //console.log('/* Node state and structure serialisation -------------------------------- */');
+    //console.log(serialiseNodeState());
 
-    console.log('/* Arrangement and visibility serialisation ------------------------------ */');
-    console.log(serialiseNodeArrangement());
+    //console.log('/* Arrangement and visibility serialisation ------------------------------ */');
+    //console.log(serialiseNodeArrangement());
 }
 
 

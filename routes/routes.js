@@ -1,9 +1,12 @@
 //Gain access to express package so that we can edit the 'router' component of the application object.
 
 const express = require('express');
-const userDataController = require('../controllers/userDataController');
-
 const router = express.Router();     //This will set the routing and response callbacks for the application requests
+
+const requestBodyParser = require('body-parser');   //Middleware used to parse HTTP request bodys. see https://expressjs.com/en/4x/api.html#req for example usage with express
+router.use(requestBodyParser.json()); // for parsing application/json
+
+const userDataController = require('../controllers/userDataController');
 
 
 // ---------------------------------------------------------------------------------------------------------------------

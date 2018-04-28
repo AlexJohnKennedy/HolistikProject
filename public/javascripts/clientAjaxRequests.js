@@ -65,7 +65,7 @@ function HttpClientWrapper() {
         request.open("POST", url, true);
 
         //Specify the message header; indicate that the posted content is UTF 8 encoded JSON data.
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
 
         //Send the request!
         request.send(bodyString);   //Send the bodyString in the POST message body.
@@ -109,7 +109,7 @@ class AjaxProjectLoader {
         let arrangementJSON = null;
         let pendingRequestCount = 2;
 
-        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_LOAD_URL, this.projectId, function(response) {
+        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_LOAD_URL, JSON.stringify({ projectId: this.projectId }), function(response) {
             structureJSON = response;
             pendingRequestCount--;
 
@@ -118,7 +118,7 @@ class AjaxProjectLoader {
             }
         });
 
-        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_LOAD_URL, this.projectId, function(response) {
+        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), function(response) {
             arrangementJSON = response;
             pendingRequestCount--;
 
@@ -141,6 +141,7 @@ class AjaxProjectLoader {
      */
     loadSavedArrangementFromServer(arrangementId, hideMissingNodes, animate, switchContext) {
         let msgBody = JSON.stringify({ projectId: this.projectId, arrangementId: arrangementId });
+
 
         this.httpClient.sendJsonPostRequest(LOAD_ARRANGEMENT_URL, msgBody, function(response) {
             updateArrangementFromJSON(response, hideMissingNodes, animate, switchContext);
