@@ -8,6 +8,19 @@
 // --- Serialisation ---------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
+function serialiseNodeState() {
+    return JSON.stringify(canvasState.contentNodeList, serializeNodeState_replacer);
+}
+
+function serialiseNodeArrangement() {
+    if (canvasState.contextNode == null) {
+        return '{ "contextNodeId": null, "nodeData": ' + JSON.stringify(canvasState.contentNodeList, serializeNodeArrangement_replacer) + ' }';
+    }
+    else {
+        return '{ "contextNodeId": "' + canvasState.contextNode.idString + '", "nodeData": ' + JSON.stringify(canvasState.contentNodeList, serializeNodeArrangement_replacer) + ' }';
+    }
+}
+
 /**
  * This is a 'replacer' function, which is used by the JSON.stringify() call intending to serialize all the
  * ContentNode's STATE and STRUCTURE into JSON.
@@ -32,7 +45,7 @@
  */
 function serializeNodeState_replacer(key, value) {
     //DEBUG
-    console.log("JSON REPLACER: |rel? = "+(this instanceof HierarchicalRelationship)+"| |Key = "+key+"| |value = "+value);
+    //console.log("JSON REPLACER: |rel? = "+(this instanceof HierarchicalRelationship)+"| |Key = "+key+"| |value = "+value);
 
     //Inside the replacer function, 'this' is set to the object who's property is reflected by the key currently being serialized.
     if (this instanceof ContentNode) {
@@ -154,7 +167,7 @@ function serializeNodeArrangement_replacer(key, value) {
  * @param nodeArrangementJSON
  * @param contextNodeId
  */
-function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, contextNodeId) {
+function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
     //Clear the current canvas state, and FULLY rebuild from scratch
     clearCanvasState();
 
@@ -162,7 +175,7 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     let newNodeMap = parseAllNodeStatesFromJSON(nodeStateJSON);
 
     //Reassign the arrangment from JSON as well
-    parseAllNodeArrangementsFromJSON(nodeArrangementJSON, newNodeMap, false);   //no animations when fully rebuilding from scratch.
+    let arrangementResult = parseAllNodeArrangementsFromJSON(nodeArrangementJSON, newNodeMap, false);   //no animations when fully rebuilding from scratch.
 
     //Place all of the contentNodes we rebuilt into the canvas state
     let maxIdSoFar = 0;   //Need to determine the new 'starting point' for generating html ids, so we don't overlap with one's from the
@@ -183,6 +196,8 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, con
     //Okay, we have tracked the maximum id suffix number. Now, for new nodes that the user creates, we need to ensure the
     //id suffix is always greater than the max suffix currently in existence..
     currIdNum = maxIdSoFar + 1;
+
+    let contextNodeId = arrangementResult.contextNodeId;
 
     //Assign the context node to the canvasState
     if (contextNodeId != null) {
@@ -244,7 +259,7 @@ function parseAllNodeStatesFromJSON(jsonString) {
 }
 
 /**
- * This function is used to update node arrangments based on a JSON string containing arrangment information
+ * This function is used to update node arrangments based on a JSON string containing arrangement information
  * @param jsonString
  * @param nodeMap
  * @param animate
@@ -255,7 +270,7 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
     let updatedNodes = new Set();  //List of all nodes that were acutally updated by this funciton. We will return this, in case anyone ever needs to know which nodes moved.
 
     //Setup all the new positions and sizes and states for each node. A corresponding node should exist in the node map.
-    for (let data of arrangementData) {
+    for (let data of arrangementData.nodeData) {
         //Lookup corresponding node.
         let node = nodeMap.get(data.idString);
         if (node === undefined) {
@@ -284,7 +299,10 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
         }
     }
 
-    return updatedNodes;
+    return {
+        updatedNodes: updatedNodes,
+        contextNodeId: arrangementData.contextNodeId
+    };
 }
 
 /**
@@ -304,22 +322,25 @@ function parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate) {
  * Finally, the caller can specify whether the nodes should be animated to their parsed positions or not.
  * @param jsonString
  * @param hideMissingNodesFlag
+ * @param animate
  */
-function updateArrangementFromJSON(newContextNodeId, jsonString, hideMissingNodesFlag, animate) {
+function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate) {
     //First, place all the content nodes into a map structure so that the parser function can recieve it.
-    let tobeContext;
     let nodeMap = new Map();
     for (let node of canvasState.contentNodeList) {
         nodeMap.set(node.idString, node);
-        if (node.idString === newContextNodeId) {
-            tobeContext = node;
-        }
     }
 
     //Now, parse the information and apply all changes
-    let updateNodes = parseAllNodeStatesFromJSON(jsonString, nodeMap, animate);
+    let result = parseAllNodeArrangementsFromJSON(jsonString, nodeMap, animate);
+    let updateNodes = result.updatedNodes;
 
-    switchContext(tobeContext);
+    if (result.contextNodeId != null) {
+        switchContext(nodeMap.get(result.contextNodeId));
+    }
+    else {
+        switchContext(null);
+    }
 
     //If we need to hideMissingNodes, then do so. PREPARE FOR CANCER NESTING!! (>:O)
     if (hideMissingNodesFlag) {
@@ -385,17 +406,14 @@ function parseNodeArrangment_reviver(key, value) {
 
 function printTestSerialistation() {
     console.log('/* Node state and structure serialisation -------------------------------- */');
-    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeState_replacer, 4));
+    console.log(serialiseNodeState());
 
     console.log('/* Arrangement and visibility serialisation ------------------------------ */');
-    console.log(JSON.stringify(canvasState.contentNodeList, serializeNodeArrangement_replacer, 4));
+    console.log(serialiseNodeArrangement());
 }
 
-let stateJSON = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode2","contentNode3"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode3"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]}]';
-let arrangmentJSON = '[{"idString":"contentNode0","translation":{"x":212,"y":327},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":486,"y":346},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":232,"y":544},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":300,"y":472.79998779296875},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
-
-let stateJSON_2 = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"Parent","descriptionText":"I have 2 children","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode0","children":["contentNode3","contentNode2","contentNode4"]}]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"Parent numeros dos","descriptionText":"I only have child, rip ME!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode0"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the Help page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode3","colour":"#a6cdf2","titleText":"Banana","descriptionText":"Edible fruit, good with uncle tobys traditional oats!","childrenList":[]},{"idString":"contentNode4","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[]}]';
-let arrangmentJSON_2 = '[{"idString":"contentNode0","translation":{"x":779,"y":491},"size":{"height":110.79998779296875,"width":192.4000244140625},"isExpanded":false,"isShowingInfo":true},{"idString":"contentNode1","translation":{"x":486,"y":338},"size":{"height":64.60000610351562,"width":281.20001220703125},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":634,"y":770},"size":{"height":72.79998779296875,"width":126.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode3","translation":{"x":82,"y":571},"size":{"height":200,"width":268.4000244140625},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode4","translation":{"x":370,"y":712},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false}]';
+let stateJSON_2 = '[{"idString":"contentNode0","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[]},{"idString":"contentNode1","colour":"#a6cdf2","titleText":"New concept","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[{"displayedLabel":"Child","categoryLabel":"child","parentNode":"contentNode1","children":["contentNode0","contentNode2"]}]},{"idString":"contentNode2","colour":"#a6cdf2","titleText":"SUppity Bup","descriptionText":"See the \'Help\' page for some tips on using Holistik!","childrenList":[]}]';
+let arrangmentJSON_2 = '{ "contextNodeId": "contentNode1", "nodeData": [{"idString":"contentNode0","translation":{"x":84,"y":327},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode1","translation":{"x":269,"y":135},"size":{"height":60,"width":120},"isExpanded":true,"isShowingInfo":false},{"idString":"contentNode2","translation":{"x":268,"y":420},"size":{"height":60,"width":120},"isExpanded":false,"isShowingInfo":false}] }';
 
 function TEST_REBUILD_FROM_HARDCODED_JSON() {
     fullyRebuildCanvasStateFromJSON(stateJSON_2, arrangmentJSON_2, null);

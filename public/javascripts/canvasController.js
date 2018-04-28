@@ -602,6 +602,12 @@ function switchContext(newContextNode) {
     let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
     let contextText = document.getElementById("contextNameTextBox");
 
+    //Safety check: if undefined is passed, we should just set to global context!
+    if (newContextNode === undefined) {
+        console.log("WARNING: switchContext method was passed UNDEFINED as object value. We are handling this by just switching to global context");
+        newContextNode = null;
+    }
+
     //Set the context node in the canvas state to be whatever was just passed in!
     canvasState.contextNode = newContextNode;
 
