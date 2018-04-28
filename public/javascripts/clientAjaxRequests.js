@@ -146,5 +146,4 @@ class AjaxProjectLoader {
             updateArrangementFromJSON(response, hideMissingNodes, animate, switchContext);
         });
     }
-
 }

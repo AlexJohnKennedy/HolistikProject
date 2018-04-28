@@ -17,7 +17,7 @@ function projectStructureLoad(req, res) {
         function() {
             res.send(db.testState);
         },
-        4000
+        2600
     );
 }
 
@@ -29,7 +29,7 @@ function projectArrangementLoad(req, res) {
         function() {
             res.send(db.testArrangement);
         },
-        5000
+        1000
     );
 }
 

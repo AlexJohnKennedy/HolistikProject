@@ -417,6 +417,11 @@ function printTestSerialistation() {
 
 
 function TEST_REBUILD_FROM_HARDCODED_JSON() {
-    let ajaxHandler = new AjaxProjectLoader(5 /* arbitrary, since project id is not implmeented yet..*/);
+    let ajaxHandler = new AjaxProjectLoader(5 /* arbitrary, since project id is not implemented yet..*/);
     ajaxHandler.loadProjectFromServer();
+}
+
+function TEST_ARRANGE_FROM_HARDCODED_JSON() {
+    let ajaxHandler = new AjaxProjectLoader(5 /* arbitrary, since project id is not implemented yet..*/);
+    ajaxHandler.loadSavedArrangementFromServer(3, false, true, true);
 }

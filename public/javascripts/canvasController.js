@@ -349,10 +349,10 @@ function deleteContentNode(node, stitchTree) {
         canvasState.rootNodes.splice(index,1);
 
         //Now, if the node that was just deleted was a root node, then we should add the children of that root node as new
-        //root nodes, so long as it was already visible. This ensures that children don't randomly disappear.
+        //root nodes. This ensures that children don't randomly disappear.
         for (let rel of node.childrenList) {
             for (let child of rel.children) {
-                if (child.isVisible && canvasState.rootNodes.indexOf(child) === -1) {
+                if (canvasState.rootNodes.indexOf(child) === -1) {
                     addNewRootNode(child);
                 }
             }
