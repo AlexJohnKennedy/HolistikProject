@@ -43,6 +43,10 @@ router.post(PROJECT_STRUCTURE_LOAD_URL,   userDataController.apiController.proje
 router.post(PROJECT_ARRANGEMENT_LOAD_URL, userDataController.apiController.projectArrangementLoad);
 router.post(LOAD_ARRANGEMENT_URL,         userDataController.apiController.loadArrangement);
 
+router.post(PROJECT_STRUCTURE_SAVE_URL,   userDataController.apiController.projectStructureSave);
+router.post(PROJECT_ARRANGEMENT_SAVE_URL, userDataController.apiController.projectArrangementSave);
+router.post(SAVE_ARRANGEMENT_URL,         userDataController.apiController.saveArrangement);
+
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()
 module.exports = router;

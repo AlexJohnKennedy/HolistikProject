@@ -52,8 +52,70 @@ function loadArrangement(req, res) {
     );
 }
 
+function projectStructureSave(req, res) {
+    //TODO -- REAL DATABASE WITH MONGOOSE
+    console.log("Got a proj structure save request, with req.body:");
+    console.log(req.body);
+
+    //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
+    //(in the real app, we will parse the information into a mongoose shcema and save it to the database!)
+    setTimeout(
+        function() {
+            let data = JSON.stringify(req.body.data);
+
+            db.testState = data;
+            res.send(data);     //Indicate back to client what was saved!
+        },
+        1500
+    );
+}
+
+function projectArrangementSave(req, res) {
+    //TODO -- REAL DATABASE WITH MONGOOSE
+    console.log("Got a proj arrangement save request, with req.body:");
+    console.log(req.body);
+
+    //NOTE: request body arrives already parsed by our body-parser which the framework is using!!
+
+    //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
+    //(in the real app, we will parse the information into a mongoose shcema and save it to the database!)
+    setTimeout(
+        function() {
+            let data = JSON.stringify(req.body.data);
+
+            db.testArrangement = data;
+            res.send(data);     //Indicate back to client what was saved!
+        },
+        1200
+    );
+}
+
+function saveArrangement(req, res) {
+    //TODO -- REAL DATABASE WITH MONGOOSE
+    console.log("Got an arrangement save request, with req.body:");
+    console.log(req.body);
+
+    //NOTE: request body arrives already parsed by our body-parser which the framework is using!!
+
+    //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
+    //(in the real app, we will parse the information into a mongoose shcema and save it to the database!)
+    setTimeout(
+        function() {
+            let data = JSON.stringify(req.body.data);
+
+            db.testArrangement = data;
+            res.send(data);     //Indicate back to client what was saved!
+        },
+        800
+    );
+}
+
 module.exports = {
-    projectStructureLoad: projectStructureLoad,
-    projectArrangementLoad: projectArrangementLoad,
-    loadArrangement: loadArrangement
+    projectStructureLoad   : projectStructureLoad,
+    projectArrangementLoad : projectArrangementLoad,
+    loadArrangement        : loadArrangement,
+
+    projectStructureSave   : projectStructureSave,
+    projectArrangementSave : projectArrangementSave,
+    saveArrangement        : saveArrangement
 };

@@ -109,11 +109,15 @@ class AjaxProjectLoader {
         let arrangementJSON = null;
         let pendingRequestCount = 2;
 
+        //TODO: DISABLE CANVAS AND SIDEBAR AND DISPLAY A 'LOADING' ICON WHILE PROJECT IS BEING LOADED!! THIS IS TO PREVENT USER FUCKING WITH NODES THAT ARE ABOUT TO BE SPONTANEOUSLY DELETED
+        //TODO: DISABLE CANVAS AND SIDEBAR AND DISPLAY A 'LOADING' ICON WHILE PROJECT IS BEING LOADED!! THIS IS TO PREVENT USER FUCKING WITH NODES THAT ARE ABOUT TO BE SPONTANEOUSLY DELETED
+
         this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_LOAD_URL, JSON.stringify({ projectId: this.projectId }), function(response) {
             structureJSON = response;
             pendingRequestCount--;
 
             if (pendingRequestCount <= 0) {
+                //TODO: REACTIVATE CANVAS HERE
                 fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
             }
         });
@@ -123,6 +127,7 @@ class AjaxProjectLoader {
             pendingRequestCount--;
 
             if (pendingRequestCount <= 0) {
+                //TODO: REACTIVATE CANVAS HERE
                 fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
             }
         });
@@ -142,9 +147,27 @@ class AjaxProjectLoader {
     loadSavedArrangementFromServer(arrangementId, hideMissingNodes, animate, switchContext) {
         let msgBody = JSON.stringify({ projectId: this.projectId, arrangementId: arrangementId });
 
-
         this.httpClient.sendJsonPostRequest(LOAD_ARRANGEMENT_URL, msgBody, function(response) {
             updateArrangementFromJSON(response, hideMissingNodes, animate, switchContext);
+        });
+    }
+
+    /**
+     * Issues a full save of the current state, structure and arrangement for this project.
+     *
+     * This sends data to the server, and will fully replace what is returned when 'load project to server' is called
+     */
+    saveProjectToServer() {
+        let stateBody = '{ "projectId": ' + this.projectId + ', "data": '+serialiseNodeState()+' }';
+        let arrangementBody = '{ "projectId": ' + this.projectId + ', "data": '+serialiseNodeArrangement()+' }';
+
+        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_SAVE_URL, stateBody, function(response) {
+            console.log("Got response from server after saving project structure:");
+            console.log(response);
+        });
+        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_SAVE_URL, arrangementBody, function(response) {
+            console.log("Got response from server after saving project arrangement:");
+            console.log(response);
         });
     }
 }
