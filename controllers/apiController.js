@@ -64,7 +64,7 @@ function projectStructureSave(req, res) {
     //construct a Mongoose model with the request body
     let structure = new projectSchema.structureModel(req.body);
 
-    //if there exists something in the db with the same project id, fuck it off
+    //if there exists something in the db with the same project id, fuck it off TODO: maintain db pk reference
     projectSchema.structureModel.remove( { projectId: req.body.projectId }, function (err) {
         if (err) {
             return console.error(err);
@@ -93,7 +93,7 @@ function projectArrangementSave(req, res) {
     //construct a Mongoose model with the request body
     let arrangement = new projectSchema.arrangementModel(req.body);
 
-    //if there exists something in the db with the same project id, fuck it off
+    //if there exists something in the db with the same project id, fuck it off TODO: maintain db pk reference
     projectSchema.arrangementModel.remove( { projectId: req.body.projectId }, function (err) {
         if (err) {
             return console.error(err);
