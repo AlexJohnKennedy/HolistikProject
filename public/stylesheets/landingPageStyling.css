@@ -1,7 +1,20 @@
 .container {
-    padding: 100px 0;
     text-align: center;
     color: white;
 }
 
+.wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 10px;
+}
 
+#leftColumn {
+    padding-top: 5%;
+    position: relative;
+}
+
+#rightColumn {
+    margin-top: 158px;
+    margin-right: 39px;
+}

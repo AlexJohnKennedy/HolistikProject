@@ -7,7 +7,7 @@ html {
 
 
 body {
-  background: linear-gradient(rgba(150,150,150,0.5), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
+  background: linear-gradient(rgba(150,150,150,0.8), rgba(0, 0, 0, 0.6)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
   background-position: center;
   background-size: cover;
 }
@@ -17,7 +17,8 @@ h1 {
   font-weight: 400;
   font-size: 9em;
   color: rgb(218,219,234);
-  margin: 0.05em;
+  margin-bottom: 45px;
+  margin-top: 131px;
 }
 
 h2 {
@@ -37,11 +38,12 @@ h3 {
 
 h4 {
   border-radius: 5px;
-  margin: 5% 43% 0 43%;
   font-family: 'Open Sans';
   font-weight: 400;
   font-size: 2em;
   background-color: rgb(223,204,123);
+  margin-left: 25%;
+  margin-right: 25%;
 }
 
 a {
