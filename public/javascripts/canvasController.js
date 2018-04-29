@@ -837,3 +837,24 @@ function clearCanvasState() {
     }
     canvasState.hierarchyLines = [];
 }
+
+/**
+ * Used to 'block' the rest of the canvas while some other action is performed and we do not want to allow user actions on the canvas
+ * E.g. when node edit window is open, or project data is loading.
+ */
+function addBlackoutEffect() {
+    //fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "block";
+    blackoutElem.style.opacity = "0.5";
+}
+
+/**
+ * Removes the blocking effect.
+ */
+function removeBlackoutEffect() {
+    //remove fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "none";
+    blackoutElem.style.opacity = "0";
+}

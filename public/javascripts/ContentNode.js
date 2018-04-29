@@ -525,9 +525,7 @@ ContentNode.prototype.editNodeContent = function() {
     //Build a form element, and render it on top of the canvas.
 
     //fully sick blackout effect
-    let blackoutElem = document.getElementById("fade");
-    blackoutElem.style.display = "block";
-    blackoutElem.style.opacity = "0.5";
+    addBlackoutEffect();
 
     //make the node editing partial visible - do i need to make it visible at the end?
     let editWindow = document.getElementById("popupEditWindow");
@@ -553,10 +551,8 @@ ContentNode.prototype.editNodeContent = function() {
  * simple function to hide the popup edit window
  */
 function closeEditWindow() {
-    //remove fully sick blackout effect
-    let blackoutElem = document.getElementById("fade");
-    blackoutElem.style.display = "none";
-    blackoutElem.style.opacity = "0";
+    //Remove the full sick blackout effect
+    removeBlackoutEffect();
 
     //make the popup div invisible
     let editWindow = document.getElementById("popupEditWindow");
