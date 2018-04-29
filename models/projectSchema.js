@@ -30,24 +30,25 @@ let projectStructureSchema = new Schema(
 let projectArrangementSchema = new Schema(
     {
         projectId: String,       //The project it pertains to
-        contentNodeArrangement: [
+        contentNodeArrangement:
             {
                 contextNodeId: String,
-                nodeData: {
-                    idString: String,
-                    translation: {
-                        x: Number,
-                        y: Number
-                    },
-                    size: {
-                        height: Number,
-                        width: Number
-                    },
-                    isExpanded: Boolean,
-                    isShowingInfo: Boolean
-                },
+                nodeData: [
+                    {
+                        idString: String,
+                        translation: {
+                            x: Number,
+                            y: Number
+                        },
+                        size: {
+                            height: Number,
+                            width: Number
+                        },
+                        isExpanded: Boolean,
+                        isShowingInfo: Boolean
+                    }
+                ]
             }
-        ]
     }
 );
 

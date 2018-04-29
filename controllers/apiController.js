@@ -12,31 +12,35 @@ const projectSchema = require('../models/projectSchema.js');
 // ---------------------------------------------------------------------------------------------------------------------
 
 function projectStructureLoad(req, res) {
-    //TODO -- REAL DATABASE
     console.log("Got a proj structure load request, with req.body:");
     console.log(req.body);
 
-    //For now, we will literally just wait 4 seconds, then send back the hard coded JSON
-    setTimeout(
-        function() {
-            res.send(db.testState);
-        },
-        2600
-    );
+    projectSchema.structureModel.findOne({ projectId: req.body.projectId }, function (err, structure) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("STURC");
+            console.log(structure.contentNodes);
+            //send off what we retrieved from the db
+            res.send(structure.contentNodes);
+        }
+    });
 }
 
 function projectArrangementLoad(req, res) {
-    //TODO -- REAL DATABASE
     console.log("Got a proj arrangement load request, with req.body:");
     console.log(req.body);
 
-    //For now, we will literally just wait 5 seconds, then send back the hard coded JSON
-    setTimeout(
-        function() {
-            res.send(db.testArrangement);
-        },
-        1000
-    );
+    projectSchema.arrangementModel.findOne({ projectId: req.body.projectId }, function (err, arrangement) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("ARA");
+            console.log(arrangement.contentNodeArrangement);
+            //send off what we retrieved from the db
+            res.send(arrangement.contentNodeArrangement);
+        }
+    });
 }
 
 function loadArrangement(req, res) {
@@ -60,6 +64,15 @@ function projectStructureSave(req, res) {
     //construct a Mongoose model with the request body
     let structure = new projectSchema.structureModel(req.body);
 
+    //if there exists something in the db with the same project id, fuck it off
+    projectSchema.structureModel.remove( { projectId: req.body.projectId }, function (err) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("Purged database of structures with ID: " + req.body.projectId);
+        }
+    });
+
     //write to the database
     structure.save(function (err, structure) {
         if (err) {
@@ -71,20 +84,6 @@ function projectStructureSave(req, res) {
 
     //indicate back to the client what was saved!
     res.send(req.body);
-
-    /*
-    //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
-    //(in the real app, we will parse the information into a mongoose shcema and save it to the database!)
-    setTimeout(
-        function() {
-            let data = JSON.stringify(req.body.data);
-
-            db.testState = data;
-            res.send(data);     //Indicate back to client what was saved!
-        },
-        1500
-    );
-    */
 }
 
 function projectArrangementSave(req, res) {
@@ -93,6 +92,15 @@ function projectArrangementSave(req, res) {
 
     //construct a Mongoose model with the request body
     let arrangement = new projectSchema.arrangementModel(req.body);
+
+    //if there exists something in the db with the same project id, fuck it off
+    projectSchema.arrangementModel.remove( { projectId: req.body.projectId }, function (err) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("Purged database of arrangements with ID: " + req.body.projectId);
+        }
+    });
 
     //write to the database
     arrangement.save(function (err, arrangement) {
@@ -105,22 +113,6 @@ function projectArrangementSave(req, res) {
 
     //indicate back to the client what was saved!
     res.send(req.body);
-
-    /*
-    //NOTE: request body arrives already parsed by our body-parser which the framework is using!!
-
-    //For hardcoded testing purposes, we will just extract the data and overwrite our hardcoded string with the new JSON
-    //(in the real app, we will parse the information into a mongoose shcema and save it to the database!)
-    setTimeout(
-        function() {
-            let data = JSON.stringify(req.body.data);
-
-            db.testArrangement = data;
-            res.send(data);     //Indicate back to client what was saved!
-        },
-        1200
-    );
-    */
 }
 
 function saveArrangement(req, res) {
