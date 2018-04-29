@@ -28,6 +28,15 @@ const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
  */
 function HttpClientWrapper() {
 
+    this.pendingPostRequests = [];
+
+    this.cancelPendingPostRequests = function() {
+        console.log(" >-----> Cancelling pending POST requests! <-----<");
+        for (let i = this.pendingPostRequests.length - 1; i >= 0; i--) {
+            this.pendingPostRequests[i].abort();    //Cancel the request!
+        }
+    };
+
     //Function to send a GET request to a specified URL, with a specified handler callback on response reception.
     this.sendGetRequest = function(url, callbackFunc) {
         let request = new XMLHttpRequest();   //Uses browser built in AJAX request functionality
@@ -42,22 +51,30 @@ function HttpClientWrapper() {
 
         //Send the request!
         request.send();   //GET body is empty, all info is just in the URL
+
+        return request;
     };
 
     //Function to set a POST request to a specified URL, with a specified 'request body' string, with a specified handler
     //callback on response reception.
     //This particular function uses JSON as the 'content-type' declaration in the request header; so we must send JSON
     //as the message body
-    this.sendJsonPostRequest = function(url, bodyString, callbackFunc) {
+    this.sendJsonPostRequest = function(url, bodyString, httpClientWrapperObj, callbackFunc) {
         let request = new XMLHttpRequest();
 
         //Define a callback for when the request state changes
         request.onreadystatechange = function() {
             if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-                callbackFunc(request.responseText);
+                callbackFunc(request.responseText, request);
             }
             else if (request.readyState === XMLHttpRequest.DONE) {
-                console.trace("POST REQUEST FAILED: URL was "+url+", RESPONSE CODE: "+request.status);
+                console.trace("POST REQUEST FAILED OR CANCELLED: URL was "+url+", RESPONSE CODE: "+request.status);
+
+                //remove this request from the pending list, as it just finished yo!
+                let index = httpClientWrapperObj.pendingPostRequests.indexOf(request);
+                if (index !== -1) {
+                    httpClientWrapperObj.pendingPostRequests.splice(index, 1);
+                }
             }
         };
 
@@ -69,6 +86,11 @@ function HttpClientWrapper() {
 
         //Send the request!
         request.send(bodyString);   //Send the bodyString in the POST message body.
+
+        this.pendingPostRequests.push(request); //Add this here so cancelling works
+
+        //Return the request object so that we can abort it if we need to, and so forth
+        return request;
     };
 }
 
@@ -93,6 +115,7 @@ class AjaxProjectLoader {
 
         //Instantiate a http client wrapper object to help us send async AJAX requests.
         this.httpClient = new HttpClientWrapper();
+        this.loadingHttpClient = new HttpClientWrapper();
     }
 
     // --- Methods --------------------------------------------------------------------
@@ -109,26 +132,28 @@ class AjaxProjectLoader {
         let arrangementJSON = null;
         let pendingRequestCount = 2;
 
-        //TODO: DISABLE CANVAS AND SIDEBAR AND DISPLAY A 'LOADING' ICON WHILE PROJECT IS BEING LOADED!! THIS IS TO PREVENT USER FUCKING WITH NODES THAT ARE ABOUT TO BE SPONTANEOUSLY DELETED
-        //TODO: DISABLE CANVAS AND SIDEBAR AND DISPLAY A 'LOADING' ICON WHILE PROJECT IS BEING LOADED!! THIS IS TO PREVENT USER FUCKING WITH NODES THAT ARE ABOUT TO BE SPONTANEOUSLY DELETED
+        addBlackoutEffect();    //Block user input while the request is being processed.
+        showLoadingWindow();
 
-        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_LOAD_URL, JSON.stringify({ projectId: this.projectId }), function(response) {
+        this.loadingHttpClient.sendJsonPostRequest(PROJECT_STRUCTURE_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
             structureJSON = response;
             pendingRequestCount--;
 
             if (pendingRequestCount <= 0) {
-                //TODO: REACTIVATE CANVAS HERE
                 fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
+                removeBlackoutEffect();
+                hideLoadingWindow();
             }
         });
 
-        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), function(response) {
+        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
             arrangementJSON = response;
             pendingRequestCount--;
 
             if (pendingRequestCount <= 0) {
-                //TODO: REACTIVATE CANVAS HERE
                 fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
+                removeBlackoutEffect();
+                hideLoadingWindow();
             }
         });
     }
@@ -147,7 +172,7 @@ class AjaxProjectLoader {
     loadSavedArrangementFromServer(arrangementId, hideMissingNodes, animate, switchContext) {
         let msgBody = JSON.stringify({ projectId: this.projectId, arrangementId: arrangementId });
 
-        this.httpClient.sendJsonPostRequest(LOAD_ARRANGEMENT_URL, msgBody, function(response) {
+        this.httpClient.sendJsonPostRequest(LOAD_ARRANGEMENT_URL, msgBody, this.httpClient, function(response) {
             updateArrangementFromJSON(response, hideMissingNodes, animate, switchContext);
         });
     }
@@ -161,13 +186,19 @@ class AjaxProjectLoader {
         let stateBody = '{ "projectId": ' + this.projectId + ', "data": '+serialiseNodeState()+' }';
         let arrangementBody = '{ "projectId": ' + this.projectId + ', "data": '+serialiseNodeArrangement()+' }';
 
-        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_SAVE_URL, stateBody, function(response) {
+        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_SAVE_URL, stateBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project structure:");
             console.log(response);
         });
-        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_SAVE_URL, arrangementBody, function(response) {
+        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_SAVE_URL, arrangementBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project arrangement:");
             console.log(response);
         });
+    }
+
+    cancelPendingLoadRequests() {
+        this.loadingHttpClient.cancelPendingPostRequests();
+        removeBlackoutEffect();
+        hideLoadingWindow();
     }
 }

@@ -41,9 +41,9 @@ body {
 
 }
 
-#closeHelpWindowButton {
-    position: center;
-    margin-left: 50%;
+#closeHelpWindowButton, #cancelLoading {
+    position: absolute;
+    bottom: 20px;
 }
 
 /* controls the fade effect when a popup appears */
@@ -74,7 +74,54 @@ body {
     background-color: white;
     z-index: 9001; /* ITS OVER 9000!!!!!!!!!!!!!!!!!!!!!!!! */
     overflow: auto;
-    opacity: 0;
 
     transition: opacity 0.25s;
 }
+
+#loadingScreenWindow {
+    display: none;
+    position: absolute;
+
+    top: 30% !important;
+    bottom: 30% !important;
+    left: 30%;
+    width: 40%;
+    height: 40%;
+    padding: 16px;
+
+    background: #f3f3f3;
+    border: 5px solid black;
+
+    z-index: 9001;
+}
+
+#loadingScreenWindow span {
+    display: inline-block;
+    position: absolute;
+    margin: auto;   /* center it horizontally */
+}
+
+/* Styling and animation for the loading icon */
+#loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 60px;
+    height: 60px;
+    margin: -30px 0 0 -30px;    /* Centres it */
+    border: 16px solid #939393;
+    border-radius: 50%;
+    border-top: 16px solid #34a0e4;
+    -webkit-animation: spin 1.25s linear infinite;
+    animation: spin 1.25s linear infinite;
+}
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
