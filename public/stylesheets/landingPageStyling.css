@@ -1,20 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+
 .container {
     text-align: center;
     color: white;
 }
 
-.wrapper {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-gap: 10px;
+#getStarted {
+    display: block;
+    font-family: "Open Sans";
+    font-weight: 400;
+    font-size: 2em;
+    border: 1px solid;
+    background-color: rgb(223,204,123);
+    border-radius: 5px;
+    margin-left: 40%;
+    margin-right: 40%;
+    border-radius: 10px;
 }
 
-#leftColumn {
-    padding-top: 5%;
-    position: relative;
+h1 {
+    margin-bottom: 15px;
 }
 
-#rightColumn {
-    margin-top: 158px;
-    margin-right: 39px;
+h2 {
+    margin-bottom: 7%;
+    margin-top:
 }

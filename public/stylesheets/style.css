@@ -36,16 +36,6 @@ h3 {
 
 }
 
-h4 {
-  border-radius: 5px;
-  font-family: 'Open Sans';
-  font-weight: 400;
-  font-size: 2em;
-  background-color: rgb(223,204,123);
-  margin-left: 25%;
-  margin-right: 25%;
-}
-
 a {
   text-decoration: none;
   color: rgb(65,78,85);
