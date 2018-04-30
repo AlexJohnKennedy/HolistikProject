@@ -13,6 +13,9 @@ const canvasState = {
     showingNodes : []   //List of all content nodes which are currently 'showing' their info (i.e. expanded)
 };
 
+//TODO -- MOVE THE CREATION OF THIS OBJECT TO SOME 'INIT' FUNCTION WHICH IS CALLED ON PAGE LOAD.
+const ajaxHandler = new AjaxProjectLoader(5 /* arbitrary, since project id is not implemented yet..*/);
+
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
 const defaultNodePosition = {
@@ -475,7 +478,8 @@ function addNewRootNode(node) {
         //Was already in the root node list! Do nothing.
         return;
     }
-    console.log("ADDING A NEW ROOT!");
+    //DEBUG
+    //console.log("ADDING A NEW ROOT!");
 
     //Alright. Let's push this node into the root node list
     canvasState.rootNodes.push(node);
@@ -517,8 +521,8 @@ function rebuildVisibility() {
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
     //DEBUG
-    console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
-    printTestSerialistation();
+    //console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
+    //printTestSerialistation();
 
     // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
     for (let node of canvasState.contentNodeList) {
@@ -836,4 +840,45 @@ function clearCanvasState() {
         svg.removeChild(line.line);
     }
     canvasState.hierarchyLines = [];
+}
+
+/**
+ * Used to 'block' the rest of the canvas while some other action is performed and we do not want to allow user actions on the canvas
+ * E.g. when node edit window is open, or project data is loading.
+ */
+function addBlackoutEffect() {
+    //fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "block";
+    blackoutElem.style.opacity = "0.5";
+}
+
+/**
+ * Removes the blocking effect.
+ */
+function removeBlackoutEffect() {
+    //remove fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "none";
+    blackoutElem.style.opacity = "0";
+}
+
+function showLoadingWindow(message) {
+    let window = document.getElementById("loadingScreenWindow");
+    if (message !== undefined && message != null) {
+        window.getElementsByTagName("span").item(0).innerHTML = message;
+    }
+    else {
+        window.getElementsByTagName("span").item(0).innerHTML = "Loading your project...";
+    }
+
+    window.style.display = "inline-block";
+}
+
+function hideLoadingWindow() {
+    document.getElementById("loadingScreenWindow").style.display = "none";
+}
+
+function cancelCurrentLoadRequest() {
+    ajaxHandler.cancelPendingLoadRequests();
 }
