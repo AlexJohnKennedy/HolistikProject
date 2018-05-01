@@ -8,15 +8,14 @@ let userSchema = new Schema(
         email:    {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
         bio: String,
         image: String,  //URL to some supplied profile picture resource
-        hash: String,   //Hash of the registered password+salt. Will be used to compare passwords
-        salt: String,   //We need to store the salt value that was generated for this user so that we can re-use it with the pw hash to authenticate logins
-        address: String,
+        hash: {type: String, required: true},   //Hash of the registered password+salt. Will be used to compare passwords
+        salt: {type: String, required: true},   //We need to store the salt value that was generated for this user so that we can re-use it with the pw hash to authenticate logins
 
         //Store references to projects that this user can use.
         projects: [
             {
-                writePermission: Boolean,
-                projectId: Schema.ObjectId
+                writePermission: Boolean,       //Determines if the current user is allowed to overwrite the saved data for this project.
+                projectId: Schema.ObjectId      //Reference to _id of a Project document. (Each user will have a collection of these)
             }
         ]
     }
