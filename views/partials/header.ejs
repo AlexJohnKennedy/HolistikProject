@@ -15,7 +15,7 @@
 <nav class="navbar navbar-default" role="navigation">
 
     <!-- use a simple div to 'contain' the nav bar elements -->
-    <div class="container-fluid">
+    <div class="container-fluid" id="generalHeader">
 
         <div class="navbar-header">
             <!-- The x of the nav bar will be a 'brand name' element, also serving as a hyperlink to the homepage? -->
@@ -29,11 +29,23 @@
                     <a href="/main">Application</a>
                 </li>
                 <li>
-                    <a title="Sorry, this page is coming soon!">Profile</a> <!--<a href="/profile">Profile</a>-->
+                    <a href="/profile">Profile</a> <!--<a href="/profile">Profile</a>-->
                 </li>
                 <li>
                     <!--<a href="/help" target="_blank">Help</a> --><!-- target = "_blank" makes it open in a new tab -->
                     <a href="#" onclick="window.open('/help', 'Help page - Holistik', 'width=1000,height=600')">Help</a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav" id="user">
+                <li>
+                    <name>User Name</name>
+                </li>
+                <li>
+                    |
+                </li>
+                <li>
+                    <a title="sign-out to landing page">Sign out</a>
                 </li>
             </ul>
 

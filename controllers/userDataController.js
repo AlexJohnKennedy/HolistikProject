@@ -20,6 +20,7 @@ function homeDirectoryGet(req, res) {
     });
 }
 
+
 //Define behaviour and access data to get user list
 function generateUserList(req, res) {
     res.render('usersDirectory', {
@@ -30,7 +31,15 @@ function generateUserList(req, res) {
 
 function helpPageGet(req, res) {
     res.render('pages/helpPage');
-}
+};
+
+function profilePageGet(req,res) {
+    res.render('pages/profilePage');
+};
+
+function loginPageGet(req,res) {
+    res.render('pages/loginPage');
+};
 
 //Define behaviour and access data to get specific user page
 function userDetail(req, res) {
@@ -76,5 +85,8 @@ module.exports = {
     userDetail : userDetail,
     mainPageGet : mainPageGet,
     helpPageGet : helpPageGet,
+    profilePageGet: profilePageGet,
+    loginPageGet : loginPageGet,
+
     apiController : apiController
 };

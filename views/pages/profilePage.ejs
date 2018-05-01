@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Page - Holistik</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/stylesheets/profileStyling.css">
+    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+</head>
+<body>
+
+<!-- ejs to present the profile page which shows the information about the user and the notes created by the user -->
+
+<header>
+    <% include ../partials/header.ejs %>
+</header>
+
+<div class="wrapper">
+
+    <!-- this container holds all the profile content -->
+    <div class="container-fluid" id="contentHolder">
+
+        <!-- this section contains the notebook header text and the search box -->
+        <div id="notebookHeader">
+            <h1 id="headerText">Notebooks</h1>
+            <div class="searchBox">
+                <input type="text" name="searchNotebook" aria-label="Search my notebooks">
+
+                <!-- insert search icon to search box -->
+                <i class="fa fa-search"></i>
+
+            </div>
+        </div>
+
+
+        <div id="notebookTabPanel">
+            <div id="notebookTabs">
+                <a id="recentTab" class="notebookTab" href="#" role="tab">Rencent</a>
+                <a id="myNotebookTab" class="notebookTab" href="#" role="tab">My notebooks</a>
+            </div>
+        </div>
+
+        <div class="divisionLine"></div>
+
+
+        <!-- render all the notebooks into an unordered list -->
+        <div class="notebookList">
+            <ul class="notebookList">
+                <li>
+                    Notebook 1
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    <% include ../partials/footer.ejs %>
+</footer>
+
+</body>

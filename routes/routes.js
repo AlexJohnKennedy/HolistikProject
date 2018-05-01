@@ -19,12 +19,17 @@ const userDataController = require('../controllers/userDataController');
 //
 router.get('/', userDataController.homeDirectoryGet);
 
+//Route for getting login page
+router.get('/login', userDataController.loginPageGet)
+
 //Route for going to the 'main' application page (the one where it functions as a one-screen app)
 router.get('/main', userDataController.mainPageGet);
 
 //Route for the help page
 router.get('/help', userDataController.helpPageGet);
 
+//Route for the profile page
+router.get('/profile', userDataController.profilePageGet);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------
