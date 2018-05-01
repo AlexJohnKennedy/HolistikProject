@@ -135,6 +135,18 @@ function saveArrangement(req, res) {
     );
 }
 
+function registerNewUser(req, res) {
+    //TODO
+}
+
+function loginUser(req, res) {
+    //TODO
+}
+
+function logoutUser(req, res) {
+    //TODO
+}
+
 module.exports = {
     projectStructureLoad   : projectStructureLoad,
     projectArrangementLoad : projectArrangementLoad,
@@ -142,5 +154,9 @@ module.exports = {
 
     projectStructureSave   : projectStructureSave,
     projectArrangementSave : projectArrangementSave,
-    saveArrangement        : saveArrangement
+    saveArrangement        : saveArrangement,
+
+    registerNewUser        : registerNewUser,
+    loginUser              : loginUser,
+    logoutUser             : logoutUser
 };
