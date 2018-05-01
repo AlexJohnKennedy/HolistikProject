@@ -6,17 +6,34 @@
     color: white;
 }
 
-#getStarted {
-    display: block;
-    font-family: "Open Sans";
-    font-weight: 400;
-    font-size: 2em;
-    border: 1px solid;
+body {
+    background: linear-gradient(rgba(150,150,150,0.8), rgba(0, 0, 0, 0.4)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
+    background-position: center;
+    background-size: cover;
+}
+
+#signUpBox {
+    position: fixed;
+    width: 150px;
+    margin-left: 84%;
+    margin-top: -5%;
+}
+
+#signUpBtn {
+    border-radius: 30px;
+    color: black;
+    font-size: 22px;
+    height: 35px;
+}
+
+
+#loginBtn {
     background-color: rgb(223,204,123);
-    border-radius: 5px;
-    margin-left: 40%;
-    margin-right: 40%;
-    border-radius: 10px;
+    width: 200px;
+    border-radius: 30px;
+    margin-bottom: 6px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 h1 {
@@ -24,6 +41,31 @@ h1 {
 }
 
 h2 {
-    margin-bottom: 7%;
-    margin-top:
+    margin-bottom: 4%;
+}
+
+.signInSection {
+    text-align: center;
+}
+
+
+#guest {
+    font-family: "Open Sans";
+    font-weight: 400;
+    font-size: 0.9em;
+    color: #eff7de;
+}
+
+#signUpBtn:hover {
+    background-color: rgb(90,159,231);
+    color: white;
+    text-decoration: underline;
+    border-color: rgb(90,159,231);
+}
+
+#loginBtn:hover {
+    background-color: rgb(90,159,231);
+    color: white;
+    text-decoration: underline;
+    border-color: rgb(90,159,231);
 }

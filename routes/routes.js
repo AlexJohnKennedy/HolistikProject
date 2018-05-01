@@ -20,8 +20,7 @@ const controller = require('../controllers/controller');
 //
 router.get('/', controller.homeDirectoryGet);
 
-//Route for getting login page
-router.get('/login', controller.loginPageGet)
+router.get('/signup', controller.signupPageGet);
 
 //Route for going to the 'main' application page (the one where it functions as a one-screen app)
 router.get('/main', controller.mainPageGet);
