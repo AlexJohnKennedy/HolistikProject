@@ -7,8 +7,6 @@ const passport = require('passport');
 const session = require('express-session');
 const router = require('./routes/routes');
 
-
-
 const app = express();      //'app' is the controller object.
 
 app.use(session({
@@ -21,15 +19,10 @@ app.use(passport.session());
 
 app.use(router);
 
-app.set("views", "./views");    //Sets the directory from which the 'views' (templates for the TE) will look fo r the templating file.
-app.set("view engine", "ejs");  //Sets EJS to be the templating engine we are using.
-
-
 app.use(express.static(__dirname + '/public'));
 
-
-
-
+app.set("views", "./views");    //Sets the directory from which the 'views' (templates for the TE) will look fo r the templating file.
+app.set("view engine", "ejs");  //Sets EJS to be the templating engine we are using.
 
 //Start the server with app.listen( /* PORT NUMBER */ )
 //This function literally runs the server and makes the host listen for live HTTP requests at the specified port!!
