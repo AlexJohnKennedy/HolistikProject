@@ -44,6 +44,9 @@ const PROJECT_STRUCTURE_SAVE_URL   = "/saveProjectStructure";
 const PROJECT_ARRANGEMENT_SAVE_URL = "/saveProjectArrangement";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
+const SIGN_UP_URL                  = "/saveNewUser";
+const LOG_IN_URL                   = "/logInUser";
+
 router.post(PROJECT_STRUCTURE_LOAD_URL,   controller.apiController.projectStructureLoad);
 router.post(PROJECT_ARRANGEMENT_LOAD_URL, controller.apiController.projectArrangementLoad);
 router.post(LOAD_ARRANGEMENT_URL,         controller.apiController.loadArrangement);
@@ -51,6 +54,9 @@ router.post(LOAD_ARRANGEMENT_URL,         controller.apiController.loadArrangeme
 router.post(PROJECT_STRUCTURE_SAVE_URL,   controller.apiController.projectStructureSave);
 router.post(PROJECT_ARRANGEMENT_SAVE_URL, controller.apiController.projectArrangementSave);
 router.post(SAVE_ARRANGEMENT_URL,         controller.apiController.saveArrangement);
+
+router.post(SIGN_UP_URL,                  controller.apiController.saveNewUser);
+router.post(LOG_IN_URL,                   controller.apiController.logInUser);
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()

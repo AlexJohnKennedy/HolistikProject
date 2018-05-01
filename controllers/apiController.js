@@ -4,7 +4,9 @@
  */
 
 const db = require('../models/db.js');
-const projectSchema = require('../models/projectSchema.js');
+const cryptoFunctions = require('../config/cryptoFunctions.js');
+const Project = require('../models/projectSchema.js');
+const User = require('../models/projectSchema.js');
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -15,7 +17,7 @@ function projectStructureLoad(req, res) {
     console.log("Got a proj structure load request, with req.body:");
     console.log(req.body);
 
-    projectSchema.structureModel.findOne({ projectId: req.body.projectId }, function (err, structure) {
+    Project.structureModel.findOne({ projectId: req.body.projectId }, function (err, structure) {
         if (err) {
             return console.error(err);
         } else {
@@ -31,7 +33,7 @@ function projectArrangementLoad(req, res) {
     console.log("Got a proj arrangement load request, with req.body:");
     console.log(req.body);
 
-    projectSchema.arrangementModel.findOne({ projectId: req.body.projectId }, function (err, arrangement) {
+    Project.arrangementModel.findOne({ projectId: req.body.projectId }, function (err, arrangement) {
         if (err) {
             return console.error(err);
         } else {
@@ -62,10 +64,10 @@ function projectStructureSave(req, res) {
     console.log(req.body);
 
     //construct a Mongoose model with the request body
-    let structure = new projectSchema.structureModel(req.body);
+    let structure = new Project.structureModel(req.body);
 
     //if there exists something in the db with the same project id, fuck it off TODO: maintain db pk reference
-    projectSchema.structureModel.remove( { projectId: req.body.projectId }, function (err) {
+    Project.structureModel.remove( { projectId: req.body.projectId }, function (err) {
         if (err) {
             return console.error(err);
         } else {
@@ -91,10 +93,10 @@ function projectArrangementSave(req, res) {
     console.log(req.body);
 
     //construct a Mongoose model with the request body
-    let arrangement = new projectSchema.arrangementModel(req.body);
+    let arrangement = new Project.arrangementModel(req.body);
 
     //if there exists something in the db with the same project id, fuck it off TODO: maintain db pk reference
-    projectSchema.arrangementModel.remove( { projectId: req.body.projectId }, function (err) {
+    Project.arrangementModel.remove( { projectId: req.body.projectId }, function (err) {
         if (err) {
             return console.error(err);
         } else {
@@ -135,6 +137,43 @@ function saveArrangement(req, res) {
     );
 }
 
+function saveNewUser(req, res) {
+    console.log("Attempting to save a new user. req.body:");
+    console.log(req.body);
+
+    //construct model from the json body, note that the hash and salt fields need to be updated
+    let user = new User.userSchema(req.body.user);
+
+    //hash teh plain text pass and store the user in mong
+    cryptoFunctions.hashPassAndStoreUser(req.body.password, req.body.user);
+}
+
+function storeUser(freshHash, user) {
+    //update hash field
+    user.hash = freshHash;
+
+    //push to mong
+    user.save(function (err, user) {
+        if (err) {
+            return console.error(err);
+        } else {
+            console.log("Saved new user. email: " + user.email);
+        }
+    });
+}
+
+function logInUser(req, res) {
+    //get the relevant hash from the db NOTE: CHANGE SEARCH JSON
+    User.userSchema.findOne({ email : res.email }, function (err, user) {
+        if (err || !user) {
+            return console.error(err);
+        } else {
+            //we found the user, check if the plain text pass corresponds to the hash
+            cryptoFunctions.verifyPassword(user.hash, req.password);
+        }
+    });
+}
+
 module.exports = {
     projectStructureLoad   : projectStructureLoad,
     projectArrangementLoad : projectArrangementLoad,
@@ -142,5 +181,10 @@ module.exports = {
 
     projectStructureSave   : projectStructureSave,
     projectArrangementSave : projectArrangementSave,
-    saveArrangement        : saveArrangement
+    saveArrangement        : saveArrangement,
+
+    saveNewUser            : saveNewUser,
+    logInUser              : logInUser,
+
+    storeUser              : storeUser
 };
