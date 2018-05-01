@@ -28,32 +28,28 @@ let structureSchema = new Schema(
 //Schema for a project's visual arrangement
 let arrangementSchema = new Schema(
     {
-        projectId: String,       //The project it pertains to
-        contentNodeArrangement:
+        contextNodeId: String,
+        nodeData: [
             {
-                contextNodeId: String,
-                nodeData: [
-                    {
-                        idString: String,
-                        translation: {
-                            x: Number,
-                            y: Number
-                        },
-                        size: {
-                            height: Number,
-                            width: Number
-                        },
-                        isExpanded: Boolean,
-                        isShowingInfo: Boolean
-                    }
-                ]
+                idString: String,
+                translation: {
+                    x: Number,
+                    y: Number
+                },
+                size: {
+                    height: Number,
+                    width: Number
+                },
+                isExpanded: Boolean,
+                isShowingInfo: Boolean
             }
+        ]
     }
 );
 
 //Model the project structure schema into a Model, so we can use it
-let projectStructureModel   = mongoose.model('project', projectStructureSchema);
-let projectArrangementModel = mongoose.model('arrangement', projectArrangementSchema);
+let projectStructureModel   = mongoose.model('project', structureSchema);
+let projectArrangementModel = mongoose.model('arrangement', arrangementSchema);
 
 module.exports = {
     structureModel: projectStructureModel,

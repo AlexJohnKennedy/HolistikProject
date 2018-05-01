@@ -6,7 +6,7 @@ const router = express.Router();     //This will set the routing and response ca
 const requestBodyParser = require('body-parser');   //Middleware used to parse HTTP request bodys. see https://expressjs.com/en/4x/api.html#req for example usage with express
 router.use(requestBodyParser.json()); // for parsing application/json
 
-const userDataController = require('../controllers/userDataController');
+const controller = require('../controllers/controller');
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -17,19 +17,19 @@ const userDataController = require('../controllers/userDataController');
 //Define a handler for HTTP GET requests that come into the server, along any URL path. For now, we will
 //define this such that we just send back a hello world message.
 //
-router.get('/', userDataController.homeDirectoryGet);
+router.get('/', controller.homeDirectoryGet);
 
 //Route for getting login page
-router.get('/login', userDataController.loginPageGet)
+router.get('/login', controller.loginPageGet)
 
 //Route for going to the 'main' application page (the one where it functions as a one-screen app)
-router.get('/main', userDataController.mainPageGet);
+router.get('/main', controller.mainPageGet);
 
 //Route for the help page
-router.get('/help', userDataController.helpPageGet);
+router.get('/help', controller.helpPageGet);
 
 //Route for the profile page
-router.get('/profile', userDataController.profilePageGet);
+router.get('/profile', controller.profilePageGet);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------
@@ -44,13 +44,13 @@ const PROJECT_STRUCTURE_SAVE_URL   = "/saveProjectStructure";
 const PROJECT_ARRANGEMENT_SAVE_URL = "/saveProjectArrangement";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
-router.post(PROJECT_STRUCTURE_LOAD_URL,   userDataController.apiController.projectStructureLoad);
-router.post(PROJECT_ARRANGEMENT_LOAD_URL, userDataController.apiController.projectArrangementLoad);
-router.post(LOAD_ARRANGEMENT_URL,         userDataController.apiController.loadArrangement);
+router.post(PROJECT_STRUCTURE_LOAD_URL,   controller.apiController.projectStructureLoad);
+router.post(PROJECT_ARRANGEMENT_LOAD_URL, controller.apiController.projectArrangementLoad);
+router.post(LOAD_ARRANGEMENT_URL,         controller.apiController.loadArrangement);
 
-router.post(PROJECT_STRUCTURE_SAVE_URL,   userDataController.apiController.projectStructureSave);
-router.post(PROJECT_ARRANGEMENT_SAVE_URL, userDataController.apiController.projectArrangementSave);
-router.post(SAVE_ARRANGEMENT_URL,         userDataController.apiController.saveArrangement);
+router.post(PROJECT_STRUCTURE_SAVE_URL,   controller.apiController.projectStructureSave);
+router.post(PROJECT_ARRANGEMENT_SAVE_URL, controller.apiController.projectArrangementSave);
+router.post(SAVE_ARRANGEMENT_URL,         controller.apiController.saveArrangement);
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()
