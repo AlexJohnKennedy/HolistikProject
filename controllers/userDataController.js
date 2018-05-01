@@ -36,8 +36,8 @@ function profilePageGet(req,res) {
     res.render('pages/profilePage');
 };
 
-function loginPageGet(req,res) {
-    res.render('pages/loginPage');
+function signupPageGet(req,res) {
+    res.render('pages/signupPage');
 };
 
 //Define behaviour and access data to get specific user page
@@ -85,5 +85,5 @@ module.exports = {
     mainPageGet : mainPageGet,
     helpPageGet : helpPageGet,
     profilePageGet: profilePageGet,
-    loginPageGet : loginPageGet
+    signupPageGet : signupPageGet
 };

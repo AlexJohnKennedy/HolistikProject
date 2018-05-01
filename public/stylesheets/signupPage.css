@@ -48,8 +48,17 @@
 
 #loginBtn {
     display: block;
+    font-family: "Open Sans";
+    font-weight: 400;
+    font-size: 2em;
+    border: 1px solid;
+    border-radius: 5px;
+    width: 130px;
+    margin: auto;
 }
 
 a {
     text-decoration: none;
 }
+
+
