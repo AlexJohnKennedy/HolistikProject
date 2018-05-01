@@ -17,6 +17,10 @@ const PROJECT_STRUCTURE_SAVE_URL   = "/saveProjectStructure";
 const PROJECT_ARRANGEMENT_SAVE_URL = "/saveProjectArrangement";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
+const REGISTER_USER_URL            = "/register";
+const LOGIN_URL                    = "/login";
+const LOGOUT_URL                   = "/logout";
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Http AJAX request wrapper object --------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -95,7 +99,7 @@ function HttpClientWrapper() {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// --- AJAX Request for saving and loading nodes -----------------------------------------------------------------------
+// --- AJAX Request for saving and loading project information ---------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -200,5 +204,53 @@ class AjaxProjectLoader {
         this.loadingHttpClient.cancelPendingPostRequests();
         removeBlackoutEffect();
         hideLoadingWindow();
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Ajax request handler class for sending user registration and user login data ------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Define an ES6 class to handle sending user login data and new-user registration data. This will be sent to the server
+ * and the server will handle generating session cookies and so forth.
+ *
+ * Note: After being authenticated, the client browser will recieve cookie info for sessions which will automatically
+ * be sent by the browser in subsequent HTTP reuqests to the same domain. We do not have to handle session logic
+ * on the front-end, only the back end!
+ */
+class AjaxUserDataSender {
+
+    constructor() {
+        this.httpClient = new HttpClientWrapper();
+    }
+
+    /**
+     * Sends a user-entered email and password string to the server, in an attempt to log the user in and establish an
+     * authenticated login session on this browser. If successful, the server will send back a response with
+     * 'set-cookie' in the header, which should automatically make our browser save the cookie data containing our
+     * session information. All we need to do here is literally just POST our strings to the correct URL!
+     * @param email
+     * @param password
+     */
+    sendLoginRequest(email, password) {
+        this.httpClient.sendJsonPostRequest(LOGIN_URL, JSON.stringify({email: email, password: password}), this.httpClient, function(response) {
+            console.log("Got response from server after sending login request!");
+            console.log(response);
+        });
+    }
+
+    registerNewUserRequest(username, email, password, description) {
+        this.httpClient.sendJsonPostRequest(REGISTER_USER_URL, JSON.stringify({username: username, email: email, password: password, description: description}), this.httpClient, function(response) {
+            console.log("Got response from server after sending a register a new user request");
+            console.log(response);
+        });
+    }
+
+    logoutRequest() {
+        this.httpClient.sendJsonPostRequest(LOGOUT_URL, JSON.stringify({}), this.httpClient, function(response) {
+           console.log("got a logout request response from the server:");
+           console.log(response);
+        });
     }
 }

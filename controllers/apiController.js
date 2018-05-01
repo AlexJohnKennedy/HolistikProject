@@ -137,7 +137,7 @@ function saveArrangement(req, res) {
     );
 }
 
-function saveNewUser(req, res) {
+function registerNewUser(req, res) {
     console.log("Attempting to save a new user. req.body:");
     console.log(req.body);
 
@@ -162,9 +162,9 @@ function storeUser(freshHash, user) {
     });
 }
 
-function logInUser(req, res) {
+function loginUser(req, res) {
     //get the relevant hash from the db NOTE: CHANGE SEARCH JSON
-    User.userSchema.findOne({ email : res.email }, function (err, user) {
+    User.userSchema.findOne({email: res.email}, function (err, user) {
         if (err || !user) {
             return console.error(err);
         } else {
@@ -172,6 +172,10 @@ function logInUser(req, res) {
             cryptoFunctions.verifyPassword(user.hash, req.password);
         }
     });
+}
+
+function logoutUser(req, res) {
+
 }
 
 module.exports = {
@@ -183,8 +187,7 @@ module.exports = {
     projectArrangementSave : projectArrangementSave,
     saveArrangement        : saveArrangement,
 
-    saveNewUser            : saveNewUser,
-    logInUser              : logInUser,
-
-    storeUser              : storeUser
+    registerNewUser        : registerNewUser,
+    loginUser              : loginUser,
+    logoutUser             : logoutUser
 };
