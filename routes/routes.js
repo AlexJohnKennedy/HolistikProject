@@ -31,6 +31,14 @@ router.get('/help', controller.helpPageGet);
 //Route for the profile page
 router.get('/profile', controller.profilePageGet);
 
+const REGISTER_USER_URL            = "/register";
+const LOGIN_URL                    = "/login";
+const LOGOUT_URL                   = "/logout";
+
+router.post(REGISTER_USER_URL, controller.apiController.registerNewUser);
+router.post(LOGIN_URL,         controller.apiController.loginUser);
+router.post(LOGOUT_URL,        controller.apiController.logoutUser);
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -51,6 +59,8 @@ router.post(LOAD_ARRANGEMENT_URL,         controller.apiController.loadArrangeme
 router.post(PROJECT_STRUCTURE_SAVE_URL,   controller.apiController.projectStructureSave);
 router.post(PROJECT_ARRANGEMENT_SAVE_URL, controller.apiController.projectArrangementSave);
 router.post(SAVE_ARRANGEMENT_URL,         controller.apiController.saveArrangement);
+
+
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()
