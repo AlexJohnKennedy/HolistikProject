@@ -64,13 +64,19 @@ let savedArrangementSchema = new Schema({
     timestamp  : Date
 });
 
-//Schema for a
 
-//Model the project structure schema into a Model, so we can use it
-let projectStructureModel   = mongoose.model('project', structureSchema);
-let projectArrangementModel = mongoose.model('arrangement', arrangementSchema);
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Compiling Schema definitions into Model Constructor functions ---------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+let structureModel   = mongoose.model('structure', structureSchema);
+let arrangementModel = mongoose.model('arrangement', arrangementSchema);
+let savedArrangementModel = mongoose.model('savedArrangement', savedArrangementSchema);
+let projectModel = mongoose.model('project', projectSchema);
 
 module.exports = {
-    structureModel: projectStructureModel,
-    arrangementModel: projectArrangementModel
+    structureModel: structureModel,
+    arrangementModel: arrangementModel,
+    savedArrangementModel: savedArrangementModel,
+    projectModel: projectModel
 };
