@@ -8,6 +8,47 @@ const bcrypt = require('bcrypt');
 
 const SALT_ROUNDS = 10;     //How many iterations for bcrypt will use for hasing password with the generated salt
 
+//Import passport and username/password module, to handle login authentication and session handling.
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+//Globally run code (invoked when this module is 'required') to configure the passport library
+passport.use(new LocalStrategy(
+    function(email, password, done) {
+
+        //Get a corresponding user by the passed email.
+        let databasePromise = db.getOneUserByEmail(email);
+
+        //Okay, let's attach our handler callbacks to the promise
+        databasePromise.then(function(user) {
+            //Okay, we successfully got a result from the database.
+
+            //If the user account corresponding with the email did not exist:
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
+            //Okay, the user exists! Now we need to use bcrypt to compare the password with the hash!
+            bcrypt.compare(password, user.hash).then(function(isMatch) {
+                //If the crypto call succeeded this happens.
+                if (isMatch) {
+                    //Woo! the password matched after it was hashed with da salt!
+                    return done(null, user);
+                }
+                else {
+                    //Passwords did not match.
+                    return done(null, false, { message: 'Incorrect password.' });
+                }
+            }).catch(function(err) {
+                return done(null, false, { message: 'Bcrypt failed to compare password with hash' });
+            });
+
+        }).catch(function(err) {
+            //Catching database lookup error!
+            return done(err);
+        });
+    }
+));
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Functions which will be invoked by the router. ------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -93,20 +134,15 @@ function registerNewUser(req, res) {
             res.send("ERROR ON ATTMEPT TO SAVE USER:\n"+err);
         });
     }).catch(function(err) {
-        res.send("Bcrypt failed to fucking hash dat shit:\ns"+err);
+        res.send("Bcrypt failed to fucking hash dat shit:\n"+err);
     });
 }
 
 function loginUser(req, res) {
-    /*//get the relevant hash from the db NOTE: CHANGE SEARCH JSON
-    User.userModel.findOne({email: res.email}, function (err, user) {
-        if (err || !user) {
-            return console.error(err);
-        } else {
-            //we found the user, check if the plain text pass corresponds to the hash
-            cryptoFunctions.verifyPassword(user.hash, req.password);
-        }
-    });*/
+    console.log("Attempting to login a user. req.body:");
+    console.log(req.body);
+
+
 }
 
 function logoutUser(req, res) {

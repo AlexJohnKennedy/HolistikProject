@@ -1,3 +1,6 @@
+//Session secret..
+const secret = "TripleGisGod";
+
 //'Import' the express module as an OBJECT (representing the express framework) using the 'require' syntax
 const express = require('express');     //Now we have a reference to an object known as 'express'
 const app = express();      //'app' is the controller object.
@@ -15,6 +18,17 @@ app.set("view engine", "ejs");  //Sets EJS to be the templating engine we are us
 
 //Declare a static directory for accessing public files (client side scripts and static resources which load on the front end)
 app.use(express.static(__dirname + '/public'));
+
+//Import passport and tell our app to setup session usage, and initilaize passport sessions.
+const passport = require('passport');
+const session = require('express-session');
+app.use(session({
+    secret: secret,
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Start the server with app.listen( /* PORT NUMBER */ )
 //This function literally runs the server and makes the host listen for live HTTP requests at the specified port!!

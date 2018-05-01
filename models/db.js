@@ -39,6 +39,18 @@ function createNewUser(userData, pwHash) {
     return user.save();
 }
 
+function getOneUserByEmail(email) {
+    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
+    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
+    return User.userModel.findOne({email: email});
+}
+function getOneUserByUsername(username) {
+
+}
+
+
 module.exports = {
-    createNewUser: createNewUser
+    createNewUser: createNewUser,
+    getOneUserByEmail: getOneUserByEmail,
+    getOneUserByUsername: getOneUserByUsername
 };
