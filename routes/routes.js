@@ -5,6 +5,7 @@ const router = express.Router();     //This will set the routing and response ca
 
 const requestBodyParser = require('body-parser');   //Middleware used to parse HTTP request bodys. see https://expressjs.com/en/4x/api.html#req for example usage with express
 router.use(requestBodyParser.json()); // for parsing application/json
+router.use(requestBodyParser.urlencoded({ extended: true }));
 
 const controller = require('../controllers/controller');
 
@@ -36,7 +37,12 @@ const LOGIN_URL                    = "/login";
 const LOGOUT_URL                   = "/logout";
 
 router.post(REGISTER_USER_URL, controller.apiController.registerNewUser);
-router.post(LOGIN_URL,         controller.apiController.loginUser);
+router.post(LOGIN_URL, controller.apiController.passport.authenticate('local', {
+        successRedirect: '/profile',
+        failureRedirect: '/'
+    }),
+    controller.apiController.loginUser
+);
 router.post(LOGOUT_URL,        controller.apiController.logoutUser);
 
 // ---------------------------------------------------------------------------------------------------------------------
