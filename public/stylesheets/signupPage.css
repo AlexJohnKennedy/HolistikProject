@@ -48,7 +48,7 @@
 
 #loginBtn {
     display: block;
-    font-family: "Noto Serif";
+    font-family: "Open Sans";
     font-weight: 400;
     font-size: 27px;
     border: 1px solid;
@@ -56,11 +56,11 @@
     width: 130px;
     margin: auto;
     color: black;
+    margin-top: 44px;
 }
 
 #loginBtn:hover {
-    background-color: rgb(134,160,208);
-    color: white;
+    background-color: rgb(90,159,231);
     text-decoration: underline;
     color: white;
 }

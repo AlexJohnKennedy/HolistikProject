@@ -6,6 +6,11 @@
     color: white;
 }
 
+body {
+    background: linear-gradient(rgba(150,150,150,0.8), rgba(0, 0, 0, 0.4)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
+    background-position: center;
+    background-size: cover;
+}
 
 #signUpBox {
     position: fixed;
@@ -43,45 +48,24 @@ h2 {
     text-align: center;
 }
 
-.input {
-    display: block;
-    align-content: center;
-    margin: auto;
-    font-family: "Open Sans";
-    font-weight: 300;
-    font-size: 22px;
-    height: 43px;
-    width: 319px;
-    margin-bottom: 20px;
-    right: 15px;
-}
-
-::placeholder {
-    font-size: 10px;
-    font-family: "Noto Serif";
-    font-weight: 400;
-    font-style: italic;
-    font-size: 22px;
-    padding-left: 10px;
-}
 
 #guest {
     font-family: "Open Sans";
     font-weight: 400;
     font-size: 0.9em;
-    color: whitesmoke;
+    color: #eff7de;
 }
 
 #signUpBtn:hover {
-    background-color: rgb(134,160,208);
+    background-color: rgb(90,159,231);
     color: white;
     text-decoration: underline;
-    border-color: rgb(134,160,208);
+    border-color: rgb(90,159,231);
 }
 
 #loginBtn:hover {
-    background-color: rgb(134,160,208);
+    background-color: rgb(90,159,231);
     color: white;
     text-decoration: underline;
-    border-color: rgb(134,160,208);
+    border-color: rgb(90,159,231);
 }
