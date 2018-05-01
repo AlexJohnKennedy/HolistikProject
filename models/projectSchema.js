@@ -2,9 +2,8 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 //This schema represents the semantics and relationship structure of one single node, within a project.
-let projectStructureSchema = new Schema(
+let structureSchema = new Schema(
     {
-        projectId: String,
         contentNodes: [
             {
                 idString: String,   //HTML id string (not DB id) for a node
@@ -27,7 +26,7 @@ let projectStructureSchema = new Schema(
 );
 
 //Schema for a project's visual arrangement
-let projectArrangementSchema = new Schema(
+let arrangementSchema = new Schema(
     {
         projectId: String,       //The project it pertains to
         contentNodeArrangement:
