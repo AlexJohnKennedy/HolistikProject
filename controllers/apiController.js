@@ -40,7 +40,6 @@ passport.use(new LocalStrategy({
 
                 //If the crypto call succeeded this happens.
                 if (isMatch) {
-                    console.log(user);
                     //Woo! the password matched after it was hashed with da salt!
                     return done(null, user);
                 }
@@ -49,7 +48,8 @@ passport.use(new LocalStrategy({
                     return done(null, false);
                 }
             }).catch(function(err) {
-                return done(null, false);
+                console.log("Entered error catch block, line 52, apiController.js!");
+                return done(err, false);
             });
 
         }).catch(function(err) {
