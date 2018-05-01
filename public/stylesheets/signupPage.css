@@ -48,13 +48,21 @@
 
 #loginBtn {
     display: block;
-    font-family: "Open Sans";
+    font-family: "Noto Serif";
     font-weight: 400;
-    font-size: 2em;
+    font-size: 27px;
     border: 1px solid;
-    border-radius: 5px;
+    border-radius: 30px;
     width: 130px;
     margin: auto;
+    color: black;
+}
+
+#loginBtn:hover {
+    background-color: rgb(134,160,208);
+    color: white;
+    text-decoration: underline;
+    color: white;
 }
 
 a {
