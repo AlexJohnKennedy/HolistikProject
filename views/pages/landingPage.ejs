@@ -17,12 +17,12 @@
         <h1>Holistik</h1>
         <h2>Learn <em>better.</em></h2>
 
-        <div class="logInSection">
-            <input class="input" type="text" placeholder="Username">
-            <input class="input" type="text" placeholder="Password">
+        <form action="/login" method="post" class="logInSection" enctype="application/x-www-form-urlencoded">
+            <input class="input" type="text" name="email" placeholder="Email address">
+            <input class="input" type="text" name="password" placeholder="Password">
 
-            <a id="loginBtn" class="btn" href="/main">Log In</a>
-        </div>
+            <input id="loginBtn" class= "btn" type="submit" value="Log In"/>
+        </form>
 
         <a id="guest" href="/main">Continue as a guest</a>
 
