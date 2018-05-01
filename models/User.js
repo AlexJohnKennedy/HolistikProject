@@ -9,8 +9,7 @@ let userSchema = new Schema(
         bio: String,
         image: String,  //URL to some supplied profile picture resource
         hash: {type: String, required: true},   //Hash of the registered password+salt. Will be used to compare passwords
-        salt: {type: String, required: true},   //We need to store the salt value that was generated for this user so that we can re-use it with the pw hash to authenticate logins
-
+        
         //Store references to projects that this user can use.
         projects: [
             {
