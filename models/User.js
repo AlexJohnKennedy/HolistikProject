@@ -18,3 +18,9 @@ let userSchema = new Schema(
         ]
     }
 );
+
+let userModel = mongoose.model('user', userSchema);
+
+module.exports = {
+    userModel : userModel
+};

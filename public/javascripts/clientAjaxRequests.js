@@ -240,8 +240,8 @@ class AjaxUserDataSender {
         });
     }
 
-    registerNewUserRequest(username, email, password, description) {
-        this.httpClient.sendJsonPostRequest(REGISTER_USER_URL, JSON.stringify({username: username, email: email, password: password, description: description}), this.httpClient, function(response) {
+    registerNewUserRequest(username, email, password, bio) {
+        this.httpClient.sendJsonPostRequest(REGISTER_USER_URL, JSON.stringify({username: username, email: email, password: password, bio: bio}), this.httpClient, function(response) {
             console.log("Got response from server after sending a register a new user request");
             console.log(response);
         });
