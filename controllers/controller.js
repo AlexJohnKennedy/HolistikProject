@@ -9,7 +9,12 @@ const apiController = require('./apiController.js');
 
 //Define a simple main page rendering for front end development
 function mainPageGet(req, res) {
-    res.render('pages/mindMapPage');
+    let username = null;
+    //If the user is logged in, then we can supply the username
+    if (req.user) {
+        username = req.user.username
+    }
+    res.render('pages/mindMapPage', { username: username});
 }
 
 
