@@ -79,6 +79,7 @@ function profilePageGet(req,res) {
 
         //Define callbacks for the database handling
         dbPromise.then(function(result) {
+            console.log("Successfully got some write-permission project records for this user! user owns "+result.length+" projects with write permission");
             extractProjectInfoForProfilePageIcons(result, dataToClient.writeProjects);
         }).catch(function(err) {
             console.log("ERROR: Failed to get project data for list of write-permission ids for this user \n"+err);
@@ -90,6 +91,7 @@ function profilePageGet(req,res) {
 
         //Define callbacks for the database handling
         dbPromise.then(function(result) {
+            console.log("Successfully got some write-permission project records for this user! user owns "+result.length+" projects with write permission");
             extractProjectInfoForProfilePageIcons(result, dataToClient.readOnlyProjects);
         }).catch(function(err) {
             console.log("ERROR: Failed to get project data for list of read-permission ids for this user \n"+err);

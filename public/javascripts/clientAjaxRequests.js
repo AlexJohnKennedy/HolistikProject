@@ -9,12 +9,10 @@
  */
 
 //Constant api routes that we will use. MUST MATCH THE SERVER-SPECIFIED ROUTES! (See 'routes' folder in the project dir)
-const PROJECT_STRUCTURE_LOAD_URL   = "/loadProjectStructure";
-const PROJECT_ARRANGEMENT_LOAD_URL = "/loadProjectArrangement";
+const PROJECT_LOAD_URL             = "/loadProject";
 const LOAD_ARRANGEMENT_URL         = "/loadArrangement";
 
-const PROJECT_STRUCTURE_SAVE_URL   = "/saveProjectStructure";
-const PROJECT_ARRANGEMENT_SAVE_URL = "/saveProjectArrangement";
+const PROJECT_SAVE_URL             = "/saveProject";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
 const REGISTER_USER_URL            = "/register";
@@ -187,15 +185,10 @@ class AjaxProjectLoader {
      * This sends data to the server, and will fully replace what is returned when 'load project to server' is called
      */
     saveProjectToServer() {
-        let stateBody = '{ "projectId": ' + this.projectId + ', "contentNodes": '+serialiseNodeState()+' }';
-        let arrangementBody = '{ "projectId": ' + this.projectId + ', "contentNodeArrangement": '+serialiseNodeArrangement()+' }';
+        let requestBody = '{ "projectId": ' + this.projectId + ', "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }';
 
-        this.httpClient.sendJsonPostRequest(PROJECT_STRUCTURE_SAVE_URL, stateBody, this.httpClient, function(response) {
+        this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project structure:");
-            console.log(response);
-        });
-        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_SAVE_URL, arrangementBody, this.httpClient, function(response) {
-            console.log("Got response from server after saving project arrangement:");
             console.log(response);
         });
     }

@@ -57,21 +57,17 @@ router.post(LOGOUT_URL,        controller.apiController.logoutUser);
 // ---------------------------------------------------------------------------------------------------------------------
 
 //Constant api routes that we will use. MUST MATCH THE CLIENT-SIDE ROUTES! (See 'clientAjaxRequests.js' file)
-const PROJECT_STRUCTURE_LOAD_URL   = "/loadProjectStructure";
-const PROJECT_ARRANGEMENT_LOAD_URL = "/loadProjectArrangement";
+const PROJECT_LOAD_URL             = "/loadProject";
 const LOAD_ARRANGEMENT_URL         = "/loadArrangement";
 
-const PROJECT_STRUCTURE_SAVE_URL   = "/saveProjectStructure";
-const PROJECT_ARRANGEMENT_SAVE_URL = "/saveProjectArrangement";
+const PROJECT_SAVE_URL             = "/saveProject";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
-router.post(PROJECT_STRUCTURE_LOAD_URL,   controller.apiController.projectStructureLoad);
-router.post(PROJECT_ARRANGEMENT_LOAD_URL, controller.apiController.projectArrangementLoad);
-router.post(LOAD_ARRANGEMENT_URL,         controller.apiController.loadArrangement);
+router.post(PROJECT_LOAD_URL,     controller.apiController.passport.authenticate('local'), controller.apiController.projectLoad);
+router.post(LOAD_ARRANGEMENT_URL, controller.apiController.passport.authenticate('local'), controller.apiController.loadArrangement);
 
-router.post(PROJECT_STRUCTURE_SAVE_URL,   controller.apiController.projectStructureSave);
-router.post(PROJECT_ARRANGEMENT_SAVE_URL, controller.apiController.projectArrangementSave);
-router.post(SAVE_ARRANGEMENT_URL,         controller.apiController.saveArrangement);
+router.post(PROJECT_SAVE_URL,     controller.apiController.passport.authenticate('local'), controller.apiController.projectSave);
+router.post(SAVE_ARRANGEMENT_URL, controller.apiController.passport.authenticate('local'), controller.apiController.saveArrangement);
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()

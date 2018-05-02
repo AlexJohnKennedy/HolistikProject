@@ -36,20 +36,28 @@
 
         <div id="notebookTabPanel">
             <div id="notebookTabs">
-                <a id="recentTab" class="notebookTab" href="#" role="tab">Rencent</a>
-                <a id="myNotebookTab" class="notebookTab" href="#" role="tab">My notebooks</a>
+                <!--<p id="recentTab" class="notebookTab" href="#" role="tab">Recent</p>-->
+                <p id="myNotebookTab" class="notebookTab" href="#" role="tab">My notebooks</p>
             </div>
         </div>
 
         <div class="divisionLine"></div>
 
 
-        <!-- render all the notebooks into an unordered list -->
+        <!-- render all the notebooks into an unordered list, based on the data being passed from the controller -->
         <div class="notebookList">
             <ul class="notebookList">
-                <li>
-                    Notebook 1
-                </li>
+                <% writeProjects.forEach(function(project) { %>
+                    <li>
+                        <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
+                        <div class="projectPreviewBox">
+                            <div class="projectNameText"> <%= project.projectName %> </div>
+                            <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
+                            <div class="projectTimestampText"> <%= project.timestamp %> </div>
+                        </div>
+                    </li>
+                    <br>
+                <% }); %>
             </ul>
         </div>
 

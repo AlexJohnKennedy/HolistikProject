@@ -48,7 +48,7 @@ input[name="searchNotebook"] {
     font-size: 35px;
 }
 
-#notebookTabs a:link {
+#notebookTabs p {
     text-decoration: none;
     color: black;
     font-family: "Open Sans";
@@ -121,6 +121,7 @@ a:hover {
 }
 
 .layer {
+    display: none;  /* hidden until button is pressed */
     position: absolute;
     top: 73px;
     width: 100%;
