@@ -43,10 +43,70 @@ function profilePageGet(req,res) {
         //Oops! the user is not logged in. Redirect them to the landing page so that they can log in and set up a session
         return res.redirect("/");   //return, so that we only reply once.
     }
-    else {
-        res.render('pages/profilePage');
+    //If we made it here, then all is well, and the user is logged in! Thus, we need to gather the project data for this
+    //user from the database, and pass it back to the profile page for rendering and client storage!
+
+    //Access the list of project elements according to the schema, from the User record.
+    let projectAssociations = req.user.projects;    //SEE USER SCHEMA FOR STRUCTURE.
+
+    //Split these associations into write permission projects, and read permission projects
+    let writePermIds = [];
+    let readPermIds  = [];
+    for (let proj of projectAssociations) {
+        if (proj.writePermission) {
+            writePermIds.push(proj.projectId);
+        }
+        else {
+            readPermIds.push(proj.projectId);
+        }
+    }
+
+    //Define the data object the EJS renderer will receive when it renders the page.
+    let dataToClient = {
+        username: req.user.username,
+        writeProjects: [],      //Will become array of project data objects, if the user has them
+        readOnlyProjects: [],   //Will become array of project data objects, if the user has them
+    };
+
+    //For id lists which are not empty, make database requests to gather project information
+    if (writePermIds.length) {
+        let dbPromise = db.getProjectsByIds(writePermIds);
+
+        //Define callbacks for the database handling
+        dbPromise.then(function(result) {
+            extractProjectInfoForProfilePageIcons(result, dataToClient.writeProjects);
+        }).catch(function(err) {
+            console.log("ERROR: Failed to get project data for list of write-permission ids for this user \n"+err);
+            res.send("ERROR: Failed to get project data for list of write-permission ids for this user \n"+err);
+        });
+    }
+    if (readPermIds.length) {
+        let dbPromise = db.getProjectsByIds(readPermIds);
+
+        //Define callbacks for the database handling
+        dbPromise.then(function(result) {
+            extractProjectInfoForProfilePageIcons(result, dataToClient.readOnlyProjects);
+        }).catch(function(err) {
+            console.log("ERROR: Failed to get project data for list of read-permission ids for this user \n"+err);
+            res.send("ERROR: Failed to get project data for list of read-permission ids for this user \n"+err);
+        });
+    }
+
+    //Okay, we have built up our data! Let's tell the client to render the profile page with the data we gathered.
+    res.render('pages/profilePage', dataToClient);
+}
+//Helper
+function extractProjectInfoForProfilePageIcons(queryResults, arrayToPushTo) {
+    //The query results should be an iterable list of documents
+    for (let i=0; i<queryResults.length; i++) {
+        arrayToPushTo.push({
+            projectId: queryResults[i]._id,
+            projectName: queryResults[i].name,
+            projectImage: (queryResults[i].image != null && queryResults[i].image !== undefined) ? queryResults[i].image : null
+        });
     }
 }
+
 
 function signupPageGet(req,res) {
     res.render('pages/signupPage');

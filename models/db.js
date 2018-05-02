@@ -53,7 +53,7 @@ function getOneUserByUsername(username) {
 function getOneProjectById(id) {
     //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
     //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
-    return Project.projectModel.findOne({_id: id});
+    return Project.projectModel.findById(id);
 }
 
 function getProjectsByIds(arrayOfIds) {
@@ -67,5 +67,7 @@ function getProjectsByIds(arrayOfIds) {
 module.exports = {
     createNewUser: createNewUser,
     getOneUserByEmail: getOneUserByEmail,
-    getOneUserByUsername: getOneUserByUsername
+    getOneUserByUsername: getOneUserByUsername,
+    getOneProjectById: getOneProjectById,
+    getProjectsByIds: getProjectsByIds
 };
