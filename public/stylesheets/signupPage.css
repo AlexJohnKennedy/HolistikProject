@@ -57,6 +57,7 @@
     margin: auto;
     color: black;
     margin-top: 44px;
+    text-align: center;
 }
 
 #loginBtn:hover {
