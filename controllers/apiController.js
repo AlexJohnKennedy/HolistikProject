@@ -125,7 +125,82 @@ function loadArrangement(req, res) {
 }
 
 function projectSave(req, res) {
+    console.log("recieved request to save a currently existing project!");
+    console.log("The user making the save request is: ");
+    console.log(req.user);
+    console.log("The project data passed to us is: ");
+    console.log(req.body);
 
+    //Okay! we just got a save project request.
+    //Firstly, we need to ensure that the user is logged in. If they are NOT, then there is some error, and we should do nothing!
+    if (!req.user || !req.isAuthenticated()) {
+        //No session established...
+        console.trace("ERROR: We got a project save request but there was no user session associated with the request:");
+        return res.redirect("/");
+    }
+
+    let projectModel = null;    //Will be used to store out project lookup result
+
+    //Now, we need to access the project object and ensure that the passed id actually corresponds to an existing project document on the DB
+    //TODO: Make a more advanced singular query (handled in db.js) which automatically only returns projects if the user has a corresponding writepermission project id in their record.
+    db.getOneProjectById(req.body.projectId).then(function(result) {
+        //If the result is null, then our projectId did not match any existing projects.. That is not good!
+        if (result == null) {
+            console.log("ERROR: Tried to save a project with _id: "+req.body.projectId+" but the lookup on this id returned no results!!");
+            res.send("ERROR: Client passed a project id that returned no results in the database during save operation");
+        }
+        //If we got a result, save it in the outer scope, and we good to go!!
+        else {
+            projectModel = result;
+        }
+    }).catch(function(err) {
+        console.log("Database error when looking up project document to save to! "+err);
+        res.send("ERROR: Database error: "+err);
+    });
+
+    //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
+    let userModel = null;
+    db.getOneUserByEmail(req.user.email).then(function(result) {
+        if (!result) {
+            //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
+            console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+            res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+        }
+        else {
+            userModel = result;
+        }
+    }).catch(function(err) {
+        console.log("Database error when looking up user document after the user wanted to save their project! "+err);
+        res.send("ERROR: Database error: "+err);
+    });
+
+    //Okay, let's make sure the user has the correct permissions.
+    if (hasWritePermission(userModel, projectModel)) {
+        //They have permission to save to this project! So, let's update the project model!
+        db.updateProject(projectModel, req.body.structure, req.body.arrangement).then(function(result) {
+            console.log("updated project successfully!");
+            console.log("result");
+            res.send(result);
+        }).catch(function(err) {
+            console.log("Database error when trying to update project document during save operation: "+err);
+            res.send("ERROR: Database error "+err);
+        });
+    }
+    else {
+        //NO PERMISSION! throw an error!
+        console.log("ERROR: User tried to save project but did not have write permission for it!");
+        res.send("ERROR: Client user does not have write permission for this project");
+    }
+}
+//helper
+function hasWritePermission(userModel, projectModel) {
+    let pid = projectModel._id;
+    for (let obj of userModel.projects) {
+        if (obj.writePermission && obj.projectId === pid) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function saveArrangement(req, res) {
