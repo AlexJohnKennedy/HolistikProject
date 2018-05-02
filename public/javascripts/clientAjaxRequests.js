@@ -14,6 +14,7 @@ const LOAD_ARRANGEMENT_URL         = "/loadArrangement";
 
 const PROJECT_SAVE_URL             = "/saveProject";
 const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
+const PROJECT_CREATE_URL           = "/createProject";
 
 const REGISTER_USER_URL            = "/register";
 const LOGIN_URL                    = "/login";
@@ -188,7 +189,20 @@ class AjaxProjectLoader {
         let requestBody = '{ "projectId": ' + this.projectId + ', "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }';
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
-            console.log("Got response from server after saving project structure:");
+            console.log("Got response from server after saving project:");
+            console.log(response);
+        });
+    }
+
+    /**
+     * Issue a request to create a new project for the currently logged in user, with the specified project name (string)
+     * @param projectName String to specifcy what the name of the new user should be called!
+     */
+    createNewProject(projectName) {
+        let requestBody = '{ "projectName": '+projectName+ ' }';     //All this sends is the name of the new project. The user association is handled by req.user
+
+        this.httpClient.sendJsonPostRequest(PROJECT_CREATE_URL, requestBody, this.httpClient, function(response) {
+            console.log("Got response from server after creating a new project with name: "+projectName);
             console.log(response);
         });
     }
