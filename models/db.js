@@ -81,28 +81,49 @@ function createNewProject(projectData) {
     });
 }
 
-function getOneUserByEmail(email) {
-    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
-    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
-    return User.userModel.findOne({email: email});
+/*
+The functions below are asynchronous - the mongoose function call returns a promise object which is handled here in the
+db file. This is to allow us to uses them as if they were synchronous using the "await" command.
+ */
+async function getOneUserByEmail(email) {
+    return User.userModel.findOne({email: email}).then(function(user) {
+        //async db call finished, return whatever we got back!
+        return user;
+    }).catch(function(err) {
+        console.log("Error trying to get one user by email from MongoDB: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
 }
-function getOneUserByUsername(username) {
-    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
-    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
-    return User.userModel.findOne({username: username});
+async function getOneUserByUsername(username) {
+    return User.userModel.findOne({username: username}).then(function(user) {
+        //async db call finished, return whatever we got back!
+        return user;
+    }).catch(function(err) {
+        console.log("Error trying to get one user by username from MongoDB: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
 }
-
-function getOneProjectById(id) {
-    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
-    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
-    return Project.projectModel.findById(id);
+async function getOneProjectById(id) {
+    return Project.projectModel.findById(id).then(function(project) {
+        //async db call finished, return whatever we got back!
+        return project;
+    }).catch(function(err) {
+        console.log("Error trying to get one project by id from MongoDB: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
 }
-
-function getProjectsByIds(arrayOfIds) {
-    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
-    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
-
-    return Project.projectModel.find({ /* match all project documents in collection */ }).where('_id').in(arrayOfIds);  //Return Query promise
+async function getProjectsByIds(arrayOfIds) {
+    return Project.projectModel.find({ /* match all project documents in collection */ }).where('_id').in(arrayOfIds).then(function(projects) {
+       //async db query finished, return the projects we found!
+       return projects;
+    }).catch(function(err) {
+        console.log("Error trying to retrieve projects by Ids from MongoDB: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
 }
 
 function updateProject(projectModel, structure, arrangement) {
