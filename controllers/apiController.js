@@ -136,6 +136,12 @@ function projectCreate(req, res) {
     console.log("Attempting to save a new project. req.body:");
     console.log(req.body);
 
+    //authenticate
+    if (!req.isAuthenticated()) {
+        console.log("User failed to pass Passport authentication. Redirecting to the landing page.");
+        return res.redirect("/");
+    }
+
     //check that the user is logged in
     if (!req.user) {
         return res.redirect("/");
@@ -145,7 +151,7 @@ function projectCreate(req, res) {
     let newId = db.createNewProject(req.body);
 
     //debugging
-    console.log("new project ID: " + newId);
+    console.log("new project ID: " + newId + " and the type is: " + typeof(newId));
 
     //we need to add the new project to the current users' list
     let user = db.getOneUserByEmail(req.user);

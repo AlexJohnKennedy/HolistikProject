@@ -65,13 +65,13 @@ const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
 const PROJECT_CREATE_URL           = "/createProject";
 
-router.post(PROJECT_LOAD_URL,     controller.apiController.passport.authenticate('local'), controller.apiController.projectLoad);
-router.post(LOAD_ARRANGEMENT_URL, controller.apiController.passport.authenticate('local'), controller.apiController.loadArrangement);
+router.post(PROJECT_LOAD_URL,     controller.apiController.projectLoad);
+router.post(LOAD_ARRANGEMENT_URL, controller.apiController.loadArrangement);
 
-router.post(PROJECT_SAVE_URL,     controller.apiController.passport.authenticate('local'), controller.apiController.projectSave);
-router.post(SAVE_ARRANGEMENT_URL, controller.apiController.passport.authenticate('local'), controller.apiController.saveArrangement);
+router.post(PROJECT_SAVE_URL,     controller.apiController.projectSave);
+router.post(SAVE_ARRANGEMENT_URL, controller.apiController.saveArrangement);
 
-router.post(PROJECT_CREATE_URL,   controller.apiController.passport.authenticate('local'), controller.apiController.projectCreate);
+router.post(PROJECT_CREATE_URL,   controller.apiController.projectCreate);
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()

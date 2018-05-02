@@ -78,7 +78,7 @@
         <a id="aCross" onclick="unseeThePopUpWindow()">X</a>
         <p id="newNotebook">New Notebook Name</p>
 
-        <form method="POST" action="/createProject">
+        <form method="post" action="/createProject" enctype="application/x-www-form-urlencoded">
             <input type="text" id="newNotebook" name="projectName">
             <input class="btn" type="submit" value="Create">
         </form>
