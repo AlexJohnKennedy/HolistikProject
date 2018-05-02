@@ -53,7 +53,7 @@
                     <li>
                         <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
                         <div class="projectPreviewBox">
-                            <div class="projectNameText"> <%= project.projectName %> </div>
+                            <div class="projectNameText"> <a href="/main/<%= project.projectName %>/<%= project.projectId %>"> <%= project.projectName %> </a></div>
                             <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
                             <div class="projectTimestampText"> <%= project.timestamp %> </div>
                         </div>
