@@ -173,3 +173,11 @@ p {
     text-decoration: none;
     color:white;
 }
+
+#newNotebook {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 18px;
+    margin-top: -16px;
+    color: black;
+}

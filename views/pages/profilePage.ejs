@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/footerStyling.css">
 
-    <script src="/javascripts/canvasController.js"></script>
+    <script src="/javascripts/profilePageController.js"></script>
 </head>
 <body>
 
@@ -68,11 +68,11 @@
 
     <div class="container" id="createContent">
         <a id="aCross" onclick="unseeThePopUpWindow()">X</a>
-        <p>New Notebook Name</p>
+        <p id="newNotebook">New Notebook Name</p>
 
         <form method="POST" action="/createProject">
             <input type="text" id="newNotebook" name="projectName">
-            <input class="btn" onclick="" type="submit" value="Create">
+            <input class="btn" type="submit" value="Create">
         </form>
 
     </div>
