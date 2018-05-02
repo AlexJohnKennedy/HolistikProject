@@ -124,10 +124,11 @@ function getOneProjectById(id) {
 }
 function getProjectsByIds(arrayOfIds) {
     return Project.projectModel.find({ /* match all project documents in collection */ }).where('_id').in(arrayOfIds).then(function(projects) {
-       //async db query finished, return the projects we found!
+       //async db query finished, return the projects we found! (iterable list)
        return projects;
     }).catch(function(err) {
-        console.log("Error trying to retrieve projects by Ids from MongoDB: "+err);
+        console.log("Error trying to retrieve projects by Ids from MongoDB: IDS WERE QUERIED WITH: "+arrayOfIds);
+        console.log(err);
         //indicate that an error has occurred by returning undefined
         return undefined;
     });

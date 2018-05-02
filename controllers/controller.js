@@ -38,7 +38,7 @@ function helpPageGet(req, res) {
     res.render('pages/helpPage');
 }
 
-function profilePageGet(req,res) {
+async function profilePageGet(req,res) {
     console.log("--- Rendering the profile page! ---");
     console.log("NOTE: if the user is not currently logged in, then the passport authorisation will have failed and re-directed them back to the landing page");
     console.log("The currently logged in user is:");
@@ -75,28 +75,24 @@ function profilePageGet(req,res) {
 
     //For id lists which are not empty, make database requests to gather project information
     if (writePermIds.length) {
-        let dbPromise = db.getProjectsByIds(writePermIds);
+        let queryResult = await db.getProjectsByIds(writePermIds);
+        if (queryResult === undefined) {
+            return res.send("Error loading projects for this user. Try again later :(");
+        }
 
-        //Define callbacks for the database handling
-        dbPromise.then(function(result) {
-            console.log("Successfully got some write-permission project records for this user! user owns "+result.length+" projects with write permission");
-            extractProjectInfoForProfilePageIcons(result, dataToClient.writeProjects);
-        }).catch(function(err) {
-            console.log("ERROR: Failed to get project data for list of write-permission ids for this user \n"+err);
-            res.send("ERROR: Failed to get project data for list of write-permission ids for this user \n"+err);
-        });
+        //If we got here, then we found a list of projects to build from!
+        console.log("Successfully got some write-permission project records for this user! user owns "+queryResult.length+" projects with write permission");
+        extractProjectInfoForProfilePageIcons(queryResult, dataToClient.writeProjects);
     }
     if (readPermIds.length) {
-        let dbPromise = db.getProjectsByIds(readPermIds);
+        let queryResult = await db.getProjectsByIds(readPermIds);
+        if (queryResult === undefined) {
+            return res.send("Error loading projects for this user. Try again later :(");
+        }
 
-        //Define callbacks for the database handling
-        dbPromise.then(function(result) {
-            console.log("Successfully got some write-permission project records for this user! user owns "+result.length+" projects with write permission");
-            extractProjectInfoForProfilePageIcons(result, dataToClient.readOnlyProjects);
-        }).catch(function(err) {
-            console.log("ERROR: Failed to get project data for list of read-permission ids for this user \n"+err);
-            res.send("ERROR: Failed to get project data for list of read-permission ids for this user \n"+err);
-        });
+        //If we got here, then we found a list of projects to build from!
+        console.log("Successfully got some read-permission project records for this user! user owns "+queryResult.length+" projects with read permission");
+        extractProjectInfoForProfilePageIcons(queryResult, dataToClient.readOnlyProjects);
     }
 
     //Okay, we have built up our data! Let's tell the client to render the profile page with the data we gathered.
