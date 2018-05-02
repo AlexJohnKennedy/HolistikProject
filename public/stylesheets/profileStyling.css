@@ -149,3 +149,27 @@ p {
     margin-right: auto;
     width: 79px;
 }
+
+#create {
+    display: none;
+}
+
+
+#aCross {
+    position: absolute;
+    color: black;
+    font-family: "Open Sans";
+    font-weight: 300;
+    margin-left: 38%;
+    margin-top: -66px;
+    border: 0.5px solid;
+    border-radius: 50%;
+    width: 22px;
+}
+
+#aCross:hover {
+    border-color: white;
+    background-color:  #ad9d7f;
+    text-decoration: none;
+    color:white;
+}

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/stylesheets/profileStyling.css">
     <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+
+    <script src="/javascripts/canvasController.js"></script>
 </head>
 <body>
 
@@ -56,20 +58,26 @@
         <div class="newNotebookBtnBox">
 
             <!-- need a function here to let the create create window to popup -->
-            <a class="btn" href="#" id="newNotebookBtn" onclick="myfunction()">Create new notebook</a>
+            <a class="btn" id="newNotebookBtn" onclick="showMeThePopUpWindow()">Create new notebook</a>
 
         </div>
     </div>
 </div>
 
 <div class="layer" id="create">
-    <div class="container" id="createContent">
-        <p>New Notebook Name</p>
-        <input type="text" id="newNotebook">
-        <a class="btn" method="GET">Create</a>
-    </div>
-</div>
 
+    <div class="container" id="createContent">
+        <a id="aCross" onclick="unseeThePopUpWindow()">X</a>
+        <p>New Notebook Name</p>
+
+        <form method="POST" action="/createProject">
+            <input type="text" id="newNotebook" name="projectName">
+            <input class="btn" onclick="" type="submit" value="Create">
+        </form>
+
+    </div>
+
+</div>
 
 <footer>
     <% include ../partials/footer.ejs %>
