@@ -149,7 +149,7 @@ function projectCreate(req, res) {
 
     //we need to add the new project to the current users' list
     let user = db.getOneUserByEmail(req.user);
-    user.projects.push({ writePermission: true, projectId, newId });
+    user.projects.push({ writePermission: true, projectId: newId });
 
     //indicate that the user successfully created a new project
 
