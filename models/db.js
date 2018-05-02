@@ -41,25 +41,45 @@ function createNewUser(userData, pwHash) {
 
 function createNewProject(projectData) {
     //build new model from JSON
+    let structure = new Project.structureModel({
+        contentNodes: []
+    });
+    let arrangement = new Project.arrangementModel({
+        contextNodeId: null,
+        nodeData: []
+    });
     let project = new Project.projectModel({
         //current structure and arrangement are required, so we just pass in the empty json structure
-        currentStructure: {
-            contentNodes: []
-        },
-        currentArrangement: {
-            contextNodeId: null,
-            nodeData: []
-        },
+        currentStructure: null,     //Will be set later in this function, inside the callbacks
+        currentArrangement: null,
         savedArrangements: [],
         image: "",
         name: projectData.projectName
     });
 
-    //call its save function to push to mong
-    project.save();
 
-    //return its id
-    return project._id;
+    //Save the empty models to the database
+    return structure.save().then(function(savedStructure) {
+        console.log("New empty structure was saved to the database " + savedStructure);
+        //If we got here, the structure is saved.
+        return arrangement.save();
+    }).then(function(savedArrangement) {
+        console.log("New empty arrangement was saved to the database " + savedArrangement);
+        //If we got here, the arrangement is saved.
+
+        //Since both the blocks exist, we can plus their _ids into the project model
+        project.currentStructure   = structure._id;
+        project.currentArrangement = arrangement._id;
+
+        //Okay, the project data is setup, so we can save that to the DB as well!
+        return project.save();  //return the promise once again to allow exterior chaining rahter than cancer
+    }).then(function(savedProject) {
+        //return the final saved project document
+        console.log("+++++++++ DEBUG +++++++++ " + savedProject);
+        return savedProject;
+    }).catch(function(err) {
+        console.log("Database error: during new project creation: "+err);
+    });
 }
 
 function getOneUserByEmail(email) {

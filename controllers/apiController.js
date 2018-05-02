@@ -207,7 +207,7 @@ function saveArrangement(req, res) {
 
 }
 
-function projectCreate(req, res) {
+async function projectCreate(req, res) {
     console.log("Attempting to save a new project. req.body:");
     console.log(req.body);
 
@@ -216,24 +216,32 @@ function projectCreate(req, res) {
         console.log("User failed to pass Passport authentication. Redirecting to the landing page.");
         return res.redirect("/");
     }
-
     //check that the user is logged in
     if (!req.user) {
+        console.log("No user session detected (req.user was null)");
         return res.redirect("/");
     }
 
     //user is authenticated! let's create a new project in the db
-    let newId = db.createNewProject(req.body);
+    let projectModel = await db.createNewProject(req.body);
 
-    //debugging
-    console.log("new project ID: " + newId + " and the type is: " + typeof(newId));
+    console.log("======== DEBUG ======== " + projectModel);
 
     //we need to add the new project to the current users' list
-    let user = db.getOneUserByEmail(req.user);
-    user.projects.push({ writePermission: true, projectId: newId });
+    db.getOneUserByEmail(req.user.email).then(function(user) {
+        console.log(user.projects);
+        console.log(typeof(user.projects));
+        user.projects.push({ writePermission: true, projectId: projectModel._id });
 
-    //indicate that the user successfully created a new project
+        console.log("pushed new porject to user list");
 
+        return user.save();
+    }).then(function(savedUser) {
+        console.log("User with newly pushed project field was saved to the database! \n"+savedUser);
+        res.redirect("/profile");
+    }).catch(function(err) {
+        console.log("ERROR: database error: "+err);
+    });
 }
 
 module.exports = {
