@@ -225,16 +225,9 @@ async function projectCreate(req, res) {
     //user is authenticated! let's create a new project in the db
     let projectModel = await db.createNewProject(req.body);
 
-    console.log("======== DEBUG ======== " + projectModel);
-
     //we need to add the new project to the current users' list
     db.getOneUserByEmail(req.user.email).then(function(user) {
-        console.log(user.projects);
-        console.log(typeof(user.projects));
         user.projects.push({ writePermission: true, projectId: projectModel._id });
-
-        console.log("pushed new porject to user list");
-
         return user.save();
     }).then(function(savedUser) {
         console.log("User with newly pushed project field was saved to the database! \n"+savedUser);

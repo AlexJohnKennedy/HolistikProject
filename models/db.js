@@ -75,7 +75,6 @@ function createNewProject(projectData) {
         return project.save();  //return the promise once again to allow exterior chaining rahter than cancer
     }).then(function(savedProject) {
         //return the final saved project document
-        console.log("+++++++++ DEBUG +++++++++ " + savedProject);
         return savedProject;
     }).catch(function(err) {
         console.log("Database error: during new project creation: "+err);
