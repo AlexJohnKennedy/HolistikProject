@@ -7,14 +7,15 @@ const apiController = require('./apiController.js');
 //It is not up to the controller object to decide WHICH URLS activate which repsonses, that is the job of the router
 //Here, we are simply defining the functions which pass data to views to be rendered, and the router will decide when to call each one
 
-//Define a simple main page rendering for front end development
+//For loading canvas when you are a logged in user. Should have parameters along with it!
 function mainPageGet(req, res) {
-    let username = null;
-    //If the user is logged in, then we can supply the username
-    if (req.user) {
-        username = req.user.username
+    if (!req.user || !req.isAuthenticated()) {
+        //User failed to authenticate! Redirect to the login screen
+        return res.redirect("/");
     }
-    res.render('pages/mindMapPage', { username: username});
+    let username = req.user.username;
+
+    res.render('pages/mindMapPage', { username: username });
 }
 
 

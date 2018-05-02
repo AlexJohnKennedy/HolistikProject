@@ -173,6 +173,37 @@ function addProjectToUser(user, projectModel, writePermission) {
     });
 }
 
+//helper
+function hasWritePermission(userModel, projectModel) {
+    let pid = projectModel._id;
+    for (let obj of userModel.projects) {
+        if (obj.writePermission && obj.projectId === pid) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function hasReadOrWritePermission(userModel, projectModel) {
+    let pid = projectModel._id;
+    for (let obj of userModel.projects) {
+        if (obj.projectId === pid) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function hasReadOnlyPermission(userModel, projectModel) {
+    let pid = projectModel._id;
+    for (let obj of userModel.projects) {
+        if (!obj.writePermission && obj.projectId === pid) {
+            return true;
+        }
+    }
+    return false;
+}
+
 module.exports = {
     createNewUser: createNewUser,
     createNewProject: createNewProject,
@@ -181,5 +212,8 @@ module.exports = {
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
     updateProject: updateProject,
-    addProjectToUser: addProjectToUser
+    addProjectToUser: addProjectToUser,
+    hasWritePermission: hasWritePermission,
+    hasReadOrWritePermission: hasReadOrWritePermission,
+    hasReadOnlyPermission: hasReadOnlyPermission
 };

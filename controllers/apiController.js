@@ -161,7 +161,7 @@ async function projectSave(req, res) {
     }
 
     //Okay, let's make sure the user has the correct permissions.
-    if (hasWritePermission(userModel, projectModel)) {
+    if (db.hasWritePermission(userModel, projectModel)) {
         //They have permission to save to this project! So, let's update the project model!
         let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.arrangement);
         if (updatedProjectModel === undefined) {
@@ -177,16 +177,6 @@ async function projectSave(req, res) {
         console.log("ERROR: User tried to save project but did not have write permission for it!");
         res.send("ERROR: Client user does not have write permission for this project");
     }
-}
-//helper
-function hasWritePermission(userModel, projectModel) {
-    let pid = projectModel._id;
-    for (let obj of userModel.projects) {
-        if (obj.writePermission && obj.projectId === pid) {
-            return true;
-        }
-    }
-    return false;
 }
 
 function saveArrangement(req, res) {
