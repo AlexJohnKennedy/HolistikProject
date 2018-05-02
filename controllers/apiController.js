@@ -4,8 +4,8 @@
  */
 
 const db = require('../models/db.js');
-const bcrypt = require('bcrypt');
 
+const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 10;     //How many iterations for bcrypt will use for hasing password with the generated salt
 
 //Import passport and username/password module, to handle login authentication and session handling.
@@ -208,6 +208,25 @@ function saveArrangement(req, res) {
 }
 
 function projectCreate(req, res) {
+    console.log("Attempting to save a new project. req.body:");
+    console.log(req.body);
+
+    //check that the user is logged in
+    if (!req.user) {
+        return res.redirect("/");
+    }
+
+    //user is authenticated! let's create a new project in the db
+    let newId = db.createNewProject(req.body);
+
+    //debugging
+    console.log("new project ID: " + newId);
+
+    //we need to add the new project to the current users' list
+    let user = db.getOneUserByEmail(req.user);
+    user.projects.push({ writePermission: true, projectId: newId });
+
+    //indicate that the user successfully created a new project
 
 }
 

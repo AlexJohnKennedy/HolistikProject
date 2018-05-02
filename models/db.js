@@ -39,6 +39,29 @@ function createNewUser(userData, pwHash) {
     return user.save();
 }
 
+function createNewProject(projectData) {
+    //build new model from JSON
+    let project = new Project.projectModel({
+        //current structure and arrangement are required, so we just pass in the empty json structure
+        currentStructure: {
+            contentNodes: []
+        },
+        currentArrangement: {
+            contextNodeId: null,
+            nodeData: []
+        },
+        savedArrangements: [],
+        image: "",
+        name: projectData.projectName
+    });
+
+    //call its save function to push to mong
+    project.save();
+
+    //return its id
+    return project._id;
+}
+
 function getOneUserByEmail(email) {
     //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
     //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
@@ -94,6 +117,7 @@ function updateProject(projectModel, structure, arrangement) {
 
 module.exports = {
     createNewUser: createNewUser,
+    createNewProject: createNewProject,
     getOneUserByEmail: getOneUserByEmail,
     getOneUserByUsername: getOneUserByUsername,
     getOneProjectById: getOneProjectById,
