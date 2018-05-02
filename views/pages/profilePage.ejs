@@ -53,8 +53,23 @@
             </ul>
         </div>
 
+        <div class="newNotebookBtnBox">
+
+            <!-- need a function here to let the create create window to popup -->
+            <a class="btn" href="#" id="newNotebookBtn" onclick="myfunction()">Create new notebook</a>
+
+        </div>
     </div>
 </div>
+
+<div class="layer" id="create">
+    <div class="container" id="createContent">
+        <p>New Notebook Name</p>
+        <input type="text" id="newNotebook">
+        <a class="btn" method="GET">Create</a>
+    </div>
+</div>
+
 
 <footer>
     <% include ../partials/footer.ejs %>
