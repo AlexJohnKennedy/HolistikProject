@@ -100,6 +100,7 @@ function profilePageGet(req,res) {
     }
 
     //Okay, we have built up our data! Let's tell the client to render the profile page with the data we gathered.
+    console.log(dataToClient);
     res.render('pages/profilePage', dataToClient);
 }
 //Helper

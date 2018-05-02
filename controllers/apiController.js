@@ -83,18 +83,23 @@ passport.deserializeUser(function(email, done) {
 // --- User registration and login establishment -----------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-function registerNewUser(req, res) {
+async function registerNewUser(req, res) {
     console.log("Attempting to save a new user. req.body:");
     console.log(req.body);
 
     //Call the bcrypt library to hash our plaintext password and automatically create an asociated salt.
     //When that completes (asynchronously), we will ask the db to create a new user record
-    bcrypt.hash(req.body.password, SALT_ROUNDS).then(function(hashResult) {
-        db.createNewUser(req.body, hashResult).then(function(user) {
-            res.send(user);
-        }).catch(function(err) {
-            res.send("ERROR ON ATTMEPT TO SAVE USER:\n"+err);
-        });
+    bcrypt.hash(req.body.password, SALT_ROUNDS).then(async function(hashResult) {
+        let newCreatedUser = await db.createNewUser(req.body, hashResult);
+
+        //If we got an undefined result, then there was a database error!
+        if (newCreatedUser === undefined) {
+            res.send("DATABASSE ERROR - On createnew user attempt!");
+        }
+        else {
+            //All good!
+            res.send(newCreatedUser);
+        }
     }).catch(function(err) {
         res.send("Bcrypt failed to fucking hash dat shit:\n"+err);
     });
@@ -124,8 +129,8 @@ function loadArrangement(req, res) {
 
 }
 
-function projectSave(req, res) {
-    console.log("recieved request to save a currently existing project!");
+async function projectSave(req, res) {
+    console.log("received request to save a currently existing project!");
     console.log("The user making the save request is: ");
     console.log(req.user);
     console.log("The project data passed to us is: ");
@@ -139,52 +144,33 @@ function projectSave(req, res) {
         return res.redirect("/");
     }
 
-    let projectModel = null;    //Will be used to store out project lookup result
+    //Get the project model object from the database, making sure to WAIT for the response before continuing
+    let projectModel = await db.getOneProjectById(req.body.projectId);
 
-    //Now, we need to access the project object and ensure that the passed id actually corresponds to an existing project document on the DB
-    //TODO: Make a more advanced singular query (handled in db.js) which automatically only returns projects if the user has a corresponding writepermission project id in their record.
-    db.getOneProjectById(req.body.projectId).then(function(result) {
-        //If the result is null, then our projectId did not match any existing projects.. That is not good!
-        if (result == null) {
-            console.log("ERROR: Tried to save a project with _id: "+req.body.projectId+" but the lookup on this id returned no results!!");
-            res.send("ERROR: Client passed a project id that returned no results in the database during save operation");
-        }
-        //If we got a result, save it in the outer scope, and we good to go!!
-        else {
-            projectModel = result;
-        }
-    }).catch(function(err) {
-        console.log("Database error when looking up project document to save to! "+err);
-        res.send("ERROR: Database error: "+err);
-    });
+    //If the result is undefined, then our projectId did not match any existing projects.. That is not good!
+    if (projectModel === null) {
+        return res.send("ERROR: Client passed a project id that returned no results in the database during save operation");
+    }
 
     //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
-    let userModel = null;
-    db.getOneUserByEmail(req.user.email).then(function(result) {
-        if (!result) {
-            //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
-            console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
-            res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
-        }
-        else {
-            userModel = result;
-        }
-    }).catch(function(err) {
-        console.log("Database error when looking up user document after the user wanted to save their project! "+err);
-        res.send("ERROR: Database error: "+err);
-    });
+    let userModel = await db.getOneUserByEmail(req.user.email);
+    if (userModel === undefined) {
+        //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
+        console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+        return res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+    }
 
     //Okay, let's make sure the user has the correct permissions.
     if (hasWritePermission(userModel, projectModel)) {
         //They have permission to save to this project! So, let's update the project model!
-        db.updateProject(projectModel, req.body.structure, req.body.arrangement).then(function(result) {
-            console.log("updated project successfully!");
-            console.log("result");
-            res.send(result);
-        }).catch(function(err) {
-            console.log("Database error when trying to update project document during save operation: "+err);
-            res.send("ERROR: Database error "+err);
-        });
+        let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.arrangement);
+        if (updatedProjectModel === undefined) {
+            res.send("DATABASE ERROR: Failed to update project details");
+        }
+        else {
+            //Success!
+            res.send(updatedProjectModel);
+        }
     }
     else {
         //NO PERMISSION! throw an error!
@@ -224,17 +210,23 @@ async function projectCreate(req, res) {
 
     //user is authenticated! let's create a new project in the db
     let projectModel = await db.createNewProject(req.body);
+    if (projectModel === undefined) {
+        return res.send("Database error: failed to create a new project");
+    }
 
     //we need to add the new project to the current users' list
-    db.getOneUserByEmail(req.user.email).then(function(user) {
-        user.projects.push({ writePermission: true, projectId: projectModel._id });
-        return user.save();
-    }).then(function(savedUser) {
-        console.log("User with newly pushed project field was saved to the database! \n"+savedUser);
-        res.redirect("/profile");
-    }).catch(function(err) {
-        console.log("ERROR: database error: "+err);
-    });
+    let user = await db.getOneUserByEmail(req.user.email);
+    if (user === undefined) {
+        return res.send("Database error: failed to get a user based on cookie data");
+    }
+
+    let updatedUser = await db.addProjectToUser(user, projectModel, true);
+    if (updatedUser === undefined) {
+        return res.send("Database error: failed to update user with new project");
+    }
+
+    //All succeeded!
+    res.redirect("/profile");   //Refresh the page so that the new entry shows up
 }
 
 module.exports = {

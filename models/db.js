@@ -36,7 +36,13 @@ function createNewUser(userData, pwHash) {
         projects: []
     });
 
-    return user.save();
+    return user.save().then(function(savedUser) {
+        console.log("New user entry was saved successfully! "+savedUser);
+        return savedUser;
+    }).catch(function(err) {
+        console.log("DATABASE ERROR: Failed to create a new user: "+err);
+        return undefined;
+    });
 }
 
 function createNewProject(projectData) {
@@ -78,14 +84,15 @@ function createNewProject(projectData) {
         return savedProject;
     }).catch(function(err) {
         console.log("Database error: during new project creation: "+err);
+        return undefined;
     });
 }
 
 /*
 The functions below are asynchronous - the mongoose function call returns a promise object which is handled here in the
-db file. This is to allow us to uses them as if they were synchronous using the "await" command.
+db file. This is to allow us to use of them as if they were synchronous using the "await" command.
  */
-async function getOneUserByEmail(email) {
+function getOneUserByEmail(email) {
     return User.userModel.findOne({email: email}).then(function(user) {
         //async db call finished, return whatever we got back!
         return user;
@@ -95,7 +102,7 @@ async function getOneUserByEmail(email) {
         return undefined;
     });
 }
-async function getOneUserByUsername(username) {
+function getOneUserByUsername(username) {
     return User.userModel.findOne({username: username}).then(function(user) {
         //async db call finished, return whatever we got back!
         return user;
@@ -105,7 +112,7 @@ async function getOneUserByUsername(username) {
         return undefined;
     });
 }
-async function getOneProjectById(id) {
+function getOneProjectById(id) {
     return Project.projectModel.findById(id).then(function(project) {
         //async db call finished, return whatever we got back!
         return project;
@@ -115,7 +122,7 @@ async function getOneProjectById(id) {
         return undefined;
     });
 }
-async function getProjectsByIds(arrayOfIds) {
+function getProjectsByIds(arrayOfIds) {
     return Project.projectModel.find({ /* match all project documents in collection */ }).where('_id').in(arrayOfIds).then(function(projects) {
        //async db query finished, return the projects we found!
        return projects;
@@ -128,7 +135,7 @@ async function getProjectsByIds(arrayOfIds) {
 
 function updateProject(projectModel, structure, arrangement) {
     //Get all the structures and arrangements and shit
-    let toRet = Project.structureModel.findById(projectModel.currentStructure).then(function(structureDoc) {
+    return Project.structureModel.findById(projectModel.currentStructure).then(function(structureDoc) {
         structureDoc.contentNodes = structure.contentNodes;     //Overwrite entire structure
 
         //Ok, save the document and return the promise from that, so we can continue chaining promise callbacks
@@ -150,9 +157,19 @@ function updateProject(projectModel, structure, arrangement) {
         console.log("Database error when updating project in updateProject method "+err);
         return err;
     });
+}
 
-    console.log("PROMISE TESTING: The type of 'toRet' in db.updateProject() is "+typeof(toRet));
-    return toRet;
+function addProjectToUser(user, projectModel, writePermission) {
+    user.projects.push({ writePermission: writePermission, projectId: projectModel._id });
+
+    //Return result of the promise chain callbacks
+    return user.save().then(function(savedUser) {
+        console.log("User with newly pushed project field was saved to the database! \n"+savedUser);
+        return savedUser;
+    }).catch(function(err) {
+        console.log("ERROR: database error when saving newly updated user: "+err);
+        return undefined;
+    });
 }
 
 module.exports = {
@@ -162,5 +179,6 @@ module.exports = {
     getOneUserByUsername: getOneUserByUsername,
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
-    updateProject: updateProject
+    updateProject: updateProject,
+    addProjectToUser: addProjectToUser
 };
