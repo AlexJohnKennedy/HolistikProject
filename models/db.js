@@ -86,6 +86,34 @@ function getProjectsByIds(arrayOfIds) {
     return Project.projectModel.find({ /* match all project documents in collection */ }).where('_id').in(arrayOfIds);  //Return Query promise
 }
 
+function updateProject(projectModel, structure, arrangement) {
+    //Get all the structures and arrangements and shit
+    let toRet = Project.structureModel.findById(projectModel.currentStructure).then(function(structureDoc) {
+        structureDoc.contentNodes = structure.contentNodes;     //Overwrite entire structure
+
+        //Ok, save the document and return the promise from that, so we can continue chaining promise callbacks
+        return structureDoc.save();
+    }).then(function(result) {
+        //We should have received the result of the save
+        //Now, do the same operation for arrangement as well
+        return Project.arrangementModel.findById(projectModel.currentArrangement);
+    }).then(function(arrangementDoc) {
+        arrangementDoc.contextNodeId = arrangement.contextNodeId;
+        arrangementDoc.nodeData      = arrangement.nodeData;
+
+        return arrangementDoc.save();
+    }).then(function(arrangementSaveResult) {
+        console.log("db.updateProject() - All save operations succeeded!");
+        //Everything passed! let's return the updated arrangement data
+        return arrangementSaveResult;
+    }).catch(function(err) {
+        console.log("Database error when updating project in updateProject method "+err);
+        return err;
+    });
+
+    console.log("PROMISE TESTING: The type of 'toRet' in db.updateProject() is "+typeof(toRet));
+    return toRet;
+}
 
 module.exports = {
     createNewUser: createNewUser,
@@ -93,5 +121,6 @@ module.exports = {
     getOneUserByEmail: getOneUserByEmail,
     getOneUserByUsername: getOneUserByUsername,
     getOneProjectById: getOneProjectById,
-    getProjectsByIds: getProjectsByIds
+    getProjectsByIds: getProjectsByIds,
+    updateProject: updateProject
 };

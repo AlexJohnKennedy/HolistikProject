@@ -44,7 +44,7 @@ function profilePageGet(req,res) {
     console.log("The currently logged in user is:");
     console.log(req.user);
 
-    if (req.user == null) {
+    if (req.user == null || !req.isAuthenticated()) {
         //Oops! the user is not logged in. Redirect them to the landing page so that they can log in and set up a session
         return res.redirect("/");   //return, so that we only reply once.
     }
