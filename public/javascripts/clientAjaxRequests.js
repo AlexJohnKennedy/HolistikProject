@@ -131,33 +131,21 @@ class AjaxProjectLoader {
      * the server returns both of the resulting JSON.
      */
     loadProjectFromServer() {
-        let structureJSON = null;
-        let arrangementJSON = null;
-        let pendingRequestCount = 2;
 
         addBlackoutEffect();    //Block user input while the request is being processed.
         showLoadingWindow();
 
-        this.loadingHttpClient.sendJsonPostRequest(PROJECT_STRUCTURE_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
-            structureJSON = response;
-            pendingRequestCount--;
+        this.loadingHttpClient.sendJsonPostRequest(PROJECT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
+            let responseObject = JSON.parse(response);
 
-            if (pendingRequestCount <= 0) {
-                fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
-                removeBlackoutEffect();
-                hideLoadingWindow();
-            }
-        });
+            //TODO -- stop client from wasting fuck loads of effort re-stringifying everything...
+            let structureJSON   = JSON.stringify(responseObject.structure);
+            let arrangementJSON = JSON.stringify(responseObject.arrangement);
 
-        this.httpClient.sendJsonPostRequest(PROJECT_ARRANGEMENT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
-            arrangementJSON = response;
-            pendingRequestCount--;
+            fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
 
-            if (pendingRequestCount <= 0) {
-                fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
-                removeBlackoutEffect();
-                hideLoadingWindow();
-            }
+            removeBlackoutEffect();
+            hideLoadingWindow();
         });
     }
 
