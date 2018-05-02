@@ -31,18 +31,35 @@ router.get('/help', controller.helpPageGet);
 //Route for the profile page
 router.get('/profile', controller.profilePageGet);
 
+// ---------------------------------------------------------------------------------------------------------------------
+// --- User information gathering api routes ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
 const REGISTER_USER_URL            = "/register";
 const LOGIN_URL                    = "/login";
 const LOGOUT_URL                   = "/logout";
 
+const GET_USER_PROJECTS_URL        = "/getprojectlist";
+
 router.post(REGISTER_USER_URL, controller.apiController.registerNewUser);
+
 router.post(LOGIN_URL, controller.apiController.passport.authenticate('local', {
         successRedirect: '/profile',
         failureRedirect: '/'
     }),
     controller.apiController.loginUser
 );
+
 router.post(LOGOUT_URL,        controller.apiController.logoutUser);
+
+/* NOTE NEEDED I THINK
+router.get(GET_USER_PROJECTS_URL,
+    controller.apiController.passport.authenticate('local', {      //Go through auth middleware before controller logic.
+        failureRedirect: '/'    //If the authorisation fails redirect to login page.
+    }),
+    controller.apiController.getUserProjectInformation    //If the authorisation succeeds, continue to the controller logic. User data is ensured to be available.
+);
+*/
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------

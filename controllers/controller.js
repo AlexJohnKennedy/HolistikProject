@@ -34,7 +34,18 @@ function helpPageGet(req, res) {
 }
 
 function profilePageGet(req,res) {
-    res.render('pages/profilePage');
+    console.log("--- Rendering the profile page! ---");
+    console.log("NOTE: if the user is not currently logged in, then the passport authorisation will have failed and re-directed them back to the landing page");
+    console.log("The currently logged in user is:");
+    console.log(req.user);
+
+    if (req.user == null) {
+        //Oops! the user is not logged in. Redirect them to the landing page so that they can log in and set up a session
+        return res.redirect("/");   //return, so that we only reply once.
+    }
+    else {
+        res.render('pages/profilePage');
+    }
 }
 
 function signupPageGet(req,res) {

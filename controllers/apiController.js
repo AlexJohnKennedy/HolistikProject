@@ -71,8 +71,10 @@ passport.deserializeUser(function(email, done) {
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Passport is calling the DEserialise method we specified!!");
     let databasePromise = db.getOneUserByEmail(email);
     databasePromise.then(function(user) {
+        console.log("deserialisation success");
         done(null, user);   //Error object is null, because we succeeded!
     }).catch(function(err) {
+        console.trace("deseiralistaion FAILURE");
         done(err);
     });
 });
@@ -108,9 +110,16 @@ function loginUser(req, res) {
 }
 
 function logoutUser(req, res) {
-
+    //TODO
 }
 
+/**
+ * This will use the logged-in user (in the request object) to look up what projects a given user has ownership of, so
+ * that we can send them back to the client, giving them the option to pick one of them and load it
+ */
+function getUserProjectInformation(req, res) {
+    //Alright. Let's query our database for the project information and then build the appropriate JSON response to send back to the client.
+}
 
 
 
@@ -183,17 +192,19 @@ function saveArrangement(req, res) {
 }
 
 module.exports = {
-    projectStructureLoad   : projectStructureLoad,
-    projectArrangementLoad : projectArrangementLoad,
-    loadArrangement        : loadArrangement,
+    projectStructureLoad     : projectStructureLoad,
+    projectArrangementLoad   : projectArrangementLoad,
+    loadArrangement          : loadArrangement,
 
-    projectStructureSave   : projectStructureSave,
-    projectArrangementSave : projectArrangementSave,
-    saveArrangement        : saveArrangement,
+    projectStructureSave     : projectStructureSave,
+    projectArrangementSave   : projectArrangementSave,
+    saveArrangement          : saveArrangement,
 
-    registerNewUser        : registerNewUser,
-    loginUser              : loginUser,
-    logoutUser             : logoutUser,
+    registerNewUser          : registerNewUser,
+    loginUser                : loginUser,
+    logoutUser               : logoutUser,
+
+    getUserProjectInformation: getUserProjectInformation,
 
     passport: passport
 };

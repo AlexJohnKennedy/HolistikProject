@@ -45,7 +45,22 @@ function getOneUserByEmail(email) {
     return User.userModel.findOne({email: email});
 }
 function getOneUserByUsername(username) {
+    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
+    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
+    return User.userModel.findOne({username: username});
+}
 
+function getOneProjectById(id) {
+    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
+    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
+    return Project.projectModel.findOne({_id: id});
+}
+
+function getProjectsByIds(arrayOfIds) {
+    //Perform a database lookup based on email, and return the promise object which mongoose creates. The invoker of this
+    //function can therefor attach callbacks to the promise to handle the various cases, and we do not have to worry about that!
+
+    return Project.projectModel.find({ /* match all project documents in collection */ }).where('_id').in(arrayOfIds);  //Return Query promise
 }
 
 
