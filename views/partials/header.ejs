@@ -19,7 +19,7 @@
 
         <div class="navbar-header">
             <!-- The x of the nav bar will be a 'brand name' element, also serving as a hyperlink to the homepage? -->
-            <a class="navbar-brand brandNameText" href="/">
+            <a class="navbar-brand brandNameText" href="/main">
                 Holistik
             </a>
 
@@ -29,7 +29,12 @@
                     <a href="/main">Application</a>
                 </li>
                 <li>
-                    <a href="/profile">Profile</a> <!--<a href="/profile">Profile</a>-->
+                    <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
+                    <% if (username !== undefined && username != null) { %>
+                        <a href="/profile">Projects</a> <!--<a href="/profile">Profile</a>-->
+                    <% } else { %>
+                        <a class="disabledLink" title="Log in to use this feature!" disabled="true">Projects</a> <!-- HYPERLINK WITH NO HREF, TO SHOW AS GREYED OUT LINK -->
+                    <% } %>
                 </li>
                 <li>
                     <!--<a href="/help" target="_blank">Help</a> --><!-- target = "_blank" makes it open in a new tab -->

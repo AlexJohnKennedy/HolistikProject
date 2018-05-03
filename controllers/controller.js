@@ -9,11 +9,12 @@ const apiController = require('./apiController.js');
 
 //For loading canvas when you are a logged in user. Should have parameters along with it!
 function mainPageGet(req, res) {
-    if (!req.user || !req.isAuthenticated()) {
+    let username = null;
+
+    if (req.user && req.isAuthenticated()) {
         //User failed to authenticate! Redirect to the login screen
-        return res.redirect("/");
+        username = req.user.username;
     }
-    let username = req.user.username;
 
     res.render('pages/mindMapPage', { username: username });
 }

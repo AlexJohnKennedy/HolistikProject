@@ -95,3 +95,7 @@ name {
     font-weight: 400;
 }
 
+.disabledLink {
+    color: #595959;
+}
+
