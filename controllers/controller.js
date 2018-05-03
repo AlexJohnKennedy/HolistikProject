@@ -22,8 +22,16 @@ function mainPageGet(req, res) {
 
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
+    let username = null;
+
+    if (req.user && req.isAuthenticated()) {
+        //User failed to authenticate! Redirect to the login screen
+        username = req.user.username;
+    }
+
     res.render('pages/landingPage', {
-        path : "/"
+        path : "/",
+        username: username  //If there is a session, this will not be null, and EJS will behave differently.
     });
 }
 

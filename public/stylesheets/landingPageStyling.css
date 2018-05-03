@@ -27,9 +27,18 @@ body {
 }
 
 
-#loginBtn {
+#loginBtn, #logoutbutton{
     background-color: rgb(223,204,123);
     width: 200px;
+    border-radius: 30px;
+    margin-bottom: 6px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#goToProfileButton {
+    background-color: rgb(223,204,123);
+    width: 400px;
     border-radius: 30px;
     margin-bottom: 6px;
     margin-left: auto;
@@ -43,7 +52,9 @@ h1 {
 h2 {
     margin-bottom: 4%;
 }
-
+h3 {
+    font-size: 3em;
+}
 .signInSection {
     text-align: center;
 }
