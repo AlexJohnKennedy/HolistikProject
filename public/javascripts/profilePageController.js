@@ -21,6 +21,9 @@ function setProjectDataInLocalBrowserStorage(name, id) {
 
     window.localStorage.setItem("projectName", name);
     window.localStorage.setItem("projectId", id);
+
+    console.log("projectName saved to local storage: "+window.localStorage.getItem("projectName"));
+    console.log("projectId saved to local storage: "+window.localStorage.getItem("projectId"));
 }
 
 window.onload = function() {
@@ -36,4 +39,4 @@ window.onload = function() {
             window.location.href = "/main";
         });
     }
-}
+};
