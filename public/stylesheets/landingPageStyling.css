@@ -1,5 +1,71 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+
 .container {
-    padding: 100px 0;
     text-align: center;
     color: white;
+}
+
+body {
+    background: linear-gradient(rgba(150,150,150,0.8), rgba(0, 0, 0, 0.4)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
+    background-position: center;
+    background-size: cover;
+}
+
+#signUpBox {
+    position: fixed;
+    width: 150px;
+    margin-left: 84%;
+    margin-top: -5%;
+}
+
+#signUpBtn {
+    border-radius: 30px;
+    color: black;
+    font-size: 22px;
+    height: 35px;
+}
+
+
+#loginBtn {
+    background-color: rgb(223,204,123);
+    width: 200px;
+    border-radius: 30px;
+    margin-bottom: 6px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    margin-bottom: 15px;
+}
+
+h2 {
+    margin-bottom: 4%;
+}
+
+.signInSection {
+    text-align: center;
+}
+
+
+#guest {
+    font-family: "Open Sans";
+    font-weight: 400;
+    font-size: 0.9em;
+    color: #eff7de;
+}
+
+#signUpBtn:hover {
+    background-color: rgb(90,159,231);
+    color: white;
+    text-decoration: underline;
+    border-color: rgb(90,159,231);
+}
+
+#loginBtn:hover {
+    background-color: rgb(90,159,231);
+    color: white;
+    text-decoration: underline;
+    border-color: rgb(90,159,231);
 }

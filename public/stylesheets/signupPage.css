@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+
+.container {
+    display: block;
+    margin-top: 10%;
+}
+
+.logInTitle {
+    font-family: "Open Sans";
+    font-weight: 300;
+    font-size: 56px;
+    display: block;
+    text-align: center;
+}
+
+.newUser {
+    text-align: center;
+    font-family: "Open Sans";
+    font-weight: 300;
+    margin-top: 10px;
+    margin-bottom: 38px;
+}
+
+.signInSection {
+    text-align: center;
+}
+
+.input {
+    display: block;
+    align-content: center;
+    margin: auto;
+    font-family: "Open Sans";
+    font-weight: 300;
+    height: 43px;
+    width: 319px;
+    margin-bottom: 20px;
+}
+}
+
+::placeholder {
+    font-size: 10px;
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-style: italic;
+    font-size: 500px;
+}
+
+#loginBtn {
+    display: block;
+    font-family: "Open Sans";
+    font-weight: 400;
+    font-size: 27px;
+    border: 1px solid;
+    border-radius: 30px;
+    width: 130px;
+    margin: auto;
+    color: black;
+    margin-top: 44px;
+    text-align: center;
+}
+
+#loginBtn:hover {
+    background-color: rgb(90,159,231);
+    text-decoration: underline;
+    color: white;
+}
+
+a {
+    text-decoration: none;
+}
+

@@ -1,4 +1,3 @@
-
 //Create local 'state' objects to remember all the canvas related logic objects.
 //This will be a storage of all the content nodes, and all the 'resource' nodes (To be implemented later..)
 //Access to the relationship objects will be done VIA the content nodes, and they cannot exist in isolation.
@@ -8,10 +7,14 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 50,          //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 50,         //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : [],
-    showingNodes : []   //List of all content nodes which are currently 'showing' their info (i.e. expanded)
+    showingNodes : [],      //List of all content nodes which are currently 'showing' their info (i.e. expanded)
+    projectLoaded : false
 };
+
+//TODO -- MOVE THE CREATION OF THIS OBJECT TO SOME 'INIT' FUNCTION WHICH IS CALLED ON PAGE LOAD.
+let ajaxHandler = null;
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
@@ -50,31 +53,75 @@ let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-rela
 let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 
 // ---------------------------------------------------------------------------------------------------------------------
+// --- Initialisation logic for when page first loads ------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Define initialisation behviour when the page finishes loading
+ */
+window.onload = function() {
+    console.log("Loading page");
+
+    //Set up the project loader object to manage our saving and loading. Get the respective project id from local browser memory
+    let projectIdString = window.localStorage.getItem("projectId");
+    if (projectIdString === undefined || projectIdString == null) {
+        //Guest user!
+    }
+    else {
+        console.log("Loading page: Project id (as string) is "+projectIdString);
+        console.log(typeof(projectIdString));
+
+        ajaxHandler = new AjaxProjectLoader(projectIdString);
+
+        //Load the project we are associated with!
+        ajaxHandler.loadProjectFromServer();
+    }
+};
+
+function saveProject() {
+    if (ajaxHandler !== undefined && ajaxHandler != null) {
+        //We must be logged in
+        ajaxHandler.saveProjectToServer();
+    }
+    else {
+        //TODO: Guest user saving (local save)
+    }
+}
+
+function loadProject() {
+    if (ajaxHandler !== undefined && ajaxHandler != null) {
+        //We must be logged in
+        ajaxHandler.loadProjectFromServer();
+    }
+    else {
+        //TODO: Guest user loading (local load)
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // --- Node creation functionality -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 // These functions will access the page DOM and generate new or delete old HTML elements, representing 'content nodes'
 // to be rendered on the page. Accordingly, the logical models of these elements will be updated in the canvasState
 // object structure as well.
 
-/** This function will simply create a new content node and place it at the specified default location.
- *  Accordingly, the new node will be tracked by the canvasState.
- *  The new node will have an associated HTML div element in the DOM, such that it can be rendered.
- *  The HTML element will have a unique id, and have the associated class types to allow interact.js library to
- *  apply it's drag/drop/resize functionality to the node.
+/**
+ * This function is only invoked by the USER (by pressing a ui element), and creates a brand new node on the current
+ * canvas. This funciton is how they add new nodes to their project.
+ *
+ * Note that this function is not responsible for BUILDING THE OBJECT ITSELF, rather, it invokes buildContentNode()
+ * and then adds the resulting node to the canvas state.
  */
 function createNewContentNode() {
     //Create the HTML element for this node by directly editing the browser DOM.
     //The creation method will return the new html element object, and it's id string.
 
-    //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
-    let canvasWindow = document.getElementById("canvasWindow");
-    let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
-    let ypos = canvasWindow.scrollTop + defaultNodePosition.y;
+    //assign an id for the new element based on the current 'tracking'
+    let idString = idPrefix + currIdNum;
+    currIdNum++;
 
-    let newElemDetails = createNewContentNode_HtmlElement(xpos, ypos);
+    let newNode = buildContentNode(idString);
 
-    //Use the returned details to create a new logical object representing the HTML element, and store it.
-    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
 
@@ -84,15 +131,32 @@ function createNewContentNode() {
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
 }
 
-function createNewContentNode_HtmlElement(xPos, yPos) {
+/**
+ * This function will simply create a new content node OBJECT and place it at the specified default location.
+ * Accordingly, the new node will be tracked by the canvasState.
+ * The new node will have an associated HTML div element in the DOM, such that it can be rendered.
+ * The HTML element will have a unique id, and have the associated class types to allow interact.js library to
+ * apply it's drag/drop/resize functionality to the node.
+ */
+function buildContentNode(idString) {
+    //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
+    let canvasWindow = document.getElementById("canvasWindow");
+    let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
+    let ypos = canvasWindow.scrollTop + defaultNodePosition.y;
+
+    let newElemDetails = createNewContentNode_HtmlElement(xpos, ypos, idString);
+
+    //Use the returned details to create a new logical object representing the HTML element, and store it.
+    let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
+
+    return newNode;
+}
+
+function createNewContentNode_HtmlElement(xPos, yPos, idString) {
     //Access the DOM, and find the drawingCanvas element. We will add the new content node as a DIV nested inside of this
     let drawingCanvas = document.getElementById("drawingCanvas");
 
     let newElem = document.createElement("div");
-
-    //assign an id for the new element based on the current 'tracking'
-    let idString = idPrefix + currIdNum;
-    currIdNum++;
 
     //Add element as a child of the canvas object!
     drawingCanvas.appendChild(newElem);
@@ -334,10 +398,10 @@ function deleteContentNode(node, stitchTree) {
         canvasState.rootNodes.splice(index,1);
 
         //Now, if the node that was just deleted was a root node, then we should add the children of that root node as new
-        //root nodes, so long as it was already visible. This ensures that children don't randomly disappear.
+        //root nodes. This ensures that children don't randomly disappear.
         for (let rel of node.childrenList) {
             for (let child of rel.children) {
-                if (child.isVisible && canvasState.rootNodes.indexOf(child) === -1) {
+                if (canvasState.rootNodes.indexOf(child) === -1) {
                     addNewRootNode(child);
                 }
             }
@@ -460,7 +524,8 @@ function addNewRootNode(node) {
         //Was already in the root node list! Do nothing.
         return;
     }
-    console.log("ADDING A NEW ROOT!");
+    //DEBUG
+    //console.log("ADDING A NEW ROOT!");
 
     //Alright. Let's push this node into the root node list
     canvasState.rootNodes.push(node);
@@ -501,7 +566,9 @@ function removeRootNode(node) {
 function rebuildVisibility() {
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
+    //DEBUG
     console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
+    printTestSerialistation();
 
     // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
     for (let node of canvasState.contentNodeList) {
@@ -584,6 +651,12 @@ function switchContext(newContextNode) {
     let contextBox = document.getElementById("contextIndicatorBox");
     let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
     let contextText = document.getElementById("contextNameTextBox");
+
+    //Safety check: if undefined is passed, we should just set to global context!
+    if (newContextNode === undefined) {
+        console.log("WARNING: switchContext method was passed UNDEFINED as object value. We are handling this by just switching to global context");
+        newContextNode = null;
+    }
 
     //Set the context node in the canvas state to be whatever was just passed in!
     canvasState.contextNode = newContextNode;
@@ -787,4 +860,71 @@ function searchDown(node1, node2) {
         }
     }
     return false;   //No matches found! We have run out of children!
+}
+
+/**
+ * This function will completely clear the entire canvas state, and the entire HTML DOM of Content Nodes.
+ */
+function clearCanvasState() {
+    canvasState.rootNodes = [];
+    canvasState.showingNodes = [];
+    canvasState.contextNode = null;
+
+    //Delete every node from the DOM
+    let drawingCanvas = document.getElementById("drawingCanvas");
+    for (let node of canvasState.contentNodeList) {
+        drawingCanvas.removeChild(node.htmlElement);
+
+        //Get the node's DOM mutation listener to stop observing.
+        node.mutationObserver.disconnect();
+    }
+    canvasState.contentNodeList = [];
+
+    //Delete every SVG line from the DOM
+    let svg = document.getElementById("svgObject");
+    for (let line of canvasState.hierarchyLines) {
+        svg.removeChild(line.line);
+    }
+    canvasState.hierarchyLines = [];
+}
+
+/**
+ * Used to 'block' the rest of the canvas while some other action is performed and we do not want to allow user actions on the canvas
+ * E.g. when node edit window is open, or project data is loading.
+ */
+function addBlackoutEffect() {
+    //fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "block";
+    blackoutElem.style.opacity = "0.5";
+}
+
+/**
+ * Removes the blocking effect.
+ */
+function removeBlackoutEffect() {
+    //remove fully sick blackout effect
+    let blackoutElem = document.getElementById("fade");
+    blackoutElem.style.display = "none";
+    blackoutElem.style.opacity = "0";
+}
+
+function showLoadingWindow(message) {
+    let window = document.getElementById("loadingScreenWindow");
+    if (message !== undefined && message != null) {
+        window.getElementsByTagName("span").item(0).innerHTML = message;
+    }
+    else {
+        window.getElementsByTagName("span").item(0).innerHTML = "Loading your project...";
+    }
+
+    window.style.display = "inline-block";
+}
+
+function hideLoadingWindow() {
+    document.getElementById("loadingScreenWindow").style.display = "none";
+}
+
+function cancelCurrentLoadRequest() {
+    ajaxHandler.cancelPendingLoadRequests();
 }

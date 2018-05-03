@@ -71,4 +71,10 @@ RenderLine.prototype.deleteLine = function() {
     console.log("Render line being deleted");
     let svg = document.getElementById("svgObject");
     svg.removeChild(this.line);
+
+    //Remove from the canvas state as well!
+    let index = canvasState.hierarchyLines.indexOf(this);
+    if (index !== -1) {
+        canvasState.hierarchyLines.splice(index,1);
+    }
 };

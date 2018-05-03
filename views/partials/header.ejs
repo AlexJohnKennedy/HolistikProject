@@ -15,7 +15,7 @@
 <nav class="navbar navbar-default" role="navigation">
 
     <!-- use a simple div to 'contain' the nav bar elements -->
-    <div class="container-fluid">
+    <div class="container-fluid" id="generalHeader">
 
         <div class="navbar-header">
             <!-- The x of the nav bar will be a 'brand name' element, also serving as a hyperlink to the homepage? -->
@@ -29,11 +29,33 @@
                     <a href="/main">Application</a>
                 </li>
                 <li>
-                    <a title="Sorry, this page is coming soon!">Profile</a> <!--<a href="/profile">Profile</a>-->
+                    <a href="/profile">Profile</a> <!--<a href="/profile">Profile</a>-->
                 </li>
                 <li>
                     <!--<a href="/help" target="_blank">Help</a> --><!-- target = "_blank" makes it open in a new tab -->
                     <a href="#" onclick="window.open('/help', 'Help page - Holistik', 'width=1000,height=600')">Help</a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav" id="user">
+                <li>
+                    <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
+                    <% if (username !== undefined && username != null) { %>
+                        <name><%= username %></name>
+                    <% } else { %>
+                        <name>Guest User</name>
+                    <% } %>
+                </li>
+                <li>
+                    |
+                </li>
+                <li>
+                    <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
+                    <% if (username !== undefined && username != null) { %>
+                        <a href="/logout" title="sign-out to landing page">Sign out</a>
+                    <% } else { %>
+                        <a href="/" title="sign-out to landing page">Log in</a>
+                    <% } %>
                 </li>
             </ul>
 

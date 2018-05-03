@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+
+body {
+    margin: 0;
+}
+
+.wrapper {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(500px, 650px);
+    position: relative;
+    padding: 0;
+    background-color: rgb(237,237,237);
+    width: 99.5%;
+    height: 100%;
+}
+
+#contentHolder {
+    margin: 0 12% 0 12%;
+}
+
+.searchBox {
+    position: fixed;
+    top: 84px;
+    right: 12%;
+    border: 1px solid rgb(223,220,217);
+}
+
+#searchIconBox {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    right: 3px;
+}
+
+i {
+    font-size: 16px;
+}
+
+input[name="searchNotebook"] {
+    width: 250px;
+    height: 32px;
+
+}
+
+#headerText {
+    font-size: 35px;
+}
+
+#notebookTabs p {
+    text-decoration: none;
+    color: black;
+    font-family: "Open Sans";
+    font-size: 18px;
+}
+
+#notebookTabs {
+    display: inline-block;
+}
+
+.notebookTab {
+    margin-right: 40px;
+    padding-top: 11px;
+}
+
+#notebookTabPanel {
+    height: 47px;
+    display: block;
+}
+
+.divisionLine {
+    display: block;
+    border: 1px solid black;
+}
+
+
+
+.btn {
+    display: block;
+    font-family: "Open Sans";
+    font-weight: 400;
+    font-size: 19px;
+    border: 1px solid;
+    border-radius: 30px;
+    width: 230px;
+}
+
+.input {
+    display: block;
+    align-content: center;
+    margin: auto;
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 22px;
+    height: 43px;
+    width: 319px;
+    margin-bottom: 20px;
+    right: 15px;
+}
+
+::placeholder {
+    font-size: 10px;
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 22px;
+    padding-left: 10px;
+}
+
+a {
+    text-decoration: none;
+    text-align: center;
+    color: black;
+}
+
+a:hover {
+    background-color: rgb(90,159,231);
+    color: white;
+    text-decoration: underline;
+    border-color: rgb(90,159,231);
+}
+
+.layer {
+    display: none;  /* hidden until button is pressed */
+    position: absolute;
+    top: 73px;
+    width: 100%;
+}
+
+#createContent {
+    position: relative;
+    width: 30%;
+    height: 69px;
+    background-color: #ad9d7f;
+    margin: auto;
+    margin-top: 20%;
+}
+
+p {
+    margin-top: 0;
+}
+
+.newNotebookBtnBox {
+    margin-top: 55%;
+}
+
+#create .btn {
+    margin-top: 16px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 79px;
+}
+
+#create {
+    display: none;
+}
+
+
+#aCross {
+    position: absolute;
+    color: black;
+    font-family: "Open Sans";
+    font-weight: 300;
+    margin-left: 38%;
+    margin-top: -66px;
+    border: 0.5px solid;
+    border-radius: 50%;
+    width: 22px;
+}
+
+#aCross:hover {
+    border-color: white;
+    background-color:  #ad9d7f;
+    text-decoration: none;
+    color:white;
+}
+
+#newNotebook {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 18px;
+    margin-top: -16px;
+    color: black;
+}

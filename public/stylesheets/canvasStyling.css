@@ -95,6 +95,55 @@ html {
     z-index: 8998;
 }
 
+#testButton {
+    position: absolute;
+    top: 60px;
+    left: 6px;
+    z-index: 1;
+
+    height: 22px;
+    width: 200px;
+
+    border-radius: 3px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: grey;
+
+    z-index: 8998;
+}
+#testButton2 {
+    position: absolute;
+    top: 85px;
+    left: 6px;
+    z-index: 1;
+
+    height: 22px;
+    width: 200px;
+
+    border-radius: 3px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: grey;
+
+    z-index: 8998;
+}
+#testButton3 {
+    position: absolute;
+    top: 110px;
+    left: 6px;
+    z-index: 1;
+
+    height: 22px;
+    width: 200px;
+
+    border-radius: 3px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: grey;
+
+    z-index: 8998;
+}
+
 /* Style the svg object to be overlaid with the drawing canvas */
 #svgObject {
     position: absolute;
