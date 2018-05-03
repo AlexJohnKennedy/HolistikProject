@@ -138,7 +138,44 @@ async function projectLoad(req, res) {
 
     //Get the project from the database and ask the database to make sure that this user has read permission for this project!
     let projectModel = await db.getOneProjectById(req.body.projectId);
+    //If the result is undefined, then our database request failed (some backend error occurred)
+    if (projectModel === undefined) {
+        return res.send("ERROR: Database error on project lookup");
+    }
+    //If the result is NULL, then our lookup completed but the passed id did not match any documents in the database. SHOULD BE IMPOSSIBLE FOR CORRECT REQUESTS
+    else if (projectModel == null) {
+        return res.send("ERROR: Client passed a project id that returned no results in the database during save operation")
+    }
 
+    //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
+    let userModel = await db.getOneUserByEmail(req.user.email);
+    if (userModel === undefined) {
+
+        return res.send("ERROR: Database error on user lookup");
+    }
+    else if (userModel == null) {
+        //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
+        console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+        return res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+    }
+
+    //Okay, let's make sure the user has the correct permissions for loading (read OR write)
+    if (db.hasReadOrWritePermission(userModel, projectModel)) {
+        //They have permission to save to this project! So, let's update the project model!
+        let projectData = await db.getStructureAndArrangementFromProject(projectModel);
+        if (projectData === undefined || projectData == null) {
+            res.send("DATABASE ERROR: Failed to update project details");
+        }
+        else {
+            //Success! Now, build the response body information from the DB returned data, and send if back to the client.
+            res.send(projectData);
+        }
+    }
+    else {
+        //NO PERMISSION! throw an error!
+        console.log("ERROR: User tried to load project but did not have read permission for it!");
+        res.send("ERROR: Client user does not have write permission for this project");
+    }
 
 }
 
