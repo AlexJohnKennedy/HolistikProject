@@ -1,4 +1,3 @@
-
 //Create local 'state' objects to remember all the canvas related logic objects.
 //This will be a storage of all the content nodes, and all the 'resource' nodes (To be implemented later..)
 //Access to the relationship objects will be done VIA the content nodes, and they cannot exist in isolation.
@@ -8,13 +7,14 @@ const canvasState = {
     resourceNodeList : [],
     contextNode: null,      //A node object which represents the 'current view context'. The node that has been 'zoomed into' so to speak.
     rootNodes : [],         //The root nodes of the current view context, relative to the context node! Indicate which nodes should appear as roots on the screen
-    viewDepth : 50,          //The current maximum view depth to be displayed on the canvas.
+    viewDepth : 50,         //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : [],
-    showingNodes : []   //List of all content nodes which are currently 'showing' their info (i.e. expanded)
+    showingNodes : [],      //List of all content nodes which are currently 'showing' their info (i.e. expanded)
+    projectLoaded : false
 };
 
 //TODO -- MOVE THE CREATION OF THIS OBJECT TO SOME 'INIT' FUNCTION WHICH IS CALLED ON PAGE LOAD.
-const ajaxHandler = new AjaxProjectLoader(5 /* arbitrary, since project id is not implemented yet..*/);
+let ajaxHandler = null;
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
@@ -51,6 +51,30 @@ let verticalSpacing           = 50;   //pixels. Vertical space between un-relate
 let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
 let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Initialisation logic for when page first loads ------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Define initialisation behviour when the page finishes loading
+ */
+window.onload = function() {
+    console.log("Loading page");
+
+    //Set up the project loader object to manage our saving and loading. Get the respective project id from local browser memory
+    let projectId = window.localStorage.getItem("projectId");
+    if (projectId === undefined || projectId == null) {
+        //Guest user!
+    }
+    else {
+        console.log("Loading page: Project id is "+projectId);
+        ajaxHandler = new AjaxProjectLoader(projectId);
+
+        //Load the project we are associated with!
+        ajaxHandler.loadProjectFromServer();
+    }
+};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Node creation functionality -------------------------------------------------------------------------------------

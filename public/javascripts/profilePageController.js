@@ -22,3 +22,18 @@ function setProjectDataInLocalBrowserStorage(name, id) {
     window.localStorage.setItem("projectName", name);
     window.localStorage.setItem("projectId", id);
 }
+
+window.onload = function() {
+    let elems = document.getElementsByClassName("projectPreviewBox");
+    for (let elem of elems) {
+        console.log("counting");
+        elem.addEventListener("click", function(event) {
+            console.log("CLICKED PREVIEW BOX");
+            let e = event.currentTarget;
+            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"));
+
+            //Redirect to the main page
+            window.location.href = "/main";
+        });
+    }
+}

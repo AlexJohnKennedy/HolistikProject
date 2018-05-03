@@ -175,9 +175,19 @@ function addProjectToUser(user, projectModel, writePermission) {
 
 //helper
 function hasWritePermission(userModel, projectModel) {
+    console.log("========>>> CHECKING FOR WRITE PERMISSION <<<========");
+    console.log("========>>> USER MODEL:                   <<<========");
+    console.log(userModel);
+    console.log("========>>> PROJECT MODEL:                <<<========");
+    console.log(projectModel);
+
     let pid = projectModel._id;
     for (let obj of userModel.projects) {
-        if (obj.writePermission && obj.projectId === pid) {
+        console.log("========>>> CHECKING ...                  <<<========");
+        console.log(obj);
+        console.log(pid);
+        //NOTE: To compare mongoDB _id objects, we need to use the .equals() method which is built into the mongo driver
+        if (obj.writePermission && obj.projectId.equals(pid)) {
             return true;
         }
     }
@@ -187,7 +197,8 @@ function hasWritePermission(userModel, projectModel) {
 function hasReadOrWritePermission(userModel, projectModel) {
     let pid = projectModel._id;
     for (let obj of userModel.projects) {
-        if (obj.projectId === pid) {
+        //NOTE: To compare mongoDB _id objects, we need to use the .equals() method which is built into the mongo driver
+        if (obj.projectId.equals(pid)) {
             return true;
         }
     }
@@ -197,7 +208,8 @@ function hasReadOrWritePermission(userModel, projectModel) {
 function hasReadOnlyPermission(userModel, projectModel) {
     let pid = projectModel._id;
     for (let obj of userModel.projects) {
-        if (!obj.writePermission && obj.projectId === pid) {
+        //NOTE: To compare mongoDB _id objects, we need to use the .equals() method which is built into the mongo driver
+        if (!obj.writePermission && obj.projectId.equals(pid)) {
             return true;
         }
     }

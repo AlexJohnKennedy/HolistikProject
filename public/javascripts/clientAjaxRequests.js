@@ -146,6 +146,7 @@ class AjaxProjectLoader {
 
             removeBlackoutEffect();
             hideLoadingWindow();
+            canvasState.projectLoaded = true;   //Set this flag to true. This way, we will allow saving since we know the original project was loaded first!
         });
     }
 
@@ -174,6 +175,12 @@ class AjaxProjectLoader {
      * This sends data to the server, and will fully replace what is returned when 'load project to server' is called
      */
     saveProjectToServer() {
+        //If the project has never been loaded, we should not allow us to save over the current project!
+        if (!canvasState.projectLoaded) {
+            console.trace("ERROR: Attempted to save to project "+this.projectId+" but this project was never loaded first!");
+            return;
+        }
+
         let requestBody = '{ "projectId": ' + this.projectId + ', "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }';
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
