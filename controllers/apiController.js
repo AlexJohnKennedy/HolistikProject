@@ -121,6 +121,12 @@ function logoutUser(req, res) {
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Functions which will be invoked by the router. ------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
+
+const NO_SESSION_ERR_MSG = "ERROR: Request has no session associated with it";
+const AUTH_FAIL_ERR_MSG = "ERROR: Request session failed to authenticate";
+const AUTH_SUCCESS_MSG = "Request session authenticated successfully";
+
+
 function projectLoad(req, res) {
 
 }
@@ -130,17 +136,13 @@ function loadArrangement(req, res) {
 }
 
 async function projectSave(req, res) {
-    console.log("received request to save a currently existing project!");
-    console.log("The user making the save request is: ");
-    console.log(req.user);
-    console.log("The project data passed to us is: ");
-    console.log(req.body);
+    logRequestDetails("received request to save a currently existing project!", req);
 
     //Okay! we just got a save project request.
     //Firstly, we need to ensure that the user is logged in. If they are NOT, then there is some error, and we should do nothing!
-    if (!req.user || !req.isAuthenticated()) {
-        //No session established...
-        console.trace("ERROR: We got a project save request but there was no user session associated with the request:");
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
         return res.redirect("/");
     }
 
@@ -184,17 +186,12 @@ function saveArrangement(req, res) {
 }
 
 async function projectCreate(req, res) {
-    console.log("Attempting to save a new project. req.body:");
-    console.log(req.body);
+    logRequestDetails("request received: Attempting to save a new project.", req);
 
     //authenticate
-    if (!req.isAuthenticated()) {
-        console.log("User failed to pass Passport authentication. Redirecting to the landing page.");
-        return res.redirect("/");
-    }
-    //check that the user is logged in
-    if (!req.user) {
-        console.log("No user session detected (req.user was null)");
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
         return res.redirect("/");
     }
 
@@ -217,6 +214,56 @@ async function projectCreate(req, res) {
 
     //All succeeded!
     res.redirect("/profile");   //Refresh the page so that the new entry shows up
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Helper functions ------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * This function will automatically use passport module to check if the request has authorised session credentials attached
+ * (send from browser cookie in the request)
+ *
+ * Invokes req.isAuthenticated() to determine authentication. This helper is essentially a wrapper function for this call,
+ * except that it handles optional logging as well for debugging and so forth.
+ *
+ * @param req the express request object containing the request information. Needed we can authenticate it
+ * @param noSessionMessage OPTIONAL: PASS NULL OR UNDEFINED FOR NO LOGGING
+ * @param authenticationFailureMessage OPTIONAL: PASS NULL OR UNDEFINED FOR NO LOGGING
+ * @param authenticationSuccessMessage OPTIONAL: PASS NULL OR UNDEFINED FOR NO LOGGING
+ *
+ * @return Boolean flag. Will return true if and only if the request object is authenticated correctly
+ */
+function isAuthenticatedRequest(req, noSessionMessage, authenticationFailureMessage, authenticationSuccessMessage) {
+    if (!req.user) {
+        //No session established...
+        if (noSessionMessage) {
+            console.trace(noSessionMessage);
+        }
+        return false;
+    }
+    else if (!req.isAuthenticated()) {
+        //Session is not authenticated...
+        if (authenticationFailureMessage) {
+            console.trace(authenticationFailureMessage)
+        }
+        return false;
+    }
+    else {
+        if (authenticationSuccessMessage) {
+            console.log(authenticationSuccessMessage);
+        }
+        return true;
+    }
+}
+
+//DEBUG HELPER
+function logRequestDetails(message, req) {
+    console.log(message);
+    console.log("The user making the save request is: ");
+    console.log(req.user);
+    console.log("The request body is: ");
+    console.log(req.body);
 }
 
 module.exports = {
