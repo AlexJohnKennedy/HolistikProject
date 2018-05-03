@@ -127,7 +127,18 @@ const AUTH_FAIL_ERR_MSG = "ERROR: Request session failed to authenticate";
 const AUTH_SUCCESS_MSG = "Request session authenticated successfully";
 
 
-function projectLoad(req, res) {
+async function projectLoad(req, res) {
+    logRequestDetails("redeived request to load a currently existing project!", req);
+
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
+        return res.redirect("/");
+    }
+
+    //Get the project from the database and ask the database to make sure that this user has read permission for this project!
+    let projectModel = await db.getOneProjectById(req.body.projectId);
+
 
 }
 
@@ -149,14 +160,22 @@ async function projectSave(req, res) {
     //Get the project model object from the database, making sure to WAIT for the response before continuing
     let projectModel = await db.getOneProjectById(req.body.projectId);
 
-    //If the result is undefined, then our projectId did not match any existing projects.. That is not good!
-    if (projectModel === null) {
-        return res.send("ERROR: Client passed a project id that returned no results in the database during save operation");
+    //If the result is undefined, then our database request failed (some backend error occurred)
+    if (projectModel === undefined) {
+        return res.send("ERROR: Database error on project lookup");
+    }
+    //If the result is NULL, then our lookup completed but the passed id did not match any documents in the database. SHOULD BE IMPOSSIBLE FOR CORRECT REQUESTS
+    else if (projectModel == null) {
+        return res.send("ERROR: Client passed a project id that returned no results in the database during save operation")
     }
 
     //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
     let userModel = await db.getOneUserByEmail(req.user.email);
     if (userModel === undefined) {
+
+        return res.send("ERROR: Database error on user lookup");
+    }
+    else if (userModel == null) {
         //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
         console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
         return res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
