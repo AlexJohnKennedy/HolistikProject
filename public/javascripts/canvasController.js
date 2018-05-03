@@ -934,17 +934,18 @@ Reusable error window to display errors passed in from the server
  */
 
 function showErrorWindow(errorMessage) {
-   let window = document.getElementById("errorWindow");
-   if (message !== undefined && message != null) {
-       window.getElementsByTagName("span").item(0).innerHTML = errorMessage;
+   let e = document.getElementById("errorWindow");
+   if (errorMessage !== undefined && errorMessage != null) {
+       e.getElementsByTagName("span").item(0).innerHTML = errorMessage;
    }
    else {
-       window.getElementsByTagName("span").item(0).innerHTML = "Error displaying error message...";
+       e.getElementsByTagName("span").item(0).innerHTML = "Error displaying error message...";
    }
 
-    window.style.display = "inline-block";
+    e.style.display = "inline-block";
 }
 
 function hideErrorWindow() {
     document.getElementById("errorWindow").style.display = "none";
+    removeBlackoutEffect();
 }

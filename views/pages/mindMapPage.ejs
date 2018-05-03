@@ -54,6 +54,8 @@
             <% include ../partials/popupEditWindow.ejs %>
             <!-- include the 'loading-screen window' partial, which is displayed with a message to indicate data is loading from the server -->
             <% include ../partials/loadingWindow.ejs %>
+            <!-- include the 'error window' partial, which is displayed when the client receives a code 500 response to some request. -->
+            <% include ../partials/errorWindow.ejs %>
 
             <!-- this div allows us to create a blackout effect -->
             <div class="black-overlay" id="fade"></div>
