@@ -125,7 +125,11 @@ function loginUser(req, res) {
 }
 
 function logoutUser(req, res) {
-    //TODO
+    logRequestDetails("User requested to be logged out!", req);
+
+    //Invoke passport method req.logout(). This will clear the session and thus log the user out.
+    req.logout();
+    res.redirect('/');
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

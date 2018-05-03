@@ -10,7 +10,7 @@
   -->
 
 <!-- ------------------------------------------------------------------------------------ -->
-
+<script src="/javascripts/signoutScript.js"></script>
 <!-- Nav bar -->
 <nav class="navbar navbar-default" role="navigation">
 
@@ -57,7 +57,7 @@
                 <li>
                     <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
                     <% if (username !== undefined && username != null) { %>
-                        <a href="/logout" title="sign-out to landing page">Sign out</a>
+                        <a onclick="clearLocalStorage()" href="/logout" title="sign-out to landing page">Sign out</a>
                     <% } else { %>
                         <a href="/" title="sign-out to landing page">Log in</a>
                     <% } %>

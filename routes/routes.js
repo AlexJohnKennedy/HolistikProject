@@ -50,7 +50,7 @@ router.post(LOGIN_URL, controller.apiController.passport.authenticate('local', {
     controller.apiController.loginUser
 );
 
-router.post(LOGOUT_URL,        controller.apiController.logoutUser);
+router.get(LOGOUT_URL, controller.apiController.logoutUser);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------
