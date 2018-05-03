@@ -78,6 +78,26 @@ window.onload = function() {
     }
 };
 
+function saveProject() {
+    if (ajaxHandler !== undefined && ajaxHandler != null) {
+        //We must be logged in
+        ajaxHandler.saveProjectToServer();
+    }
+    else {
+        //TODO: Guest user saving (local save)
+    }
+}
+
+function loadProject() {
+    if (ajaxHandler !== undefined && ajaxHandler != null) {
+        //We must be logged in
+        ajaxHandler.loadProjectFromServer();
+    }
+    else {
+        //TODO: Guest user loading (local load)
+    }
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Node creation functionality -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
