@@ -63,7 +63,6 @@ function createNewProject(projectData) {
         name: projectData.projectName
     });
 
-
     //Save the empty models to the database
     return structure.save().then(function(savedStructure) {
         console.log("New empty structure was saved to the database " + savedStructure);
@@ -86,6 +85,23 @@ function createNewProject(projectData) {
         console.log("Database error: during new project creation: "+err);
         return undefined;
     });
+}
+
+/**
+ * Returns an object tagged with structure/arrangement
+ * @param user
+ * @param project
+ */
+async function getStructureAndArrangementFromProject(project) {
+    //make database calls to retrieve the two objects
+    let currStructure = await getOneStructureById(project.currentStructure);
+    let currArrangement = await getOneArrangementById(project.currentArrangement);
+
+    //package the two objects
+    return {
+        structure: currStructure,
+        arrangement: currArrangement
+    }
 }
 
 /*
@@ -118,6 +134,26 @@ function getOneProjectById(id) {
         return project;
     }).catch(function(err) {
         console.log("Error trying to get one project by id from MongoDB: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+function getOneStructureById(id) {
+    return Project.structureModel.findById(id).then(function(struc) {
+        //async db call finished, return whatever we got back!
+        return struc;
+    }).catch(function(err) {
+        console.log("Error trying to get one structure by id from MongoDB: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+function getOneArrangementById(id) {
+    return Project.arrangementModel.findById(id).then(function(arr) {
+        //async db call finished, return whatever we got back!
+        return arr;
+    }).catch(function(err) {
+        console.log("Error trying to get one structure by id from MongoDB: "+err);
         //indicate that an error has occurred by returning undefined
         return undefined;
     });
