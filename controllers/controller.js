@@ -35,7 +35,12 @@ function generateUserList(req, res) {
 }
 
 function helpPageGet(req, res) {
-    res.render('pages/helpPage');
+    let username = null;
+    //If the user is logged in, then we can supply the username
+    if (req.user) {
+        username = req.user.username
+    }
+    res.render('pages/helpPage', { username: username});
 }
 
 async function profilePageGet(req,res) {
