@@ -94,14 +94,24 @@ async function registerNewUser(req, res) {
 
         //If we got an undefined result, then there was a database error!
         if (newCreatedUser === undefined) {
-            res.send("DATABASSE ERROR - On createnew user attempt!");
+            res.status(500).send("Whoops! Looks like someone already took that username or email address. Please try again!");
         }
         else {
             //All good!
-            res.send(newCreatedUser);
+            //When the user registers, we should manually invoke a login with passport, so the user automatically becomes logged
+            //in after registering!
+            req.login(newCreatedUser, function(err) {
+                if (err) {
+                    res.status(500).send(err);
+                }
+                else {
+                    //Redirect them to their projects page
+                    res.redirect("/profile");
+                }
+            });
         }
     }).catch(function(err) {
-        res.send("Bcrypt failed to fucking hash dat shit:\n"+err);
+        res.status(500).send("Bcrypt failed to fucking hash dat shit:\n"+err);
     });
 }
 
@@ -143,23 +153,23 @@ async function projectLoad(req, res) {
     let projectModel = await db.getOneProjectById(projectId);
     //If the result is undefined, then our database request failed (some backend error occurred)
     if (projectModel === undefined) {
-        return res.send("ERROR: Database error on project lookup");
+        return res.status(500).send("ERROR: Database error on project lookup");
     }
     //If the result is NULL, then our lookup completed but the passed id did not match any documents in the database. SHOULD BE IMPOSSIBLE FOR CORRECT REQUESTS
     else if (projectModel == null) {
-        return res.send("ERROR: Client passed a project id that returned no results in the database during save operation")
+        return res.status(500).send("ERROR: Client passed a project id that returned no results in the database during save operation")
     }
 
     //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
     let userModel = await db.getOneUserByEmail(req.user.email);
     if (userModel === undefined) {
 
-        return res.send("ERROR: Database error on user lookup");
+        return res.status(500).send("ERROR: Database error on user lookup");
     }
     else if (userModel == null) {
         //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
         console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
-        return res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+        return res.status(500).send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
     }
 
     //Okay, let's make sure the user has the correct permissions for loading (read OR write)
@@ -167,7 +177,7 @@ async function projectLoad(req, res) {
         //They have permission to save to this project! So, let's update the project model!
         let projectData = await db.getStructureAndArrangementFromProject(projectModel);
         if (projectData === undefined || projectData == null) {
-            res.send("DATABASE ERROR: Failed to update project details");
+            res.status(500).send("DATABASE ERROR: Failed to update project details");
         }
         else {
             //Success! Now, build the response body information from the DB returned data, and send if back to the client.
@@ -178,7 +188,7 @@ async function projectLoad(req, res) {
     else {
         //NO PERMISSION! throw an error!
         console.log("ERROR: User tried to load project but did not have read permission for it!");
-        res.send("ERROR: Client user does not have write permission for this project");
+        res.status(500).send("ERROR: Client user does not have write permission for this project");
     }
 
 }
@@ -203,23 +213,22 @@ async function projectSave(req, res) {
 
     //If the result is undefined, then our database request failed (some backend error occurred)
     if (projectModel === undefined) {
-        return res.send("ERROR: Database error on project lookup");
+        return res.status(500).send("ERROR: Database error on project lookup");
     }
     //If the result is NULL, then our lookup completed but the passed id did not match any documents in the database. SHOULD BE IMPOSSIBLE FOR CORRECT REQUESTS
     else if (projectModel == null) {
-        return res.send("ERROR: Client passed a project id that returned no results in the database during save operation")
+        return res.status(500).send("ERROR: Client passed a project id that returned no results in the database during save operation")
     }
 
     //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
     let userModel = await db.getOneUserByEmail(req.user.email);
     if (userModel === undefined) {
-
-        return res.send("ERROR: Database error on user lookup");
+        return res.status(500).send("ERROR: Database error on user lookup");
     }
     else if (userModel == null) {
         //SHOULD BE IMPOSSIBLE UNLESS SOMETHING HAS GONE TERRIBLY WRONG
         console.trace("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
-        return res.send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
+        return res.status(500).send("CRITICAL DATABASE ERROR: LOGGED IN USER HAD EMAIL NOT FOUND IN DATABASE!!");
     }
 
     //Okay, let's make sure the user has the correct permissions.
@@ -227,7 +236,7 @@ async function projectSave(req, res) {
         //They have permission to save to this project! So, let's update the project model!
         let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.arrangement);
         if (updatedProjectModel === undefined) {
-            res.send("DATABASE ERROR: Failed to update project details");
+            res.status(500).send("DATABASE ERROR: Failed to update project details");
         }
         else {
             //Success!
@@ -237,7 +246,7 @@ async function projectSave(req, res) {
     else {
         //NO PERMISSION! throw an error!
         console.log("ERROR: User tried to save project but did not have write permission for it!");
-        res.send("ERROR: Client user does not have write permission for this project");
+        res.status(500).send("ERROR: Client user does not have write permission for this project");
     }
 }
 
@@ -258,18 +267,18 @@ async function projectCreate(req, res) {
     //user is authenticated! let's create a new project in the db
     let projectModel = await db.createNewProject(req.body);
     if (projectModel === undefined) {
-        return res.send("Database error: failed to create a new project");
+        return res.status(500).send("Database error: failed to create a new project");
     }
 
     //we need to add the new project to the current users' list
     let user = await db.getOneUserByEmail(req.user.email);
     if (user === undefined) {
-        return res.send("Database error: failed to get a user based on cookie data");
+        return res.status(500).send("Database error: failed to get a user based on cookie data");
     }
 
     let updatedUser = await db.addProjectToUser(user, projectModel, true);
     if (updatedUser === undefined) {
-        return res.send("Database error: failed to update user with new project");
+        return res.status(500).send("Database error: failed to update user with new project");
     }
 
     //All succeeded!

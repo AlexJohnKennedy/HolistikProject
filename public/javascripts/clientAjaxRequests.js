@@ -70,6 +70,9 @@ function HttpClientWrapper() {
             if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
                 callbackFunc(request.responseText, request);
             }
+            else if (request.readyState === XMLHttpRequest.DONE && request.status === 500) {
+                handleServerSideError(request.responseText, request);
+            }
             else if (request.readyState === XMLHttpRequest.DONE) {
                 console.trace("POST REQUEST FAILED OR CANCELLED: URL was "+url+", RESPONSE CODE: "+request.status);
 
