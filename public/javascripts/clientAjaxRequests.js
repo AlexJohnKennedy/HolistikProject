@@ -114,6 +114,9 @@ class AjaxProjectLoader {
     //Constructor. All we need to pass in to any instantiated project loader object is the project id which we will use
     //to tell the server which project we are loading/saving to/from
     constructor(projectId) {
+        //In the browser, the id object is represented as A STRING. The server side code will handle converting the
+        //String back into the appropriate database _id object, whatever that may be. from the browser's perspective, we
+        //are just going to send it off!
         this.projectId = projectId;
 
         //Instantiate a http client wrapper object to help us send async AJAX requests.
@@ -136,10 +139,14 @@ class AjaxProjectLoader {
         showLoadingWindow();
 
         this.loadingHttpClient.sendJsonPostRequest(PROJECT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
+            console.log(response);
+
             let responseObject = JSON.parse(response);
 
+            console.log(responseObject);
+
             //TODO -- stop client from wasting fuck loads of effort re-stringifying everything...
-            let structureJSON   = JSON.stringify(responseObject.structure);
+            let structureJSON   = JSON.stringify(responseObject.structure.contentNodes);
             let arrangementJSON = JSON.stringify(responseObject.arrangement);
 
             fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);

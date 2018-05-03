@@ -128,7 +128,7 @@ const AUTH_SUCCESS_MSG = "Request session authenticated successfully";
 
 
 async function projectLoad(req, res) {
-    logRequestDetails("redeived request to load a currently existing project!", req);
+    logRequestDetails("received request to load a currently existing project!", req);
 
     if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
         //AUTH FAIL. Redirect to login page, for now
@@ -137,7 +137,10 @@ async function projectLoad(req, res) {
     }
 
     //Get the project from the database and ask the database to make sure that this user has read permission for this project!
-    let projectModel = await db.getOneProjectById(req.body.projectId);
+    let projectId = db.convertStringIdToIdObject(req.body.projectId);
+    console.log("Server converted an id string from the client into mongoose.Types.ObjectID: result is " + projectId);
+
+    let projectModel = await db.getOneProjectById(projectId);
     //If the result is undefined, then our database request failed (some backend error occurred)
     if (projectModel === undefined) {
         return res.send("ERROR: Database error on project lookup");
@@ -168,6 +171,7 @@ async function projectLoad(req, res) {
         }
         else {
             //Success! Now, build the response body information from the DB returned data, and send if back to the client.
+            console.log("SUCCESS: SENDING TO CLIENT:: "+projectData);
             res.send(projectData);
         }
     }
@@ -316,7 +320,7 @@ function isAuthenticatedRequest(req, noSessionMessage, authenticationFailureMess
 //DEBUG HELPER
 function logRequestDetails(message, req) {
     console.log(message);
-    console.log("The user making the save request is: ");
+    console.log("The user making the request is: ");
     console.log(req.user);
     console.log("The request body is: ");
     console.log(req.body);

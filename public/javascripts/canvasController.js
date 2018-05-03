@@ -63,13 +63,15 @@ window.onload = function() {
     console.log("Loading page");
 
     //Set up the project loader object to manage our saving and loading. Get the respective project id from local browser memory
-    let projectId = window.localStorage.getItem("projectId");
-    if (projectId === undefined || projectId == null) {
+    let projectIdString = window.localStorage.getItem("projectId");
+    if (projectIdString === undefined || projectIdString == null) {
         //Guest user!
     }
     else {
-        console.log("Loading page: Project id is "+projectId);
-        ajaxHandler = new AjaxProjectLoader(projectId);
+        console.log("Loading page: Project id (as string) is "+projectIdString);
+        console.log(typeof(projectIdString));
+
+        ajaxHandler = new AjaxProjectLoader(projectIdString);
 
         //Load the project we are associated with!
         ajaxHandler.loadProjectFromServer();

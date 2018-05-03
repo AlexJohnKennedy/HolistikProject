@@ -226,7 +226,7 @@ function parseAllNodeStatesFromJSON(jsonString) {
     let stateData_noRels = JSON.parse(jsonString, parseNodeState_reviver);
 
     //DEBUG
-    //console.log(stateData_noRels);
+    console.log(stateData_noRels);
 
     //Sweet! now we can iterate through the data packages and build ContentNode objects! Note that this will also update the DOM
     let contentNodes = new Map();

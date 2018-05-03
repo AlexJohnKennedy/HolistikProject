@@ -263,6 +263,10 @@ function hasReadOnlyPermission(userModel, projectModel) {
     return false;
 }
 
+function convertStringIdToIdObject(string) {
+    return mongoose.Types.ObjectId(string);
+}
+
 module.exports = {
     createNewUser: createNewUser,
     createNewProject: createNewProject,
@@ -275,5 +279,6 @@ module.exports = {
     hasWritePermission: hasWritePermission,
     hasReadOrWritePermission: hasReadOrWritePermission,
     hasReadOnlyPermission: hasReadOnlyPermission,
-    getStructureAndArrangementFromProject: getStructureAndArrangementFromProject
+    getStructureAndArrangementFromProject: getStructureAndArrangementFromProject,
+    convertStringIdToIdObject: convertStringIdToIdObject
 };
