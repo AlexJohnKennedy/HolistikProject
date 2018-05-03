@@ -101,7 +101,7 @@ async function getStructureAndArrangementFromProject(project) {
     return {
         structure: currStructure,
         arrangement: currArrangement
-    }
+    };
 }
 
 /*
@@ -153,7 +153,7 @@ function getOneArrangementById(id) {
         //async db call finished, return whatever we got back!
         return arr;
     }).catch(function(err) {
-        console.log("Error trying to get one structure by id from MongoDB: "+err);
+        console.log("Error trying to get one arrangement by id from MongoDB: "+err);
         //indicate that an error has occurred by returning undefined
         return undefined;
     });
@@ -274,5 +274,6 @@ module.exports = {
     addProjectToUser: addProjectToUser,
     hasWritePermission: hasWritePermission,
     hasReadOrWritePermission: hasReadOrWritePermission,
-    hasReadOnlyPermission: hasReadOnlyPermission
+    hasReadOnlyPermission: hasReadOnlyPermission,
+    getStructureAndArrangementFromProject: getStructureAndArrangementFromProject
 };
