@@ -306,7 +306,7 @@ function validateString(newString, oldString) {
         return false;
     }
 
-    //TODO: CHECK THAT NO BULLSHIT CHARACTERS ARE BEING INJECTED
+    //TODO: CHECK THAT THE STRING CONTASINS NO MALICIOUS CODE
 
     //if we made it here we're all good, return true
     return true;
@@ -353,19 +353,35 @@ function deleteProject(user, project) {
     //delete reference to the project in the user first
 
     //store its id
+    projectId = project._id;
 
     //loop from the back of the projects array
     for (let i = user.projects.length; i>= 0; i--) {
         if (user.projects[i].projectId === project._id) {
-            //we have a match! delete that shit
+            //we have a match! delete the project
             user.projects.splice(i, 1);
             break;
         }
     }
 
     //find every user that has a reference to this project using the id
+    User.userModel.find({ /* match all user documents in collection */ }).where('projects.projectId').equals(projectId).then(function(users) {
+        //if there are no users, we can safely delete the project
+        if (users.length === 0) {
+           //delete the project document if there are no other users that have it in their list
+            project.remove().then(function(removed) {
+                return removed;
+            }).catch(function(err) {
+                console.log("Error trying to remove the project document from the DB. "+err);
+                return err;
+            });
+        }
+        //do nothing otherwise
+    }).catch(function(err) {
+        console.log("Error trying to find users linked to the dropped project. "+err);
+        return err;
 
-    //delete the project document if there are no other users that have it in their list
+    });
 }
 
 function addProjectToUser(user, projectModel, writePermission) {
