@@ -137,20 +137,31 @@ function getProjectsByIds(arrayOfIds) {
 function updateProject(projectModel, structure, arrangement) {
     //Get all the structures and arrangements and shit
     return Project.structureModel.findById(projectModel.currentStructure).then(function(structureDoc) {
-        structureDoc.contentNodes = structure.contentNodes;     //Overwrite entire structure
+        console.log("db.updateProject() - Structure was retrieved from the database, the original document is: ");
+        console.log(structureDoc);
+
+        structureDoc.contentNodes = structure;     //Overwrite entire structure
 
         //Ok, save the document and return the promise from that, so we can continue chaining promise callbacks
         return structureDoc.save();
     }).then(function(result) {
+        console.log("db.updateProject() - Structure was saved to the database, the resulting document is: ");
+        console.log(result);
         //We should have received the result of the save
         //Now, do the same operation for arrangement as well
         return Project.arrangementModel.findById(projectModel.currentArrangement);
     }).then(function(arrangementDoc) {
+        console.log("db.updateProject() - Arrangement was retrieved from the database, the original document is: ");
+        console.log(arrangementDoc);
+
         arrangementDoc.contextNodeId = arrangement.contextNodeId;
         arrangementDoc.nodeData      = arrangement.nodeData;
 
         return arrangementDoc.save();
     }).then(function(arrangementSaveResult) {
+        console.log("db.updateProject() - Arrangement was saved to the database, the resulting document is: ");
+        console.log(arrangementSaveResult);
+
         console.log("db.updateProject() - All save operations succeeded!");
         //Everything passed! let's return the updated arrangement data
         return arrangementSaveResult;

@@ -408,11 +408,7 @@ function parseNodeArrangment_reviver(key, value) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 function printTestSerialistation() {
-    //console.log('/* Node state and structure serialisation -------------------------------- */');
-    //console.log(serialiseNodeState());
-
-    //console.log('/* Arrangement and visibility serialisation ------------------------------ */');
-    //console.log(serialiseNodeArrangement());
+    console.log('{ "projectId": ' + this.projectId + ', "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }');
 }
 
 
