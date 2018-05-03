@@ -188,7 +188,7 @@ class AjaxProjectLoader {
             return;
         }
 
-        let requestBody = '{ "projectId": ' + this.projectId + ', "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }';
+        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }';
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project:");
