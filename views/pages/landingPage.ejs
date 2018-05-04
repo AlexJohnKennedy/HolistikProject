@@ -5,30 +5,43 @@
     <title>Landing Page - Holistik</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/landingPageStyling.css">
+    <script src="/javascripts/signoutScript.js"></script>
 </head>
 <body>
 
-    <div class="container" id="signUpBox">
-        <a class="btn" id="signUpBtn" href="/signup">Sign Up</a>
-    </div>
+    <% if(username === undefined || username == null) { %>
+        <div class="container" id="signUpBox">
+            <a class="btn" id="signUpBtn" href="/signup">Sign Up</a>
+        </div>
+    <% } %>
 
     <div class="container">
 
         <h1>Holistik</h1>
         <h2>Learn <em>better.</em></h2>
 
-        <form action="/login" method="post" class="logInSection" enctype="application/x-www-form-urlencoded">
-            <input class="input" type="text" name="email" placeholder="Email address">
-            <input class="input" type="text" name="password" placeholder="Password">
+        <!-- prompt with login if and only if there is no current session. This is indicated by the server
+          -- if the 'username' field is not set -->
+        <% if(username === undefined || username == null) { %>
+            <form action="/login" method="post" class="logInSection" enctype="application/x-www-form-urlencoded">
+                <input class="input" type="text" name="email" placeholder="Email address">
+                <input class="input" type="text" name="password" placeholder="Password">
 
-            <input id="loginBtn" class= "btn" type="submit" value="Log In"/>
-        </form>
+                <input id="loginBtn" class= "btn" type="submit" value="Log In"/>
+            </form>
 
-        <a id="guest" href="/main">Continue as a guest</a>
+            <a id="guest" href="/main">Continue as a guest</a>
 
+            <!-- Get EJS to invoke the local storage clearing if the user isn't logged in, since we don't want session data to persist in this case -->
+            <script>window.onload=function() {clearLocalStorage() }</script>
+        <% } else { %>
+            <h3>
+                Welcome back, <%= username %>!
+            </h3>
+            <a id="goToProfileButton" class="btn" href="/profile">Take me to my projects!</a>
+            <a id="logoutbutton" class="btn" href="/logout">Log out</a>
 
-        <!-- <a id="getStarted" href = '/login'>Get started</a> -->
-
+        <% } %>
     </div>
 
 </body>

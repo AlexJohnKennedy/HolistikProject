@@ -928,3 +928,24 @@ function hideLoadingWindow() {
 function cancelCurrentLoadRequest() {
     ajaxHandler.cancelPendingLoadRequests();
 }
+
+/*
+Reusable error window to display errors passed in from the server
+ */
+
+function showErrorWindow(errorMessage) {
+   let e = document.getElementById("errorWindow");
+   if (errorMessage !== undefined && errorMessage != null) {
+       e.getElementsByTagName("span").item(0).innerHTML = errorMessage;
+   }
+   else {
+       e.getElementsByTagName("span").item(0).innerHTML = "Error displaying error message...";
+   }
+
+    e.style.display = "inline-block";
+}
+
+function hideErrorWindow() {
+    document.getElementById("errorWindow").style.display = "none";
+    removeBlackoutEffect();
+}

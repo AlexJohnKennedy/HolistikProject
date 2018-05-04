@@ -1,5 +1,5 @@
 <!-- ejs to represent a re-usable loading screen window -->
-<div id="loadingScreenWindow">
+<div id="loadingScreenWindow" class="window">
 
     <span>
         Loading your project...
@@ -8,7 +8,7 @@
     <!-- loading icon -->
     <div id="loader"></div>
 
-    <button id="cancelLoading" onclick="cancelCurrentLoadRequest()">
+    <button id="cancelLoading" class="windowHideButton" onclick="cancelCurrentLoadRequest()">
         Cancel
     </button>
 

@@ -41,7 +41,7 @@ body {
 
 }
 
-#closeHelpWindowButton, #cancelLoading {
+#closeHelpWindowButton, .windowHideButton {
     position: absolute;
     bottom: 20px;
 }
@@ -78,7 +78,7 @@ body {
     transition: opacity 0.25s;
 }
 
-#loadingScreenWindow {
+.window {
     display: none;
     position: absolute;
 
@@ -92,10 +92,13 @@ body {
     background: #f3f3f3;
     border: 5px solid black;
 
+    overflow: hidden;
+    word-break: keep-all;
+
     z-index: 9001;
 }
 
-#loadingScreenWindow span {
+.window span {
     display: inline-block;
     position: absolute;
     margin: auto;   /* center it horizontally */

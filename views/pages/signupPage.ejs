@@ -12,12 +12,13 @@
     <div class="logInTitle">Welcome!</div>
     <div class="newUser">New to Holistk? Sign Up</div>
 
-    <form method="POST">
-        <input class="input" type="text" id="username" placeholder="Username">
-        <input class="input" type="text" id="email" placeholder="Email">
-        <input class="input" type="text" id="password" placeholder="Password">
 
-        <a class="btn" id="loginBtn" href="/main">Create</a>
+    <form action="/register" method="post" class="registerSection" enctype="application/x-www-form-urlencoded">
+        <input class="input" type="text" name="username" placeholder="Username">
+        <input class="input" type="text" name="email" placeholder="Email">
+        <input class="input" type="text" name="password" placeholder="Password">
+
+        <input class="btn" id="loginBtn" type="submit" value="Submit!">
     </form>
 </div>
 

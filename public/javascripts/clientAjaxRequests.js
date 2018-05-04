@@ -70,8 +70,16 @@ function HttpClientWrapper() {
             if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
                 callbackFunc(request.responseText, request);
             }
-            else if (request.readyState === XMLHttpRequest.DONE) {
-                console.trace("POST REQUEST FAILED OR CANCELLED: URL was "+url+", RESPONSE CODE: "+request.status);
+            else if (request.readyState === XMLHttpRequest.DONE && request.status === 500) {
+                handleServerSideError(request.responseText, request);
+            }
+            else if (request.readyState === XMLHttpRequest.DONE && request.status === 302) {
+                //Redirection status code. We should redirect to the landing page
+                window.redirect.href = "/";
+            }
+
+            if (request.readyState === XMLHttpRequest.DONE) {
+                console.trace("POST REQUEST COMPLETED OR CANCELLED: URL was "+url+", RESPONSE CODE: "+request.status);
 
                 //remove this request from the pending list, as it just finished yo!
                 let index = httpClientWrapperObj.pendingPostRequests.indexOf(request);
@@ -138,12 +146,25 @@ class AjaxProjectLoader {
         addBlackoutEffect();    //Block user input while the request is being processed.
         showLoadingWindow();
 
-        this.loadingHttpClient.sendJsonPostRequest(PROJECT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response) {
-            console.log(response);
+        this.loadingHttpClient.sendJsonPostRequest(PROJECT_LOAD_URL, JSON.stringify({ projectId: this.projectId }), this.loadingHttpClient, function(response, res) {
+            console.log(res);
 
-            let responseObject = JSON.parse(response);
+            let responseObject = null;
 
-            console.log(responseObject);
+            try {
+                responseObject = JSON.parse(response);
+            }
+            catch(e) {
+                //ERROR!
+                handleServerSideError("Something went wrong when trying to load a project.. You might not be logged in! Try returning to the home page and logging in");
+                return;
+            }
+            //Sanity catch, in case something went wrong
+            if (responseObject === undefined || responseObject == null) {
+                //ERROR!
+                handleServerSideError("Something went wrong when trying to load a project.. You might not be logged in! Try returning to the home page and logging in");
+                return;
+            }
 
             //TODO -- stop client from wasting fuck loads of effort re-stringifying everything...
             let structureJSON   = JSON.stringify(responseObject.structure.contentNodes);
@@ -262,4 +283,12 @@ class AjaxUserDataSender {
            console.log(response);
         });
     }
+}
+
+function handleServerSideError(responseText, request) {
+    //This function should cancel all pending requests, and remove the loading screen, and display an error message
+    ajaxHandler.cancelPendingLoadRequests();
+
+    addBlackoutEffect();
+    showErrorWindow("Whoops! Something went wrong.. Try again in a few minutes. "+responseText);
 }

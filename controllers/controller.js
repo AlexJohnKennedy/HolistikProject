@@ -9,11 +9,12 @@ const apiController = require('./apiController.js');
 
 //For loading canvas when you are a logged in user. Should have parameters along with it!
 function mainPageGet(req, res) {
-    if (!req.user || !req.isAuthenticated()) {
+    let username = null;
+
+    if (req.user && req.isAuthenticated()) {
         //User failed to authenticate! Redirect to the login screen
-        return res.redirect("/");
+        username = req.user.username;
     }
-    let username = req.user.username;
 
     res.render('pages/mindMapPage', { username: username });
 }
@@ -21,8 +22,16 @@ function mainPageGet(req, res) {
 
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
+    let username = null;
+
+    if (req.user && req.isAuthenticated()) {
+        //User failed to authenticate! Redirect to the login screen
+        username = req.user.username;
+    }
+
     res.render('pages/landingPage', {
-        path : "/"
+        path : "/",
+        username: username  //If there is a session, this will not be null, and EJS will behave differently.
     });
 }
 

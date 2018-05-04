@@ -170,6 +170,148 @@ function getProjectsByIds(arrayOfIds) {
     });
 }
 
+/**
+ * Function to update the parameters of any particular user in the database.
+ *
+ * Note: null must be passed for fields that are to be ignored
+ * @param userModel
+ */
+function updateUserDetails(userModel, username, email, bio, image, hash) {
+    //call the update functions - these will handle internally whether the passed field is valid or not
+    userModel = updateUserUsername(userModel, username);
+    userModel = udateUserEmail(userModel, email);
+    userModel = updateUserBio(userModel, bio);
+    userModel = updateUserImage(userModel, image);
+    userModel = updateUserHash(userModel, hash);
+
+    return userModel;
+}
+
+function updateUserUsername(userModel, freshUsername) {
+    console.log("Attempting to change a users' username from: "+userModel.username+" to: "+freshUsername);
+
+    if (!validateString(freshUsername, userModel.username)) {
+        console.log("Supplied parameter failed to pass validation. Aborting");
+        return userModel;
+    }
+
+    //if we made it here the new username is valid, change that shit
+    userModel.username = freshUsername;
+
+    //save and we're done!
+    return userModel.save().then(function(user) {
+       //return the user
+       return user;
+    }).catch(function(err) {
+        console.log("Error trying to update a user username in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+function updateUserEmail(userModel, freshEmail) {
+    console.log("Attempting to change a users' email from: "+userModel.email+" to: " + freshEmail);
+
+    if (!validateString(freshEmail, userModel.email)) {
+        console.log("Supplied parameter failed to pass validation. Aborting");
+        return userModel;
+    }
+
+    //if we passed the above stuff we can update the field
+    userModel.email = freshEmail;
+
+    //save!
+    return userModel.save().then(function(user) {
+        //return the user
+        return user;
+    }).catch(function(err) {
+        console.log("Error trying to update a user email in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+function updateUserBio(userModel, freshBio) {
+    console.log("Attempting to change a users' bio from: "+userModel.bio+" to: " + freshBio);
+
+    if (!validateString(freshBio, userModel.bio)) {
+        console.log("Supplied parameter failed to pass validation. Aborting");
+        return userModel;
+    }
+
+    //if we passed the above stuff we can update the field
+    userModel.bio = freshBio;
+
+    //save!
+    return userModel.save().then(function(user) {
+        //return the user
+        return user;
+    }).catch(function(err) {
+        console.log("Error trying to update a user bio in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+function updateUserImage(userModel, freshImageURL) {
+    console.log("Attempting to change a users' image url from: "+userModel.image+" to: " + freshImageURL);
+
+    //TODO: Check that the url is valid
+
+    //if we passed the above stuff we can update the field
+    userModel.image = freshImageURL;
+
+    //save!
+    return userModel.save().then(function(user) {
+        //return the user
+        return user;
+    }).catch(function(err) {
+        console.log("Error trying to update a user image url in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+function updateUserHash(userModel, freshHash) {
+    console.log("Attempting to change a users' hash from: "+userModel.hash+" to: " + freshHash);
+
+    //TODO: Check that the hash is valid?
+
+    //if we passed the above stuff we can update the field
+    userModel.hash = freshHash;
+
+    //save!
+    return userModel.save().then(function(user) {
+        //return the user
+        return user;
+    }).catch(function(err) {
+        console.log("Error trying to update a user hash in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+
+//injection protection
+function validateString(newString, oldString) {
+    if (newString === null) {
+        console.log("The supplied string is null.");
+        return false;
+    }
+
+    //check that the username is not empty
+    if (newString === "") {
+        console.log("The supplied string is empty. Aborting");
+        return false;
+    }
+
+    //check that something has actually changed
+    if (newString === oldString) {
+        console.log("The supplied string is the same as the previous one. Aborting");
+        return false;
+    }
+
+    //TODO: CHECK THAT THE STRING CONTASINS NO MALICIOUS CODE
+
+    //if we made it here we're all good, return true
+    return true;
+}
+
 function updateProject(projectModel, structure, arrangement) {
     //Get all the structures and arrangements and shit
     return Project.structureModel.findById(projectModel.currentStructure).then(function(structureDoc) {
@@ -204,6 +346,41 @@ function updateProject(projectModel, structure, arrangement) {
     }).catch(function(err) {
         console.log("Database error when updating project in updateProject method "+err);
         return err;
+    });
+}
+
+function deleteProject(user, project) {
+    //delete reference to the project in the user first
+
+    //store its id
+    projectId = project._id;
+
+    //loop from the back of the projects array
+    for (let i = user.projects.length; i>= 0; i--) {
+        if (user.projects[i].projectId === project._id) {
+            //we have a match! delete the project
+            user.projects.splice(i, 1);
+            break;
+        }
+    }
+
+    //find every user that has a reference to this project using the id
+    User.userModel.find({ /* match all user documents in collection */ }).where('projects.projectId').equals(projectId).then(function(users) {
+        //if there are no users, we can safely delete the project
+        if (users.length === 0) {
+           //delete the project document if there are no other users that have it in their list
+            project.remove().then(function(removed) {
+                return removed;
+            }).catch(function(err) {
+                console.log("Error trying to remove the project document from the DB. "+err);
+                return err;
+            });
+        }
+        //do nothing otherwise
+    }).catch(function(err) {
+        console.log("Error trying to find users linked to the dropped project. "+err);
+        return err;
+
     });
 }
 
