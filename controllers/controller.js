@@ -53,7 +53,7 @@ function helpPageGet(req, res) {
     res.render('pages/helpPage', { username: username});
 }
 
-async function profilePageGet(req,res) {
+async function projectsPageGet(req,res) {
     console.log("--- Rendering the profile page! ---");
     console.log("NOTE: if the user is not currently logged in, then the passport authorisation will have failed and re-directed them back to the landing page");
     console.log("The currently logged in user is:");
@@ -112,7 +112,7 @@ async function profilePageGet(req,res) {
 
     //Okay, we have built up our data! Let's tell the client to render the profile page with the data we gathered.
     console.log(dataToClient);
-    res.render('pages/profilePage', dataToClient);
+    res.render('pages/projectsPage', dataToClient);
 }
 //Helper
 function extractProjectInfoForProfilePageIcons(queryResults, arrayToPushTo) {
@@ -175,7 +175,7 @@ module.exports = {
     userDetail : userDetail,
     mainPageGet : mainPageGet,
     helpPageGet : helpPageGet,
-    profilePageGet: profilePageGet,
+    profilePageGet: projectsPageGet,
     signupPageGet : signupPageGet,
 
     apiController : apiController

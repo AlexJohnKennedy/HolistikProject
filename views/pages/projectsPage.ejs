@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile Page - Holistik</title>
+    <title>Projects Page - Holistik</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/stylesheets/profileStyling.css">
     <link rel="stylesheet" href="/stylesheets/headerStyling.css">
@@ -24,10 +24,10 @@
     <div class="container-fluid" id="contentHolder">
 
         <!-- this section contains the notebook header text and the search box -->
-        <div id="notebookHeader">
-            <h1 id="headerText">Notebooks</h1>
+        <div id="projectsHeader">
+            <h1 id="headerText">Projects</h1>
             <div class="searchBox">
-                <input type="text" name="searchNotebook" aria-label="Search my notebooks">
+                <input type="text" name="searchProjects" aria-label="Search my projects">
 
                 <!-- insert search icon to search box -->
                 <i class="fa fa-search"></i>
@@ -36,10 +36,9 @@
         </div>
 
 
-        <div id="notebookTabPanel">
-            <div id="notebookTabs">
-                <!--<p id="recentTab" class="notebookTab" href="#" role="tab">Recent</p>-->
-                <p id="myNotebookTab" class="notebookTab" href="#" role="tab">My notebooks</p>
+        <div id="projectsTabPanel">
+            <div id="projectsTabs">
+                <p id="myProjectsTab" class="projectsTab" href="#" role="tab">My Projects</p>
             </div>
         </div>
 
@@ -47,8 +46,8 @@
 
 
         <!-- render all the notebooks into an unordered list, based on the data being passed from the controller -->
-        <div class="notebookList">
-            <ul class="notebookList">
+        <div class="projectsList">
+            <ul class="projectsList">
                 <% writeProjects.forEach(function(project) { %>
                     <li>
                         <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
@@ -63,10 +62,10 @@
             </ul>
         </div>
 
-        <div class="newNotebookBtnBox">
+        <div class="newProjectBtnBox">
 
             <!-- need a function here to let the create create window to popup -->
-            <a class="btn" id="newNotebookBtn" onclick="showMeThePopUpWindow()">Create new notebook</a>
+            <a class="btn" id="newProjectBtn" onclick="showMeThePopUpWindow()">Create new project</a>
 
         </div>
     </div>
@@ -76,10 +75,10 @@
 
     <div class="container" id="createContent">
         <a id="aCross" onclick="unseeThePopUpWindow()">X</a>
-        <p id="newNotebook">New Notebook Name</p>
+        <p id="newProject">New Project Name</p>
 
         <form method="post" action="/createProject" enctype="application/x-www-form-urlencoded">
-            <input type="text" id="newNotebook" name="projectName">
+            <input type="text" id="newProject" name="projectName">
             <input class="btn" type="submit" value="Create">
         </form>
 

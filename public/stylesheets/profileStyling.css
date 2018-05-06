@@ -8,7 +8,6 @@ body {
 .wrapper {
     position: relative;
     display: grid;
-    grid-template-rows: minmax(500px, 650px);
     position: relative;
     padding: 0;
     background-color: rgb(237,237,237);
@@ -48,23 +47,23 @@ input[name="searchNotebook"] {
     font-size: 35px;
 }
 
-#notebookTabs p {
+#projectsTabs p {
     text-decoration: none;
     color: black;
     font-family: "Open Sans";
     font-size: 18px;
 }
 
-#notebookTabs {
+#projectsTabs {
     display: inline-block;
 }
 
-.notebookTab {
+.projectsTab {
     margin-right: 40px;
     padding-top: 11px;
 }
 
-#notebookTabPanel {
+#projectsTabPanel {
     height: 47px;
     display: block;
 }
@@ -140,8 +139,7 @@ p {
     margin-top: 0;
 }
 
-.newNotebookBtnBox {
-    margin-top: 55%;
+.newProjectBtnBox {
 }
 
 #create .btn {
@@ -175,7 +173,7 @@ p {
     color:white;
 }
 
-#newNotebook {
+#newProject {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 18px;
