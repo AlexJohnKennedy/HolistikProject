@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/footerStyling.css">
 
-    <script src="/javascripts/profilePageController.js"></script>
+    <script src="/javascripts/projectPageController.js"></script>
 </head>
 <body>
 
@@ -55,6 +55,8 @@
                             <div class="projectNameText"> <%= project.projectName %> </div>
                             <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
                             <div class="projectTimestampText"> <%= project.timestamp %> </div>
+                            <div class="btn loadProjectBtn">Load</div>
+                            <div class="btn deleteProjectBtn">Delete</div>
                         </div>
                     </li>
                     <br>

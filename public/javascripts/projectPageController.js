@@ -30,13 +30,28 @@ window.onload = function() {
     let elems = document.getElementsByClassName("projectPreviewBox");
     for (let elem of elems) {
         console.log("counting");
-        elem.addEventListener("click", function(event) {
-            console.log("CLICKED PREVIEW BOX");
-            let e = event.currentTarget;
-            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"));
 
+        //load
+        loadButton = elem.getElementsByClassName("loadProjectBtn")[0];
+        loadButton.addEventListener("click", function(event) {
+            console.log("CLICKED LOAD");
+            let e = event.target.parentElement;
+            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"));
             //Redirect to the main page
             window.location.href = "/main";
+        });
+
+        //delete
+        deleteButton = elem.getElementsByClassName("deleteProjectBtn")[0];
+        deleteButton.addEventListener("click", function(event) {
+            console.log("CLICKED DELETE");
+            let e = event.target.parentElement;
+            //make call to server to delete the project
+
+
+            //delete the list item and the accompanying break tag
+            elem.parentElement.nextElementSibling.remove();
+            elem.parentElement.remove();
         });
     }
 };
