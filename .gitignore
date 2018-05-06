@@ -54,5 +54,4 @@ fabric.properties
 
 # package lock and shit
 package-lock.json
-package.json
 
