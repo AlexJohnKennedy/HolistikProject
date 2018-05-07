@@ -16,6 +16,7 @@
     "faker": "^4.1.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
+    "mongo-sanitize": "^1.0.0",
     "mongodb": "^3.0.7",
     "mongoose": "^5.0.16",
     "morgan": "~1.9.0",

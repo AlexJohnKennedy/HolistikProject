@@ -1,5 +1,6 @@
 //Include Mongoose and open a connection to our database
 const mongoose = require('mongoose');
+const sanitize = require('mongo-sanitize');
 const Project = require('./Project.js');
 const User = require('../models/User.js');
 
@@ -306,7 +307,13 @@ function validateString(newString, oldString) {
         return false;
     }
 
-    //TODO: CHECK THAT THE STRING CONTASINS NO MALICIOUS CODE
+    //sanitise string
+    ///TODO is it better to automatically sanitize inputs before saving them to the db?
+    sanitizedString = sanitize(newString);
+    if (sanitizedString !== newString) {
+        console.log("The string contains invalid characters. Aborting");
+        return false;
+    }
 
     //if we made it here we're all good, return true
     return true;
