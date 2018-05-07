@@ -369,8 +369,9 @@ function deleteProject(body, user) {
 
     //loop from the back of the projects array
     for (let i = user.projects.length-1; i>= 0; i--) {
-        console.log(user.projects[0].projectId+" "+projectId + " " + (user.projects[0].projectId == projectId));
-        //TODO figure out the correct way to compare ids
+        //TODO figure out the correct way to compare ids, mongodb IDs have a compare function - investigate
+        //the shit below ignores that the two project ids are of different type
+        console.log(typeof(user.projects[i].projectId) + " " + typeof(projectId));
         if (user.projects[i].projectId == projectId) {
             //we have a match! delete the project
             console.log("We have a match, fuck the item off the array :)");
