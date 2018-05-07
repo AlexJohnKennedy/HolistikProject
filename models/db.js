@@ -356,16 +356,22 @@ function updateProject(projectModel, structure, arrangement) {
     });
 }
 
-function deleteProject(user, project) {
+function deleteProject(body, user) {
+    console.log("BODY: " + body.projectId);
+    console.log("USER: " + user);
     //delete reference to the project in the user first
 
     //store its id
-    projectId = project._id;
+    projectId = body.projectId;
+
+    //get the project object
+    project = getOneProjectById(projectId);
 
     //loop from the back of the projects array
-    for (let i = user.projects.length; i>= 0; i--) {
-        if (user.projects[i].projectId === project._id) {
+    for (let i = user.projects.length-1; i>= 0; i--) {
+        if (user.projects[i].projectId === projectId) {
             //we have a match! delete the project
+            console.log("We have a match, fuck the item off the array :)");
             user.projects.splice(i, 1);
             break;
         }
@@ -373,6 +379,7 @@ function deleteProject(user, project) {
 
     //find every user that has a reference to this project using the id
     User.userModel.find({ /* match all user documents in collection */ }).where('projects.projectId').equals(projectId).then(function(users) {
+        console.log("Users length: " + users.length);
         //if there are no users, we can safely delete the project
         if (users.length === 0) {
            //delete the project document if there are no other users that have it in their list
@@ -387,7 +394,6 @@ function deleteProject(user, project) {
     }).catch(function(err) {
         console.log("Error trying to find users linked to the dropped project. "+err);
         return err;
-
     });
 }
 
@@ -459,6 +465,7 @@ module.exports = {
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
     updateProject: updateProject,
+    deleteProject: deleteProject,
     addProjectToUser: addProjectToUser,
     hasWritePermission: hasWritePermission,
     hasReadOrWritePermission: hasReadOrWritePermission,
