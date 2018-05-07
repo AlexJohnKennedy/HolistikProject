@@ -369,31 +369,44 @@ function deleteProject(body, user) {
 
     //loop from the back of the projects array
     for (let i = user.projects.length-1; i>= 0; i--) {
-        if (user.projects[i].projectId === projectId) {
+        console.log(user.projects[0].projectId+" "+projectId + " " + (user.projects[0].projectId == projectId));
+        //TODO figure out the correct way to compare ids
+        if (user.projects[i].projectId == projectId) {
             //we have a match! delete the project
             console.log("We have a match, fuck the item off the array :)");
+            console.log("user.projects before: " + user.projects[i]);
             user.projects.splice(i, 1);
+            console.log("user.projects after: " + user.projects[i]);
             break;
         }
     }
 
-    //find every user that has a reference to this project using the id
-    User.userModel.find({ /* match all user documents in collection */ }).where('projects.projectId').equals(projectId).then(function(users) {
-        console.log("Users length: " + users.length);
-        //if there are no users, we can safely delete the project
-        if (users.length === 0) {
-           //delete the project document if there are no other users that have it in their list
-            project.remove().then(function(removed) {
-                return removed;
-            }).catch(function(err) {
-                console.log("Error trying to remove the project document from the DB. "+err);
-                return err;
-            });
-        }
-        //do nothing otherwise
+    //save the user so the project deletion propagates to the remote db
+    return user.save().then(function (savedUser) {
+        console.log("User with newly deleted project field was saved to the database! \n" + savedUser);
+
+        //find every user that has a reference to this project using the id
+        User.userModel.find({/* match all user documents in collection */}).where('projects.projectId').equals(projectId).then(function (users) {
+            console.log("Users length: " + users.length);
+            //if there are no users, we can safely delete the project
+            if (users.length === 0) {
+                //delete the project document if there are no other users that have it in their list
+                project.remove().then(function (removed) {
+                    return removed;
+                }).catch(function (err) {
+                    console.log("Error trying to remove the project document from the DB. " + err);
+                    return err;
+                });
+            }
+            //do nothing otherwise
+        }).catch(function (err) {
+            console.log("Error trying to find users linked to the dropped project. " + err);
+            return err;
+        });
+
     }).catch(function(err) {
-        console.log("Error trying to find users linked to the dropped project. "+err);
-        return err;
+        console.log("ERROR: database error when saving newly updated user: "+err);
+        return undefined;
     });
 }
 
