@@ -2,11 +2,22 @@
 function showMeThePopUpWindow() {
     let create = document.getElementById('create');
     create.style.display = 'block';
-};
+}
 
 function unseeThePopUpWindow() {
     let create = document.getElementById('create');
     create.style.display = 'none'
+}
+
+//edit window
+function showMeTheEditWindow() {
+    let edit = document.getElementById('edit');
+    edit.style.display = 'block';
+}
+
+function unseeTheEditWindow() {
+    let edit = document.getElementById('edit');
+    edit.style.display = 'none'
 }
 
 /**

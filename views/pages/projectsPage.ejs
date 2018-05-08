@@ -56,6 +56,7 @@
                             <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
                             <div class="projectTimestampText"> <%= project.timestamp %> </div>
                             <div class="btn loadProjectBtn">Load</div>
+                            <div class="btn editProjectBtn" onclick="showMeTheEditWindow()">Edit</div>
                             <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
                                 <input type="hidden" name="projectId" value="<%= project.projectId %>">
                                 <input class="btn" type="submit" value="Delete">
@@ -85,6 +86,21 @@
         <form method="post" action="/createProject" enctype="application/x-www-form-urlencoded">
             <input type="text" id="newProject" name="projectName">
             <input class="btn" type="submit" value="Create">
+        </form>
+
+    </div>
+
+</div>
+
+<div class="layer" id="edit">
+
+    <div class="container" id="editContent">
+        <a id="aCross" onclick="unseeTheEditWindow()">X</a>
+        <p id="editProject">Edit Project</p>
+
+        <form method="post" action="/editProject" enctype="application/x-www-form-urlencoded">
+            <input type="text" id="editProjectName" name="projectName">
+            <input class="btn" type="submit" value="Submit">
         </form>
 
     </div>

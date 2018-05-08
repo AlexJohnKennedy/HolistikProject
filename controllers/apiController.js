@@ -289,6 +289,23 @@ async function projectCreate(req, res) {
     res.redirect("/profile");   //Refresh the page so that the new entry shows up
 }
 
+async function projectEdit(req, res) {
+    logRequestDetails("request received: Attempting to save a newly edited project.", req);
+
+    //authenticate
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
+        return res.redirect("/");
+    }
+
+    //user is authenticated! let's find the target project from the database
+
+    //tell the db class to make the appropriate changes and save them remotely
+
+    //All succeeded!
+    res.redirect("/profile");   //Refresh the page so that the new entry shows up
+}
 
 async function projectDelete(req, res) {
     logRequestDetails("request received: Attempting to save a delete a project.", req);
@@ -365,6 +382,8 @@ module.exports = {
     saveArrangement          : saveArrangement,
 
     projectCreate            : projectCreate,
+
+    projectEdit              : projectEdit,
 
     projectDelete            : projectDelete,
 

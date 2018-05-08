@@ -126,7 +126,7 @@ a:hover {
     width: 100%;
 }
 
-#createContent {
+#createContent, #editContent {
     position: relative;
     width: 30%;
     height: 69px;
@@ -142,14 +142,14 @@ p {
 .newProjectBtnBox {
 }
 
-#create .btn {
+#create .btn, #edit .btn {
     margin-top: 16px;
     margin-left: auto;
     margin-right: auto;
     width: 79px;
 }
 
-#create {
+#create, #edit {
     display: none;
 }
 
@@ -173,7 +173,7 @@ p {
     color:white;
 }
 
-#newProject {
+#newProject, #editProject {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 18px;
