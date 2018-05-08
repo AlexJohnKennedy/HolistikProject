@@ -356,7 +356,7 @@ function updateProject(projectModel, structure, arrangement) {
     });
 }
 
-function deleteProject(body, user) {
+async function deleteProject(body, user) {
     console.log("BODY: " + body.projectId);
     console.log("USER: " + user);
     //delete reference to the project in the user first
@@ -365,7 +365,7 @@ function deleteProject(body, user) {
     projectId = body.projectId;
 
     //get the project object
-    project = getOneProjectById(projectId);
+    project = await getOneProjectById(projectId);
 
     //loop from the back of the projects array
     for (let i = user.projects.length-1; i>= 0; i--) {
@@ -391,6 +391,11 @@ function deleteProject(body, user) {
             console.log("Users length: " + users.length);
             //if there are no users, we can safely delete the project
             if (users.length === 0) {
+                console.log("There are no users that have a link to the deleted project, let's clear it from the database!");
+
+                //debugging
+                console.log("Type: " + typeof(project) + " users: " + project);
+
                 //delete the project document if there are no other users that have it in their list
                 project.remove().then(function (removed) {
                     return removed;

@@ -40,22 +40,5 @@ window.onload = function() {
             //Redirect to the main page
             window.location.href = "/main";
         });
-
-        /*
-        //delete
-        deleteButton = elem.getElementsByClassName("deleteProjectBtn")[0];
-        deleteButton.addEventListener("click", function(event) {
-            console.log("CLICKED DELETE");
-
-            //make call to server to delete the project
-
-
-            //delete the list item and the accompanying break tag
-            //UPDATE: the list will be rebuilt when redirected back from the project delete url
-            let e = event.target.parentElement;
-            elem.parentElement.nextElementSibling.remove();
-            elem.parentElement.remove();
-        });
-        */
     }
 };
