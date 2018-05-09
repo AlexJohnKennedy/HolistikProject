@@ -105,6 +105,10 @@ input[name="searchNotebook"] {
     cursor: pointer;    /* Make buttons have 'you can click me' cursor when you're hovering over them */
 }
 
+.deleteProjectBtn {
+    color: red;
+}
+
 /* Apply styling to buttons which are in the project preview box list */
 .projectPreviewBox .btn {
     float: right;
