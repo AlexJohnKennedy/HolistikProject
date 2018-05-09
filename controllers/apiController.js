@@ -300,7 +300,11 @@ function projectEdit(req, res) {
     }
 
     //tell the db class to make the appropriate changes and save them remotely
-    db.updateProjectName(req.body.projectId, req.body.newName)
+    let project = db.updateProjectName(req.body.projectId, req.body.newName);
+    if (project === null) {
+        console.log("Project name update failed. Redirecting to home.");
+        return res.redirect("/");
+    }
 
     //All succeeded!
     res.redirect("/profile");   //Refresh the page so that the new entry shows up

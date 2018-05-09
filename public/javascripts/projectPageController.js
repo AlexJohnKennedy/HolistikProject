@@ -10,9 +10,12 @@ function unseeThePopUpWindow() {
 }
 
 //edit window
-function showMeTheEditWindow() {
+function showMeTheEditWindow(projectId) {
     let edit = document.getElementById('edit');
     edit.style.display = 'block';
+
+    let idStore = document.getElementById('editProjectId');
+    idStore.value = projectId;
 }
 
 function unseeTheEditWindow() {

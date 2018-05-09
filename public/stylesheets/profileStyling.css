@@ -47,42 +47,61 @@ input[name="searchNotebook"] {
     font-size: 35px;
 }
 
-#projectsTabs p {
+.projectsTabPanel p {
     text-decoration: none;
     color: black;
     font-family: "Open Sans";
     font-size: 18px;
 }
 
-#projectsTabs {
+.projectsTabs {
     display: inline-block;
 }
 
 .projectsTab {
     margin-right: 40px;
-    padding-top: 11px;
+    margin-top: 0;
+    margin-bottom: 8px;
 }
 
 #projectsTabPanel {
-    height: 47px;
+    /* height: 47px; */
     display: block;
 }
 
 .divisionLine {
+    margin-top: 1px;
     display: block;
-    border: 1px solid black;
+    border-top: 2px solid black;
 }
 
-
+.projectNameText{
+    font-family: "Open Sans";
+    font-weight: 400;
+}
 
 .btn {
+    text-align: center;
     display: block;
     font-family: "Open Sans";
     font-weight: 400;
-    font-size: 19px;
     border: 1px solid;
     border-radius: 30px;
     width: 230px;
+    cursor: pointer;    /* Make buttons have 'you can click me' cursor when you're hovering over them */
+}
+
+/* Apply styling to buttons which are in the project preview box list */
+.projectPreviewBox .btn {
+    float: right;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 100px;
+}
+
+.projectPreviewBox {
+    margin-bottom: 25px;
 }
 
 .input {
@@ -135,11 +154,8 @@ a:hover {
     margin-top: 20%;
 }
 
-p {
-    margin-top: 0;
-}
-
 .newProjectBtnBox {
+    float: right;
 }
 
 #create .btn, #edit .btn {
@@ -179,4 +195,9 @@ p {
     font-size: 18px;
     margin-top: -16px;
     color: black;
+}
+
+.clearfix {
+    clear: both;
+    font-size: 1px;
 }
