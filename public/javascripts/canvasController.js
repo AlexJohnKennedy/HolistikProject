@@ -75,6 +75,12 @@ window.onload = function() {
 
         //Load the project we are associated with!
         ajaxHandler.loadProjectFromServer();
+
+        //Set the title of the project as well
+        let title = window.localStorage.getItem("projectName");
+        if (title !== undefined && title != null) {
+            document.getElementById("sidebarProjectTitle").innerText = title;
+        }
     }
 };
 
