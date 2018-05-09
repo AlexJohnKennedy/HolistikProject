@@ -84,7 +84,7 @@
         <p id="newProject">New Project Name</p>
 
         <form method="post" action="/createProject" enctype="application/x-www-form-urlencoded">
-            <input type="text" id="newProject" name="projectName">
+            <input type="text" id="newProject" name="projectNewName">
             <input class="btn" type="submit" value="Create">
         </form>
 
@@ -99,7 +99,9 @@
         <p id="editProject">Edit Project</p>
 
         <form method="post" action="/editProject" enctype="application/x-www-form-urlencoded">
-            <input type="text" id="editProjectName" name="projectName">
+            <input type="text" id="editProjectNewName" name="newName">
+            <input type="hidden" id="editProjectName" name="projectName">
+            <input type="hidden" id="editProjectId" name="projectId">
             <input class="btn" type="submit" value="Submit">
         </form>
 

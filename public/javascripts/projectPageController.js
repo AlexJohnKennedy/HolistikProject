@@ -10,9 +10,16 @@ function unseeThePopUpWindow() {
 }
 
 //edit window
-function showMeTheEditWindow() {
+function showMeTheEditWindow(projectId, projectName) {
     let edit = document.getElementById('edit');
     edit.style.display = 'block';
+
+    //keep track of the selected project
+    let idStore = document.getElementById('editProjectId');
+    idStore.value = projectId;
+
+    let nameStore = document.getElementById('editProjectName');
+    nameStore.value = projectName;
 }
 
 function unseeTheEditWindow() {

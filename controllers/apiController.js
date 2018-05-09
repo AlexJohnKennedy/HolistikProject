@@ -300,6 +300,7 @@ async function projectEdit(req, res) {
     }
 
     //user is authenticated! let's find the target project from the database
+    let project = await db.getOneProjectById(req.body.projectId);
 
     //tell the db class to make the appropriate changes and save them remotely
 
