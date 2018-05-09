@@ -19,6 +19,13 @@ footer {
     flex-shrink: 0;
 }
 
+.thumbnail {
+    margin-top: 3px;
+    border-width: 1px;
+    border-color: #000000;
+    border-style: solid;
+}
+
 .wrapper {
     position: relative;
     display: grid;
@@ -119,7 +126,7 @@ input[name="searchNotebook"] {
 }
 
 .projectPreviewBox {
-    margin-bottom: 25px;
+    margin-bottom: 5px;
 }
 
 .input {

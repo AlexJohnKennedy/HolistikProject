@@ -238,7 +238,7 @@ async function projectSave(req, res) {
     //Okay, let's make sure the user has the correct permissions.
     if (db.hasWritePermission(userModel, projectModel)) {
         //They have permission to save to this project! So, let's update the project model!
-        let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.arrangement);
+        let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.arrangement, req.body.image);
         if (updatedProjectModel === undefined) {
             res.status(500).send("DATABASE ERROR: Failed to update project details");
         }
