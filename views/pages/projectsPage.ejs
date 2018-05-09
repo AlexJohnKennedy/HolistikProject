@@ -65,7 +65,7 @@
                         <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
                             <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
                                 <input type="hidden" name="projectId" value="<%= project.projectId %>">
-                                <input class="btn" type="submit" value="Delete">
+                                <input class="btn deleteProjectBtn" type="submit" value="Delete">
                             </form>
                             <div class="btn editProjectBtn" onclick="showMeTheEditWindow('<%= project.projectId %>')">Edit</div>
                             <div class="btn loadProjectBtn">Load</div>
