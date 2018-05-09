@@ -11,7 +11,7 @@ const password = "meme";
 
 //Default project thumbnail for new images
 const defaultImageURI = "data:image/png;base64,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";
-
+const demoProjectIdAsString = "5af2b5d19c789045e46bf639";
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Connect to the mongoDB Database ---------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ mongoose.connect('mongodb://'+username+':'+password+'@ds061474.mlab.com:61474/ho
 // --- Database operations ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-function createNewUser(userData, pwHash) {
+async function createNewUser(userData, pwHash) {
     //construct model from the json body, note that the hash and salt fields need to be updated
     let user = new User.userModel({
         username: userData.username,
@@ -40,9 +40,19 @@ function createNewUser(userData, pwHash) {
         projects: []
     });
 
-    return user.save().then(function(savedUser) {
+    return user.save().then(async function(savedUser) {
         console.log("New user entry was saved successfully! "+savedUser);
-        return savedUser;
+
+        //Okay, all new users should have the 'DemoProject' added to their listing, as a read only project!
+        let demoProject = await getOneProjectById(demoProjectIdAsString);
+        if (demoProject === undefined) {
+            //There was some error!
+            return undefined;
+        }
+        else {
+            let finalResult = await addProjectToUser(savedUser, demoProject, false);
+            return finalResult;
+        }
     }).catch(function(err) {
         console.log("DATABASE ERROR: Failed to create a new user: "+err);
         return undefined;
