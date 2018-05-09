@@ -356,16 +356,43 @@ function updateProject(projectModel, structure, arrangement) {
     });
 }
 
+async function updateProjectName(projectId, newName) {
+    //get the current project
+    let project = await getOneProjectById(projectId);
+
+    console.log("project: " + project);
+
+    console.log("Attempting to change a projects name from: "+project.name+" to: " + newName);
+
+    if (!validateString(newName, project.name)) {
+        console.log("Supplied parameter failed to pass validation. Aborting");
+        return project;
+    }
+
+    //if we passed the above stuff we can update the field
+    project.name = newName;
+
+    //save!
+    return project.save().then(function(project) {
+        //return the user
+        return project;
+    }).catch(function(err) {
+        console.log("Error trying to update a project name in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+
 async function deleteProject(body, user) {
     console.log("BODY: " + body.projectId);
     console.log("USER: " + user);
     //delete reference to the project in the user first
 
     //store its id
-    projectId = body.projectId;
+    let projectId = body.projectId;
 
     //get the project object
-    project = await getOneProjectById(projectId);
+    let project = await getOneProjectById(projectId);
 
     //loop from the back of the projects array
     for (let i = user.projects.length-1; i>= 0; i--) {
@@ -492,6 +519,7 @@ module.exports = {
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
     updateProject: updateProject,
+    updateProjectName: updateProjectName,
     deleteProject: deleteProject,
     addProjectToUser: addProjectToUser,
     hasWritePermission: hasWritePermission,
