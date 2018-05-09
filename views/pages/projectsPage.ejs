@@ -33,12 +33,18 @@
                 <i class="fa fa-search"></i>
 
             </div>
+
         </div>
 
 
         <div id="projectsTabPanel">
             <div id="projectsTabs">
                 <p id="myProjectsTab" class="projectsTab" href="#" role="tab">My Projects</p>
+            </div>
+            <div class="newProjectBtnBox">
+                <!-- need a function here to let the create create window to popup -->
+                <a class="btn" id="newProjectBtn" onclick="showMeThePopUpWindow()">Create new project</a>
+
             </div>
         </div>
 
@@ -52,15 +58,19 @@
                     <li>
                         <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
                         <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
-                            <div class="projectNameText"> <%= project.projectName %> </div>
-                            <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
-                            <div class="projectTimestampText"> <%= project.timestamp %> </div>
-                            <div class="btn loadProjectBtn">Load</div>
-                            <div class="btn editProjectBtn" onclick="showMeTheEditWindow()">Edit</div>
+
+                            <!--<div class="projectTimestampText"> <%= project.timestamp %> </div>-->
                             <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
                                 <input type="hidden" name="projectId" value="<%= project.projectId %>">
                                 <input class="btn" type="submit" value="Delete">
                             </form>
+                            <div class="btn editProjectBtn" onclick="showMeTheEditWindow()">Edit</div>
+                            <div class="btn loadProjectBtn">Load</div>
+
+                            <div class="projectNameText"> <%= project.projectName %> </div>
+                            <img src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">
+
+                            <div class="clearfix">&nbsp;</div> <!-- FLOAT FIX HACK FROM STACKOVERFLOW (??) -->
                         </div>
                     </li>
                     <br>
@@ -68,12 +78,7 @@
             </ul>
         </div>
 
-        <div class="newProjectBtnBox">
 
-            <!-- need a function here to let the create create window to popup -->
-            <a class="btn" id="newProjectBtn" onclick="showMeThePopUpWindow()">Create new project</a>
-
-        </div>
     </div>
 </div>
 
