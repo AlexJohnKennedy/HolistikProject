@@ -1,5 +1,6 @@
 //Include Mongoose and open a connection to our database
 const mongoose = require('mongoose');
+const sanitize = require('mongo-sanitize');
 const Project = require('./Project.js');
 const User = require('../models/User.js');
 
@@ -306,7 +307,13 @@ function validateString(newString, oldString) {
         return false;
     }
 
-    //TODO: CHECK THAT THE STRING CONTASINS NO MALICIOUS CODE
+    //sanitise string
+    ///TODO is it better to automatically sanitize inputs before saving them to the db?
+    sanitizedString = sanitize(newString);
+    if (sanitizedString !== newString) {
+        console.log("The string contains invalid characters. Aborting");
+        return false;
+    }
 
     //if we made it here we're all good, return true
     return true;
@@ -349,38 +356,98 @@ function updateProject(projectModel, structure, arrangement) {
     });
 }
 
-function deleteProject(user, project) {
+async function updateProjectName(projectId, newName) {
+    //get the current project
+    let project = await getOneProjectById(projectId);
+
+    console.log("project: " + project);
+
+    console.log("Attempting to change a projects name from: "+project.name+" to: " + newName);
+
+    if (!validateString(newName, project.name)) {
+        console.log("Supplied parameter failed to pass validation. Aborting");
+        return project;
+    }
+
+    //if we passed the above stuff we can update the field
+    project.name = newName;
+
+    //save!
+    return project.save().then(function(project) {
+        //return the user
+        return project;
+    }).catch(function(err) {
+        console.log("Error trying to update a project name in MongoDB. ERROR: "+err);
+        //indicate that an error has occurred by returning undefined
+        return undefined;
+    });
+}
+
+async function deleteProject(body, user) {
+    console.log("BODY: " + body.projectId);
+    console.log("USER: " + user);
     //delete reference to the project in the user first
 
     //store its id
-    projectId = project._id;
+    let projectId = body.projectId;
+
+    //get the project object
+    let project = await getOneProjectById(projectId);
 
     //loop from the back of the projects array
-    for (let i = user.projects.length; i>= 0; i--) {
-        if (user.projects[i].projectId === project._id) {
+    for (let i = user.projects.length-1; i>= 0; i--) {
+        //TODO figure out the correct way to compare ids, mongodb IDs have a compare function - investigate
+        //the shit below ignores that the two project ids are of different type
+        console.log("---------------------------------------------------------------------------------------------")
+        console.log("---------------------------------------------------------------------------------------------")
+        console.log("---------------------------------------------------------------------------------------------")
+        console.log(typeof(user.projects[i].projectId) + " " + typeof(projectId));
+        console.log(new mongoose.Types.ObjectId(projectId) === user.projects[i].projectId);
+        console.log("---------------------------------------------------------------------------------------------")
+        console.log("---------------------------------------------------------------------------------------------")
+        console.log("---------------------------------------------------------------------------------------------")
+        //double equals?
+        if (user.projects[i].projectId == projectId) {
             //we have a match! delete the project
+            console.log("We have a match, fuck the item off the array :)");
+            console.log("user.projects before: " + user.projects[i]);
             user.projects.splice(i, 1);
+            console.log("user.projects after: " + user.projects[i]);
             break;
         }
     }
 
-    //find every user that has a reference to this project using the id
-    User.userModel.find({ /* match all user documents in collection */ }).where('projects.projectId').equals(projectId).then(function(users) {
-        //if there are no users, we can safely delete the project
-        if (users.length === 0) {
-           //delete the project document if there are no other users that have it in their list
-            project.remove().then(function(removed) {
-                return removed;
-            }).catch(function(err) {
-                console.log("Error trying to remove the project document from the DB. "+err);
-                return err;
-            });
-        }
-        //do nothing otherwise
-    }).catch(function(err) {
-        console.log("Error trying to find users linked to the dropped project. "+err);
-        return err;
+    //save the user so the project deletion propagates to the remote db
+    return user.save().then(function (savedUser) {
+        console.log("User with newly deleted project field was saved to the database! \n" + savedUser);
 
+        //find every user that has a reference to this project using the id
+        User.userModel.find({/* match all user documents in collection */}).where('projects.projectId').equals(projectId).then(function (users) {
+            console.log("Users length: " + users.length);
+            //if there are no users, we can safely delete the project
+            if (users.length === 0) {
+                console.log("There are no users that have a link to the deleted project, let's clear it from the database!");
+
+                //debugging
+                console.log("Type: " + typeof(project) + " users: " + project);
+
+                //delete the project document if there are no other users that have it in their list
+                project.remove().then(function (removed) {
+                    return removed;
+                }).catch(function (err) {
+                    console.log("Error trying to remove the project document from the DB. " + err);
+                    return err;
+                });
+            }
+            //do nothing otherwise
+        }).catch(function (err) {
+            console.log("Error trying to find users linked to the dropped project. " + err);
+            return err;
+        });
+
+    }).catch(function(err) {
+        console.log("ERROR: database error when saving newly updated user: "+err);
+        return undefined;
     });
 }
 
@@ -452,6 +519,8 @@ module.exports = {
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
     updateProject: updateProject,
+    updateProjectName: updateProjectName,
+    deleteProject: deleteProject,
     addProjectToUser: addProjectToUser,
     hasWritePermission: hasWritePermission,
     hasReadOrWritePermission: hasReadOrWritePermission,

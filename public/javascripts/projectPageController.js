@@ -2,11 +2,25 @@
 function showMeThePopUpWindow() {
     let create = document.getElementById('create');
     create.style.display = 'block';
-};
+}
 
 function unseeThePopUpWindow() {
     let create = document.getElementById('create');
     create.style.display = 'none'
+}
+
+//edit window
+function showMeTheEditWindow(projectId) {
+    let edit = document.getElementById('edit');
+    edit.style.display = 'block';
+
+    let idStore = document.getElementById('editProjectId');
+    idStore.value = projectId;
+}
+
+function unseeTheEditWindow() {
+    let edit = document.getElementById('edit');
+    edit.style.display = 'none'
 }
 
 /**
@@ -30,11 +44,13 @@ window.onload = function() {
     let elems = document.getElementsByClassName("projectPreviewBox");
     for (let elem of elems) {
         console.log("counting");
-        elem.addEventListener("click", function(event) {
-            console.log("CLICKED PREVIEW BOX");
-            let e = event.currentTarget;
-            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"));
 
+        //load
+        loadButton = elem.getElementsByClassName("loadProjectBtn")[0];
+        loadButton.addEventListener("click", function(event) {
+            console.log("CLICKED LOAD");
+            let e = event.target.parentElement;
+            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"));
             //Redirect to the main page
             window.location.href = "/main";
         });

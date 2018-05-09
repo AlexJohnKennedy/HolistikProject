@@ -52,3 +52,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# package lock and shit
+package-lock.json
+

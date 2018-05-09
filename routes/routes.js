@@ -65,6 +65,10 @@ const SAVE_ARRANGEMENT_URL         = "/saveArrangement";
 
 const PROJECT_CREATE_URL           = "/createProject";
 
+const PROJECT_EDIT_URL           = "/editProject";
+
+const PROJECT_DELETE_URL           = "/deleteProject";
+
 router.post(PROJECT_LOAD_URL,     controller.apiController.projectLoad);
 router.post(LOAD_ARRANGEMENT_URL, controller.apiController.loadArrangement);
 
@@ -72,6 +76,10 @@ router.post(PROJECT_SAVE_URL,     controller.apiController.projectSave);
 router.post(SAVE_ARRANGEMENT_URL, controller.apiController.saveArrangement);
 
 router.post(PROJECT_CREATE_URL,   controller.apiController.projectCreate);
+
+router.post(PROJECT_EDIT_URL,   controller.apiController.projectEdit);
+
+router.post(PROJECT_DELETE_URL,   controller.apiController.projectDelete);
 
 //We also need to EXPORT the router object, so that the main application can access it and assign it to the app to use
 //via app.use()

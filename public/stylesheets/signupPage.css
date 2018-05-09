@@ -36,6 +36,15 @@
     width: 319px;
     margin-bottom: 20px;
 }
+
+label {
+    display: block;
+    align-content: center;
+    margin: auto;
+    font-family: "Open Sans";
+    font-weight: 300;
+    height: 43px;
+    width: 319px;
 }
 
 ::placeholder {

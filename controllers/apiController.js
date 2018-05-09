@@ -289,6 +289,44 @@ async function projectCreate(req, res) {
     res.redirect("/profile");   //Refresh the page so that the new entry shows up
 }
 
+function projectEdit(req, res) {
+    logRequestDetails("request received: Attempting to save a newly edited project.", req);
+
+    //authenticate
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
+        return res.redirect("/");
+    }
+
+    //tell the db class to make the appropriate changes and save them remotely
+    let project = db.updateProjectName(req.body.projectId, req.body.newName);
+    if (project === null) {
+        console.log("Project name update failed. Redirecting to home.");
+        return res.redirect("/");
+    }
+
+    //All succeeded!
+    res.redirect("/profile");   //Refresh the page so that the new entry shows up
+}
+
+async function projectDelete(req, res) {
+    logRequestDetails("request received: Attempting to save a delete a project.", req);
+
+    //authenticate
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
+        return res.redirect("/");
+    }
+
+    //delete in mong
+    await db.deleteProject(req.body, req.user);
+
+    //All succeeded!
+    res.redirect("/profile");   //Refresh the page so that the new entry shows up
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Helper functions ------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -347,6 +385,10 @@ module.exports = {
     saveArrangement          : saveArrangement,
 
     projectCreate            : projectCreate,
+
+    projectEdit              : projectEdit,
+
+    projectDelete            : projectDelete,
 
     registerNewUser          : registerNewUser,
     loginUser                : loginUser,

@@ -5,10 +5,23 @@ body {
     margin: 0;
 }
 
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    flex: 1 0 auto;
+}
+footer {
+    flex-shrink: 0;
+}
+
 .wrapper {
     position: relative;
     display: grid;
-    grid-template-rows: minmax(500px, 650px);
     position: relative;
     padding: 0;
     background-color: rgb(237,237,237);
@@ -48,42 +61,65 @@ input[name="searchNotebook"] {
     font-size: 35px;
 }
 
-#notebookTabs p {
+.projectsTabPanel p {
     text-decoration: none;
     color: black;
     font-family: "Open Sans";
     font-size: 18px;
 }
 
-#notebookTabs {
+.projectsTabs {
     display: inline-block;
 }
 
-.notebookTab {
+.projectsTab {
     margin-right: 40px;
-    padding-top: 11px;
+    margin-top: 0;
+    margin-bottom: 8px;
 }
 
-#notebookTabPanel {
-    height: 47px;
+#projectsTabPanel {
+    /* height: 47px; */
     display: block;
 }
 
 .divisionLine {
+    margin-top: 1px;
     display: block;
-    border: 1px solid black;
+    border-top: 2px solid black;
 }
 
-
+.projectNameText{
+    font-family: "Open Sans";
+    font-weight: 400;
+}
 
 .btn {
+    text-align: center;
     display: block;
     font-family: "Open Sans";
     font-weight: 400;
-    font-size: 19px;
     border: 1px solid;
     border-radius: 30px;
     width: 230px;
+    cursor: pointer;    /* Make buttons have 'you can click me' cursor when you're hovering over them */
+}
+
+.deleteProjectBtn {
+    color: red;
+}
+
+/* Apply styling to buttons which are in the project preview box list */
+.projectPreviewBox .btn {
+    float: right;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    width: 100px;
+}
+
+.projectPreviewBox {
+    margin-bottom: 25px;
 }
 
 .input {
@@ -127,7 +163,7 @@ a:hover {
     width: 100%;
 }
 
-#createContent {
+#createContent, #editContent {
     position: relative;
     width: 30%;
     height: 69px;
@@ -136,22 +172,18 @@ a:hover {
     margin-top: 20%;
 }
 
-p {
-    margin-top: 0;
+.newProjectBtnBox {
+    float: right;
 }
 
-.newNotebookBtnBox {
-    margin-top: 55%;
-}
-
-#create .btn {
+#create .btn, #edit .btn {
     margin-top: 16px;
     margin-left: auto;
     margin-right: auto;
     width: 79px;
 }
 
-#create {
+#create, #edit {
     display: none;
 }
 
@@ -175,10 +207,15 @@ p {
     color:white;
 }
 
-#newNotebook {
+#newProject, #editProject {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 18px;
     margin-top: -16px;
     color: black;
+}
+
+.clearfix {
+    clear: both;
+    font-size: 1px;
 }

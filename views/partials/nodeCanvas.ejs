@@ -30,12 +30,23 @@
     <button id="newNodeButton" onclick="createNewContentNode()">
         Create new node!
     </button>
-    <button id="testButton" onclick="loadProject()">
-        Re-load current project
-    </button>
-    <button id="testButton2" onclick="saveProject()">
-        Save current project state
-    </button>
+    <!-- If the user is logged in, then allow set up save and load buttons -->
+    <% if (username !== undefined && username != null) { %>
+        <button id="testButton" onclick="loadProject()">
+            Re-load current project
+        </button>
+        <button id="testButton2" onclick="saveProject()">
+            Save current project state
+        </button>
+    <% } else { %>
+        <button id="testButton" disabled="true" title="Log in to use this feature!">
+            Re-load current project
+        </button>
+        <button id="testButton2" disabled="true" title="Log in to use this feature!">
+            Save current project state
+        </button>
+    <% } %>
+
 
 
     <!-- Create a box which deletes nodes that are dragged into them. -->

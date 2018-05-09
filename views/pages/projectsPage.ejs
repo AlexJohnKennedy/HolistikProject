@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projects Page - Holistik</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/stylesheets/profileStyling.css">
+    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+
+    <script src="/javascripts/projectPageController.js"></script>
+</head>
+<body>
+
+<!-- ejs to present the profile page which shows the information about the user and the notes created by the user -->
+
+<header>
+    <% include ../partials/header.ejs %>
+</header>
+<div class="megawrapper content">
+    <div class="wrapper">
+
+        <!-- this container holds all the profile content -->
+        <div class="container-fluid" id="contentHolder">
+
+            <!-- this section contains the notebook header text and the search box -->
+            <div id="projectsHeader">
+                <h1 id="headerText">Projects</h1>
+
+                <!--
+                <div class="searchBox">
+                    <input type="text" name="searchProjects" aria-label="Search my projects">
+                    <i class="fa fa-search"></i>
+
+                </div>
+                -->
+            </div>
+
+
+            <div class="projectsTabPanel">
+                <div class="projectsTabs">
+                    <p id="myProjectsTab" class="projectsTab" href="#" role="tab">My Projects</p>
+                </div>
+                <div class="newProjectBtnBox">
+                    <!-- need a function here to let the create create window to popup -->
+                    <a class="btn" id="newProjectBtn" onclick="showMeThePopUpWindow()">Create new project</a>
+
+                </div>
+            </div>
+
+            <div class="divisionLine"></div>
+
+            <!-- render all the notebooks into an unordered list, based on the data being passed from the controller -->
+            <div class="projectsList">
+                <ul class="projectsList">
+                    <% if (writeProjects.length === 0) { %>
+                    <li>
+                        You haven't created any projects yet!
+                    </li>
+                    <% } else { %>
+                        <% writeProjects.forEach(function(project) { %>
+                        <li>
+                            <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+                                <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
+                                    <input type="hidden" name="projectId" value="<%= project.projectId %>">
+                                    <input class="btn deleteProjectBtn" type="submit" value="Delete">
+                                </form>
+                                <div class="btn editProjectBtn" onclick="showMeTheEditWindow('<%= project.projectId %>')">Edit</div>
+                                <div class="btn loadProjectBtn">Load</div>
+                                <div class="projectNameText"> <%= project.projectName %> </div>
+                                <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
+                                <div class="projectTimestampText"> <%= project.timestamp %> </div>
+
+                            </div>
+                        </li>
+                        <br>
+                        <% }); %>
+                    <% } %>
+                </ul>
+            </div>
+
+            <div class="projectsTabPanel">
+                <div class="projectsTabs">
+                    <p class="projectsTab" href="#" role="tab">Read-only Projects</p>
+                </div>
+                <div class="divisionLine"></div>
+            </div>
+
+            <!-- render all the notebooks into an unordered list, based on the data being passed from the controller -->
+            <div class="projectsList">
+                <ul class="projectsList">
+                    <% if (readOnlyProjects.length === 0) { %>
+                        <li>
+                            No projects here at the moment!
+                        </li>
+                    <% } else { %>
+                        <% readOnlyProjects.forEach(function(project) { %>
+                        <li>
+                            <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+
+                                <!--<div class="projectTimestampText"> <%= project.timestamp %> </div>-->
+                                <div class="btn loadProjectBtn">Load</div>
+
+                                <div class="projectNameText"> <%= project.projectName %> </div>
+                                <img src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">
+
+                                <div class="clearfix">&nbsp;</div> <!-- FLOAT FIX HACK FROM STACKOVERFLOW (??) -->
+                            </div>
+                        </li>
+                        <br>
+                        <% }); %>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="layer" id="create">
+
+        <div class="container" id="createContent">
+            <a id="aCross" onclick="unseeThePopUpWindow()">X</a>
+            <p id="newProject">New Project Name</p>
+
+            <form method="post" action="/createProject" enctype="application/x-www-form-urlencoded">
+                <input type="text" id="newProject" name="projectName">
+                <input class="btn" type="submit" value="Create">
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="layer" id="edit">
+        <div class="container" id="editContent">
+            <a id="aCross" onclick="unseeTheEditWindow()">X</a>
+            <p id="editProject">Edit Project</p>
+            <form method="post" action="/editProject" enctype="application/x-www-form-urlencoded">
+                <input type="text" name="newName">
+                <input type="hidden" id="editProjectId" name="projectId">
+                <input class="btn" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <% include ../partials/footer.ejs %>
+</footer>
+
+</body>
