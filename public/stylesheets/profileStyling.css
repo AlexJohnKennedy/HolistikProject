@@ -15,7 +15,7 @@ body {
 .content {
     flex: 1 0 auto;
 }
-.footer {
+footer {
     flex-shrink: 0;
 }
 
