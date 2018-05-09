@@ -69,7 +69,7 @@
                                 <div class="btn editProjectBtn" onclick="showMeTheEditWindow('<%= project.projectId %>')">Edit</div>
                                 <div class="btn loadProjectBtn">Load</div>
                                 <div class="projectNameText"> <%= project.projectName %> </div>
-                                <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
+                                <img class="thumbnail" src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
                                 <div class="projectTimestampText"> <%= project.timestamp %> </div>
 
                             </div>
@@ -104,8 +104,7 @@
                                 <div class="btn loadProjectBtn">Load</div>
 
                                 <div class="projectNameText"> <%= project.projectName %> </div>
-                                <img src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">
-
+                                <img class="thumbnail" src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">nodemon
                                 <div class="clearfix">&nbsp;</div> <!-- FLOAT FIX HACK FROM STACKOVERFLOW (??) -->
                             </div>
                         </li>
@@ -134,7 +133,7 @@
     <div class="layer" id="edit">
         <div class="container" id="editContent">
             <a id="aCross" onclick="unseeTheEditWindow()">X</a>
-            <p id="editProject">Edit Project</p>
+            <p id="editProject">Edit Project Name</p>
             <form method="post" action="/editProject" enctype="application/x-www-form-urlencoded">
                 <input type="text" name="newName">
                 <input type="hidden" id="editProjectId" name="projectId">

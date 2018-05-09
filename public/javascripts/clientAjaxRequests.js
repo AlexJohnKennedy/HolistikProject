@@ -203,14 +203,27 @@ class AjaxProjectLoader {
      *
      * This sends data to the server, and will fully replace what is returned when 'load project to server' is called
      */
-    saveProjectToServer() {
+    async saveProjectToServer() {
         //If the project has never been loaded, we should not allow us to save over the current project!
         if (!canvasState.projectLoaded) {
             console.trace("ERROR: Attempted to save to project "+this.projectId+" but this project was never loaded first!");
             return;
         }
 
-        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+' }';
+        //Screenshot the current state and package dat shit, so long as there is more than one node there
+        let imageDataURI = '';
+        if (canvasState.contentNodeList.length > 0) {
+            await html2canvas(document.getElementById("drawingCanvas"), { height: 3000, width: 3000, scale: 0.2 }).then(function(canvas) {
+                imageDataURI = canvas.toDataURL();  //Save dat SHIT
+            }).catch(function(err) {
+                console.log("Error rendering screenshot of drawing canvas " + err);
+            });
+        }
+
+        //DEBUG
+        console.log(imageDataURI);
+
+        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI + '" }';
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project:");
@@ -220,7 +233,7 @@ class AjaxProjectLoader {
 
     /**
      * Issue a request to create a new project for the currently logged in user, with the specified project name (string)
-     * @param projectName String to specifcy what the name of the new user should be called!
+     * @param projectName String to specify what the name of the new user should be called!
      */
     createNewProject(projectName) {
         let requestBody = '{ "projectName": '+projectName+ ' }';     //All this sends is the name of the new project. The user association is handled by req.user

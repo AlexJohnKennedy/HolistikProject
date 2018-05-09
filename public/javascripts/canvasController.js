@@ -62,6 +62,8 @@ let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulne
 window.onload = function() {
     console.log("Loading page");
 
+    console.log(window);
+
     //Set up the project loader object to manage our saving and loading. Get the respective project id from local browser memory
     let projectIdString = window.localStorage.getItem("projectId");
     if (projectIdString === undefined || projectIdString == null) {
