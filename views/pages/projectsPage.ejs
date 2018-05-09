@@ -37,8 +37,8 @@
         </div>
 
 
-        <div id="projectsTabPanel">
-            <div id="projectsTabs">
+        <div class="projectsTabPanel">
+            <div class="projectsTabs">
                 <p id="myProjectsTab" class="projectsTab" href="#" role="tab">My Projects</p>
             </div>
             <div class="newProjectBtnBox">
@@ -54,7 +54,55 @@
         <!-- render all the notebooks into an unordered list, based on the data being passed from the controller -->
         <div class="projectsList">
             <ul class="projectsList">
-                <% writeProjects.forEach(function(project) { %>
+                <% if (writeProjects.length === 0) { %>
+                    <li>
+                        You haven't created any projects yet!
+                    </li>
+                <% } else { %>
+                    <% writeProjects.forEach(function(project) { %>
+                        <li>
+                            <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+
+                                <!--<div class="projectTimestampText"> <%= project.timestamp %> </div>-->
+                                <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
+                                    <input type="hidden" name="projectId" value="<%= project.projectId %>">
+                                    <input class="btn" type="submit" value="Delete">
+                                </form>
+                                <div class="btn editProjectBtn" onclick="showMeTheEditWindow()">Edit</div>
+                                <div class="btn loadProjectBtn">Load</div>
+
+                                <div class="projectNameText"> <%= project.projectName %> </div>
+                                <img src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">
+
+                                <div class="clearfix">&nbsp;</div> <!-- FLOAT FIX HACK FROM STACKOVERFLOW (??) -->
+                            </div>
+                        </li>
+                        <br>
+                    <% }); %>
+                <% } %>
+            </ul>
+        </div>
+
+        <div class="projectsTabPanel">
+            <div class="projectsTabs">
+                <p class="projectsTab" href="#" role="tab">Read-only Projects</p>
+            </div>
+
+        </div>
+
+        <div class="divisionLine"></div>
+
+
+        <!-- render all the notebooks into an unordered list, based on the data being passed from the controller -->
+        <div class="projectsList">
+            <ul class="projectsList">
+                <% if (readOnlyProjects.length === 0) { %>
+                    <li>
+                        No projects here at the moment!
+                    </li>
+                <% } else { %>
+                    <% readOnlyProjects.forEach(function(project) { %>
                     <li>
                         <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
                         <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
@@ -64,7 +112,6 @@
                                 <input type="hidden" name="projectId" value="<%= project.projectId %>">
                                 <input class="btn" type="submit" value="Delete">
                             </form>
-                            <div class="btn editProjectBtn" onclick="showMeTheEditWindow()">Edit</div>
                             <div class="btn loadProjectBtn">Load</div>
 
                             <div class="projectNameText"> <%= project.projectName %> </div>
@@ -74,7 +121,8 @@
                         </div>
                     </li>
                     <br>
-                <% }); %>
+                    <% }); %>
+                <% } %>
             </ul>
         </div>
 

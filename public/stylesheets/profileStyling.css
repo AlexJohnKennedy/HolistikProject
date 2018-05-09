@@ -47,22 +47,19 @@ input[name="searchNotebook"] {
     font-size: 35px;
 }
 
-#projectsTabs p {
+.projectsTabPanel p {
     text-decoration: none;
     color: black;
     font-family: "Open Sans";
     font-size: 18px;
 }
 
-#projectsTabs {
+.projectsTabs {
     display: inline-block;
 }
 
 .projectsTab {
     margin-right: 40px;
-    /* padding-top: 11px; */
-}
-#myProjectsTab {
     margin-top: 0;
     margin-bottom: 8px;
 }
