@@ -31,7 +31,7 @@
                 <li>
                     <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
                     <% if (username !== undefined && username != null) { %>
-                        <a href="/profile">Projects</a> <!--<a href="/profile">Profile</a>-->
+                        <a href="/projects">Projects</a> <!--<a href="/profile">Profile</a>-->
                     <% } else { %>
                         <a class="disabledLink" title="Log in to use this feature!" disabled="true">Projects</a> <!-- HYPERLINK WITH NO HREF, TO SHOW AS GREYED OUT LINK -->
                     <% } %>
@@ -46,7 +46,7 @@
                 <li>
                     <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
                     <% if (username !== undefined && username != null) { %>
-                        <name><%= username %></name>
+                    <name><a href="profile"><%= username %></a></name>
                     <% } else { %>
                         <name>Guest User</name>
                     <% } %>

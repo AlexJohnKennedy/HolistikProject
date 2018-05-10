@@ -29,6 +29,9 @@ router.get('/main', controller.mainPageGet);
 router.get('/help', controller.helpPageGet);
 
 //Route for the profile page
+router.get('/projects', controller.projectsPageGet);
+
+//Route for the user profile page
 router.get('/profile', controller.profilePageGet);
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -44,7 +47,7 @@ const GET_USER_PROJECTS_URL        = "/getprojectlist";
 router.post(REGISTER_USER_URL, controller.apiController.registerNewUser);
 
 router.post(LOGIN_URL, controller.apiController.passport.authenticate('local', {
-        successRedirect: '/profile',
+        successRedirect: '/projects',
         failureRedirect: '/'
     }),
     controller.apiController.loginUser

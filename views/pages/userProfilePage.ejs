@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile Page - Holistik</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/stylesheets/userProfileStyling.css">
+    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+
+    <script src="/javascripts/userProfilePageController.js"></script>
+</head>
+<body>
+
+<!-- ejs to present the profile page which shows the information about the user and the notes created by the user -->
+
+<header>
+    <% include ../partials/header.ejs %>
+</header>
+
+<div class="content">
+
+    <form action="/updateUserDetails" method="post" class="updateUserDetailsSection" enctype="application/x-www-form-urlencoded">
+
+        <label class="input" for="username">Username:</label>
+        <input class="input" type="text" name="username" placeholder="Username">
+        <label class="input" for="email">Email:</label>
+        <input class="input" type="text" name="email" placeholder="Email">
+        <label class="input" for="bio">Bio:</label>
+        <input class="input" type="text" name="bio" placeholder="Bio">
+        <label class="input" for="password">Password:</label>
+        <input class="input" type="password" name="password" placeholder="Password">
+
+        <input class="btn" id="loginBtn" type="submit" value="Submit!">
+    </form>
+
+</div>
+
+<footer>
+    <% include ../partials/footer.ejs %>
+</footer>
+
+</body>

@@ -106,7 +106,7 @@ async function registerNewUser(req, res) {
                 }
                 else {
                     //Redirect them to their projects page
-                    res.redirect("/profile");
+                    res.redirect("/projects");
                 }
             });
         }

@@ -168,6 +168,16 @@ function userDetail(req, res) {
     });
 }
 
+function profilePageGet(req, res) {
+    let username = null;
+    //If the user is logged in, then we can supply the username
+    if (req.user) {
+        username = req.user.username
+    }
+    res.render('pages/userProfilePage', { username: username});
+}
+
+
 //Now, we have to export our functions so that the router can use them as callbacks
 module.exports = {
     homeDirectoryGet : homeDirectoryGet,
@@ -175,8 +185,9 @@ module.exports = {
     userDetail : userDetail,
     mainPageGet : mainPageGet,
     helpPageGet : helpPageGet,
-    profilePageGet: projectsPageGet,
+    projectsPageGet: projectsPageGet,
     signupPageGet : signupPageGet,
+    profilePageGet : profilePageGet,
 
     apiController : apiController
 };
