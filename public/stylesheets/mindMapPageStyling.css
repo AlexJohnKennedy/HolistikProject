@@ -105,7 +105,7 @@ body {
 }
 
 /* Styling and animation for the loading icon */
-#loader {
+.spinningIcon {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -119,6 +119,25 @@ body {
     -webkit-animation: spin 1.25s linear infinite;
     animation: spin 1.25s linear infinite;
 }
+
+#loader {
+    border: 16px solid #939393;
+    border-top: 16px solid #34a0e4;
+}
+
+#savingIcon {
+    position: static;
+    float: right;
+    width: 9px;
+    height: 9px;
+    margin: 2px 0 0 -5px;    /* Centres it */
+    border: 2px solid #939393;
+    border-radius: 50%;
+    border-top: 2px solid #424244;
+    -webkit-animation: spin 0.75s linear infinite;
+    animation: spin 0.75s linear infinite;
+}
+
 @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
@@ -128,3 +147,16 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+#savingIndicator {
+    float:right;
+    z-index: 9999999999999999;
+    margin-top: 6px;
+    margin-right: 24px;
+    background: transparent;
+    font-family: 'Open Sans', sans;
+    font-size: small;
+    width: 70px;
+    height: 40px;
+
+    opacity: 0.5;
+}

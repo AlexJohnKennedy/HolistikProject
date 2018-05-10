@@ -83,6 +83,10 @@ window.onload = function() {
         if (title !== undefined && title != null) {
             document.getElementById("sidebarProjectTitle").innerText = title;
         }
+
+        //TODO - SHOW THE SAVE INDICATOR IF AND ONLY IF window.localStorage.getItem("writePermission") == "true", and set a flag to allow the client
+        //TODO - to send save requests to the server! (if no write permission, also set the 'disabled' attribute to the save button.)
+
     }
 };
 
