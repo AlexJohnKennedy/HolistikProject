@@ -25,8 +25,6 @@ html {
     height: 100%;
     width:  100%;
     background-color: rgb(223,220,217);
-
-    z-index: -1;    /* so that statically placed elements do not go behind this */
 }
 
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */

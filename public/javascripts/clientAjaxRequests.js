@@ -205,10 +205,16 @@ class AjaxProjectLoader {
      */
     async saveProjectToServer() {
         //If the project has never been loaded, we should not allow us to save over the current project!
+        if (!hasWritePermission) {
+            return;     //Do not attempt to save if this session does not have save permission to begin with!
+        }
         if (!canvasState.projectLoaded) {
             console.trace("ERROR: Attempted to save to project "+this.projectId+" but this project was never loaded first!");
             return;
         }
+
+        //Now that we have sent the request, let's show the saving indicator, to indicate that we are in the process of saving to the server.
+        this.showSavingIndicator_InProgress("Saving...");
 
         //Screenshot the current state and package dat shit, so long as there is more than one node there
         let imageDataURI = '';
@@ -228,7 +234,45 @@ class AjaxProjectLoader {
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project:");
             console.log(response);
+            ajaxHandler.showSavingIndicator_Completed("Done!");
         });
+    }
+
+    showSavingIndicator_InProgress(msg) {
+        let indicatorElem = document.getElementById("savingIndicator");
+
+        //Find the text node child and set it's inner text..
+        for (let i = 0; i < indicatorElem.childNodes.length; i++) {
+            let curNode = indicatorElem.childNodes[i];
+            if (curNode.nodeName === "#text") {
+                curNode.nodeValue = msg;
+                break;
+            }
+        }
+
+        indicatorElem.style.transitionProperty = "opacity";
+        indicatorElem.style.transitionDuration = "0s";
+        indicatorElem.style.opacity = "0.5";
+        document.getElementById("savingIcon").style.display = "block";
+    }
+    showSavingIndicator_Completed(msg) {
+        let indicatorElem = document.getElementById("savingIndicator");
+
+        //Find the text node child and set it's inner text..
+        for (let i = 0; i < indicatorElem.childNodes.length; i++) {
+            let curNode = indicatorElem.childNodes[i];
+            if (curNode.nodeName === "#text") {
+                curNode.nodeValue = msg;
+                break;
+            }
+        }
+
+        indicatorElem.style.transitionProperty = "opacity";
+
+        //Hide the spinning icon and make the text fade out
+        indicatorElem.style.transitionDuration = "2s";
+        indicatorElem.style.opacity = "0.0";
+        document.getElementById("savingIcon").style.display = "none";
     }
 
     /**

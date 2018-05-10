@@ -148,15 +148,18 @@ body {
 }
 
 #savingIndicator {
-    float:right;
+    position: absolute;
     z-index: 9999999999999999;
+    /*float:right;
     margin-top: 6px;
-    margin-right: 24px;
+    margin-right: 24px;*/
+    right: 24px;
+    top: 6px;
     background: transparent;
     font-family: 'Open Sans', sans;
     font-size: small;
     width: 70px;
     height: 40px;
 
-    opacity: 0.5;
+    opacity: 0.0;   /* Will be controlled via JS */
 }

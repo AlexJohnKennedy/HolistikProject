@@ -13,8 +13,9 @@ const canvasState = {
     projectLoaded : false
 };
 
-//TODO -- MOVE THE CREATION OF THIS OBJECT TO SOME 'INIT' FUNCTION WHICH IS CALLED ON PAGE LOAD.
 let ajaxHandler = null;
+let hasWritePermission = false;
+
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
@@ -84,9 +85,10 @@ window.onload = function() {
             document.getElementById("sidebarProjectTitle").innerText = title;
         }
 
-        //TODO - SHOW THE SAVE INDICATOR IF AND ONLY IF window.localStorage.getItem("writePermission") == "true", and set a flag to allow the client
-        //TODO - to send save requests to the server! (if no write permission, also set the 'disabled' attribute to the save button.)
-
+        let wp = window.localStorage.getItem("writePermission");
+        if (wp !== undefined && wp != null && wp === "true") {
+            hasWritePermission = true;  //Set a flag, so tha we know not to attempt to send save requests during this session, since they will just fail.
+        }
     }
 };
 
