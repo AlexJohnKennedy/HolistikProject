@@ -74,6 +74,11 @@ function topologicalSortVisibleNodes() {
  * @param independentSet
  */
 function topologicalSort(independentSet) {
+    if (independentSet.length === 0) {
+        console.trace("ERROR: we were asked to topologically sort but was passed an empty independent set!");
+        return null;
+    }
+
     let finalOrdering = [];     //Will be constructed and returned by this algorithm.
 
     while (independentSet.length > 0) {

@@ -587,8 +587,9 @@ function rebuildVisibility() {
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
     //DEBUG
-    console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
-    printTestSerialistation();
+    //console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
+    //printTestSerialistation();
+
 
     // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
     for (let node of canvasState.contentNodeList) {
