@@ -89,6 +89,12 @@ window.onload = function() {
         if (wp !== undefined && wp != null && wp === "true") {
             hasWritePermission = true;  //Set a flag, so tha we know not to attempt to send save requests during this session, since they will just fail.
         }
+        else {
+            //Disable the save button, and inform them that pressing save is not allowed.
+            let saveBtn = document.getElementById("testButton2");
+            saveBtn.setAttribute("disabled","true");
+            saveBtn.setAttribute("title","Log in to use this feature!");
+        }
     }
 };
 
