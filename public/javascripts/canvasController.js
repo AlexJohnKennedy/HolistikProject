@@ -93,7 +93,7 @@ window.onload = function() {
             //Disable the save button, and inform them that pressing save is not allowed.
             let saveBtn = document.getElementById("testButton2");
             saveBtn.setAttribute("disabled","true");
-            saveBtn.setAttribute("title","Log in to use this feature!");
+            saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
 };

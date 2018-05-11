@@ -41,11 +41,15 @@ function topologicalSortVisibleNodes() {
 
     //STEP 2: Now that all the vertex wrapper objects exists, loop through the nodes again, and add all the outgoing edges for each node to each wrapper!
     for (let contentNode of canvasState.contentNodeList) {
-        for (let rel of contentNode.childrenList) {
-            for (let child of rel.children) {
-                //Add this edge to the wrapper vertex, with the same label as the relationships original one.
-                if (child.isVisible) {
-                    contentNode.vertexWrapper.addOutgoingEdge(child.vertexWrapper, rel.categoryLabel);
+        if (contentNode.isVisible) {
+            for (let rel of contentNode.childrenList) {
+                for (let child of rel.children) {
+                    //Add this edge to the wrapper vertex, with the same label as the relationships original one.
+                    if (child.isVisible) {
+                        console.log(contentNode);
+                        console.log(contentNode.vertexWrapper);
+                        contentNode.vertexWrapper.addOutgoingEdge(child.vertexWrapper, rel.categoryLabel);
+                    }
                 }
             }
         }
