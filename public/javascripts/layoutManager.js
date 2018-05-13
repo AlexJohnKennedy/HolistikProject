@@ -19,6 +19,27 @@
 //(i.e., when a newly reached node can be added to the set of nodes which are no longer dependent on anything.)
 
 
+function autoArrangeVisibleNodes() {
+    //Topologically sort visible nodes.
+    let topSorted = topologicalSortVisibleNodes();
+
+    //Assign layer numbers to each visible node.
+    let layerAssigned = assignVerticesToLayers(topSorted);
+
+    console.log(layerAssigned);
+
+    //DEBUG:
+    console.log("Topologically sorted ordering with layer assignments:");
+    for (let layer of layerAssigned) {
+        for (let v of layer) {
+            console.log(v.contentNode.titleText + " has layer " + v.layer);
+        }
+    }
+}
+
+
+
+
 /**
  * This function sorts all of the VISIBLE nodes on the canvas, starting from the current root nodes.
  *
@@ -46,8 +67,6 @@ function topologicalSortVisibleNodes() {
                 for (let child of rel.children) {
                     //Add this edge to the wrapper vertex, with the same label as the relationships original one.
                     if (child.isVisible) {
-                        console.log(contentNode);
-                        console.log(contentNode.vertexWrapper);
                         contentNode.vertexWrapper.addOutgoingEdge(child.vertexWrapper, rel.categoryLabel);
                     }
                 }
@@ -100,19 +119,62 @@ function topologicalSort(independentSet) {
         }
     }
 
-    //DEBUG:
-    console.log("Topologically sorted ordering:");
-
     //Quickly just restore the removed edges from all the vertices, for later processing capabilities
     for (let v of finalOrdering) {
         v.outgoingEdges = v.removedOutgoingEdges;
         v.removedOutgoingEdges = [];
-
-        //DEBUG
-        console.log(v.contentNode.titleText);
     }
 
     return finalOrdering;   //This list should be topologically sorted!!
+}
+
+/**
+ * Assigns vertices which are already in topologically sorted order to 'layers', by assigning layer number as the
+ * longest path from a root to the given vertex.
+ *
+ * @param topologicallySortedNodes
+ * @return matrix of layers. (list of lists, where each item in the outer list is a list of all nodes for a given layer)
+ */
+function assignVerticesToLayers(topologicallySortedNodes) {
+    //Since nodes are already topologically sorted, we can just scan through once and assign..
+    let layerMatrix = [];
+    let maxLayer = 0;
+
+    //The root nodes should all have a layer of 'zero' assigned to them. These are vertices with no incoming edges.
+    //Loop broke. From here, assign the layer to be the max layer of parents, plus one.
+    for (let i=0; i <topologicallySortedNodes.length; i++) {
+        let layer = 0;
+        for (let par of topologicallySortedNodes[i].incomingEdges) {
+            if (par.layer >= layer) {
+                layer = par.layer + 1;
+            }
+        }
+        topologicallySortedNodes[i].layer = layer;
+
+        if (layerMatrix[layer] === undefined) {
+            layerMatrix[layer] = [topologicallySortedNodes[i]];     //Add new inner list for this later with the vert inside it already
+        }
+        else {
+            layerMatrix[layer].push(topologicallySortedNodes[i]);
+        }
+
+        //The layer should also account for which index of the final matrix we appear in.
+        if (layer > maxLayer) {
+            maxLayer = layer;
+        }
+    }
+
+    /*
+    for (let i=0; i <= maxLayer; i++) {
+        layerMatrix.push([]);
+    }
+    for (let i=0; i < topologicallySortedNodes.length; i++) {
+        layerMatrix[topologicallySortedNodes[i].layer].push(topologicallySortedNodes[i]);
+    }
+    */
+
+    //Done!
+    return layerMatrix;
 }
 
 
@@ -136,8 +198,11 @@ class Vertex {
                                         //here, so algorithms that FOLLOW the topological sort can still access them correctly (E.g. the layer-by-layer arrangement
                                         //algorithm which relies on the topological sort).
 
+        this.incomingEdges = [];
 
         this.incomingEdgeCount = 0; //Used to detect when there are no more incoming nodes!
+
+        this.layer = -1;    //Int used to track which 'layer' a vertex belongs in. 0 will refer to a root node, and so on. < 0 will indicate that a layer has not been calculated.
     }
 
     //Functions used to build the graph, during the setup phase.
@@ -147,8 +212,11 @@ class Vertex {
             label: relationshipLabel
         });
 
-        //Increment the other vertex's incoming edge counter
+        //Increment the other vertex's incoming edge counter (used in the topological sorting)
         otherVertex.incomingEdgeCount++;
+
+        //Add an incoming edge reference as well, for longest path calculations POST topological sorting.
+        otherVertex.incomingEdges.push(this);
     }
 
     //Functions used to remove outgoing edges, during Kahn's algorithm operation.
@@ -158,6 +226,8 @@ class Vertex {
      * of that vertex, and then return the vertex that was popped. This is designed to be repeatedly called by Kahn's algorithm
      * during the part where we traverse to each child of an independent node, remove the edges, then test each child to see if
      * they are now independent.
+     *
+     * NOTE: THIS WILL NOT MUTATE THE CHILD NODE'S INCOMING EDGE LIST, ONLY THE COUNTER, AS IT'S NOT NECESSARY TO DO BOTH!
      */
     removeFrontMostEdge() {
         let removed = this.outgoingEdges.pop();
