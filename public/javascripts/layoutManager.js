@@ -34,6 +34,10 @@ function autoArrangeVisibleNodes() {
     //when we try to find a layer ordering which results in the fewest relationship line cross-overs.
     let layersWithDummyVerts = addDummyVertices(layerAssigned);
 
+    //Cosntruct a 'group meta graph' based on grouping vertices with similar parent paths.
+
+
+
     //DEBUG:
     console.log(layersWithDummyVerts);
     for (let layer of layersWithDummyVerts) {
@@ -293,7 +297,7 @@ function buildGroupsByAssociation(layerMatrix) {
         //has been instantiated yet, for that vertex's specific combination of parent groups. (since each group is defined as a collection
         //of vertices which have the same set of groups as parents). If not instantiated, create it and insert it into the map!
         for (let v of layer) {
-            //the 'key' for a given group is a sorted-order set of parent indexes, where the index represents the locaiton in the layer-above group list
+            //the 'key' for a given group is a sorted-order set of parent indexes, where the index represents the location in the layer-above group list
             //corresponding to that group
             let key = generateGroupKeyString(v.groupIndexes);
             let group = null;
@@ -333,7 +337,11 @@ function buildGroupsByAssociation(layerMatrix) {
                 }
             }
         }
+        map = new Map();    //Clear the temporary map, for the next iteration to use.
     }
+
+    //Done! return the matrix of groups-by-layer. (note also, that the GroupVertex's form a DAG as well!)
+    return groups;
 }
 
 //helper
