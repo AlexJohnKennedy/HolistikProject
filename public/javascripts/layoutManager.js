@@ -47,6 +47,15 @@ function autoArrangeVisibleNodes() {
                 str = str + ", to "+ (v.outgoingEdges[0].vertex.contentNode ? v.outgoingEdges[0].vertex.contentNode.titleText : "DUMMY");
                 console.log(str);
             }
+
+            //If there is an outgoing edge which still spans more than one layer, we have FUCKING FAILED CUNT.
+            for (let e of v.outgoingEdges) {
+                if (e.vertex.layer > v.layer + 1) {
+                    console.log("ERROR: Relationship from "+ (v.contentNode ? v.contentNode.titleText : "DUMMY")
+                                + " to " + (e.vertex.contentNode ? e.vertex.contentNode.titleText : "DUMMY")
+                                + " spans " + (e.vertex.layer - v.layer) + "layers :(");
+                }
+            }
         }
     }
 }
@@ -191,8 +200,18 @@ function assignVerticesToLayers(topologicallySortedNodes) {
     return layerMatrix;
 }
 
+/**
+ * Traverse the graph and replace all outgoing edges which span multiple layers with edges going to dummy vertices, which are
+ * newly inserted into the graph structure.
+ *
+ * After this step, all outgoing edges should only span one layer.
+ *
+ * Dummy vertices will be re-used by sets of parents which have spanning links to the same child, for grouping purposes.
+ *
+ * @param layerMatrix
+ * @return {*}
+ */
 function addDummyVertices(layerMatrix) {
-
     //Loop through each vertex in the graph, in layer order. We will then identify outgoing edges which span across more
     //than one layer, and assign dummy verts into that layer matrix list (for the layers which are spanned 'over')
     for (let layer of layerMatrix) {
@@ -301,3 +320,39 @@ class Vertex {
         return removed.vertex;  //Return that vertex, so that the algorithm using this function can examine it/test conditions/continue using it
     }
 }
+
+class GroupVertex {
+    constructor() {
+        this.members = [];  //Simple list of objects that belong in this group.
+        this.outgoingEdges = [];
+        this.incomingEdges = [];
+    }
+
+    addOutgoingEdge(childGroup) {
+        this.outgoingEdges.push(childGroup);
+        childGroup.incomingEdges.push(this);
+    }
+
+    removeOutgoingEdge(g) {
+        let i = this.outgoingEdges.indexOf(g);
+        if (i !== -1) {
+            this.outgoingEdges.splice(i, 1);
+            i = g.incomingEdges.indexOf(this);
+            if (i !== -1) {
+                g.incomingEdges.splice(i, 1);
+            }
+        }
+    }
+
+    addMember(obj) {
+        this.members.push(obj);
+    }
+
+    removeMember(obj) {
+        let i = this.members.indexOf(obj);
+        if (i !== -1) {
+            this.members.splice(i,1);
+        }
+    }
+}
+
