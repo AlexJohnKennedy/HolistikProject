@@ -261,6 +261,91 @@ function addDummyVertices(layerMatrix) {
 }
 
 
+function buildGroupsByAssociation(layerMatrix) {
+    //First, instantiate an empty matrix object which we will use to add groups into.
+    let groups = [];
+    groups[0] = [];     //Empty list is the first element of the outer list..
+
+    //For layer zero, each root vertex should be it's own group!
+    for (let v of layerMatrix[0]) {
+        groups[0].push(new GroupVertex([v]));
+    }
+
+    //Now, build temporary grouping association markers into those vertices from each group
+    for (let i=0; i < groups[0].length; i++) {
+        let group = groups[0][i];
+        for (let v of group) {
+            //For each child of this vertex in 'group', add an association tracker element, to indicate group linkage.
+            for (let edge of v.outgoingEdges) {
+                edge.vertex.groupIndexes.push(i);
+                edge.vertex.groupIncomingEdges.push(group);
+            }
+        }
+    }
+
+    //Sweet! now, let us iterate through the layers, and figure out how many groups to make for each one, based on the
+    //connections to groups in the layer above it.
+    let map = new Map();    //Empty map boi! We will use this to tell if a group object already exists for a given combination of parent-group relationships.
+    for (let j=1; j < layerMatrix.length; j++) {
+        let layer = layerMatrix[j];
+
+        //First, cycle the vertices and place them into group objects, using the map to lookup if the given group object
+        //has been instantiated yet, for that vertex's specific combination of parent groups. (since each group is defined as a collection
+        //of vertices which have the same set of groups as parents). If not instantiated, create it and insert it into the map!
+        for (let v of layer) {
+            //the 'key' for a given group is a sorted-order set of parent indexes, where the index represents the locaiton in the layer-above group list
+            //corresponding to that group
+            let key = generateGroupKeyString(v.groupIndexes);
+            let group = null;
+            if (map.has(key)) {
+                group = map.get(key);
+                group.addMember(v);     //Add this vertex to the group
+            }
+            else {
+                //Doesn't exist yet! Let's change that.
+                group = new GroupVertex([v]);
+                map.set(key, group);
+            }
+            //Now, for all of the parent groups which look at this vertex, add this child group as a child.
+            for (let parentGroup of v.groupIncomingEdges) {
+                parentGroup.addOutgoingEdge(group);
+            }
+
+            //Finally, remove the grouping clutter bullshit from the vertex object
+            v.groupIncomingEdges = [];
+            v.groupIndexes       = [];
+        }
+
+        //Second, insert all of the new GroupVertex objects into the group matrix, for this layer.
+        for (let group of map) {
+            groups[j].push(group);
+        }
+
+        //Okay, now we can loop through each edge in each vertex in each group in this layer, and begin the set up for the
+        //next layer of group construction by once again tagging associations to parent groups in the next-layer of vertices.
+        for (let i=0; i < groups[j].length; i++) {
+            let group = groups[0][i];
+            for (let v of group) {
+                //For each child of this vertex in 'group', add an association tracker element, to indicate group linkage.
+                for (let edge of v.outgoingEdges) {
+                    edge.vertex.groupIndexes.push(i);
+                    edge.vertex.groupIncomingEdges.push(group);
+                }
+            }
+        }
+    }
+}
+
+//helper
+function generateGroupKeyString(indexArray) {
+    indexArray.sort();
+    let ret = "";
+    for (let i of indexArray) {
+        ret = ret+"_"+i;
+    }
+    return ret;
+}
+
 /**
  * Constructor for the wrapper object which will represent a vertex in the graph. These objects are necessary because we will
  * need to run algorithms on the node graph under different conditions, without modifying the original data structures that
@@ -286,6 +371,9 @@ class Vertex {
         this.incomingEdgeCount = 0; //Used to detect when there are no more incoming nodes!
 
         this.layer = -1;    //Int used to track which 'layer' a vertex belongs in. 0 will refer to a root node, and so on. < 0 will indicate that a layer has not been calculated.
+
+        this.groupIndexes = [];     //Used for building groups later in the algorithm.
+        this.groupIncomingEdges = [];
     }
 
     //Functions used to build the graph, during the setup phase.
@@ -322,10 +410,16 @@ class Vertex {
 }
 
 class GroupVertex {
-    constructor() {
+    constructor(memberList) {
         this.members = [];  //Simple list of objects that belong in this group.
         this.outgoingEdges = [];
         this.incomingEdges = [];
+
+        if (memberList !== undefined) {
+            for (let member of memberList) {
+                this.addMember(member);
+            }
+        }
     }
 
     addOutgoingEdge(childGroup) {
