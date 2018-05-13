@@ -34,9 +34,8 @@ function autoArrangeVisibleNodes() {
     //when we try to find a layer ordering which results in the fewest relationship line cross-overs.
     let layersWithDummyVerts = addDummyVertices(layerAssigned);
 
-    //Cosntruct a 'group meta graph' based on grouping vertices with similar parent paths.
-
-
+    //Construct a 'group meta graph' based on grouping vertices with similar parent paths.
+    let groupMatrix = buildGroupsByAssociation(layersWithDummyVerts);
 
     //DEBUG:
     console.log(layersWithDummyVerts);
@@ -62,6 +61,9 @@ function autoArrangeVisibleNodes() {
             }
         }
     }
+
+    //DEBUG2:
+    console.log(groupMatrix);
 }
 
 
@@ -278,11 +280,11 @@ function buildGroupsByAssociation(layerMatrix) {
     //Now, build temporary grouping association markers into those vertices from each group
     for (let i=0; i < groups[0].length; i++) {
         let group = groups[0][i];
-        for (let v of group) {
+        for (let v of group.members) {
             //For each child of this vertex in 'group', add an association tracker element, to indicate group linkage.
             for (let edge of v.outgoingEdges) {
-                edge.vertex.groupIndexes.push(i);
-                edge.vertex.groupIncomingEdges.push(group);
+                edge.vertex.groupIndexes.add(i);
+                edge.vertex.groupIncomingEdges.add(group);
             }
         }
     }
@@ -291,6 +293,7 @@ function buildGroupsByAssociation(layerMatrix) {
     //connections to groups in the layer above it.
     let map = new Map();    //Empty map boi! We will use this to tell if a group object already exists for a given combination of parent-group relationships.
     for (let j=1; j < layerMatrix.length; j++) {
+        groups[j] = [];
         let layer = layerMatrix[j];
 
         //First, cycle the vertices and place them into group objects, using the map to lookup if the given group object
@@ -316,24 +319,27 @@ function buildGroupsByAssociation(layerMatrix) {
             }
 
             //Finally, remove the grouping clutter bullshit from the vertex object
-            v.groupIncomingEdges = [];
-            v.groupIndexes       = [];
+            v.groupIncomingEdges = new Set();
+            v.groupIndexes       = new Set();
         }
 
         //Second, insert all of the new GroupVertex objects into the group matrix, for this layer.
-        for (let group of map) {
+        for (let [key, group] of map) {
             groups[j].push(group);
+
+            console.log("Group "+key+" has members: ");
+            for (let m of group.members) { console.log((m.contentNode ? m.contentNode.titleText : "DUMMY")); }
         }
 
         //Okay, now we can loop through each edge in each vertex in each group in this layer, and begin the set up for the
         //next layer of group construction by once again tagging associations to parent groups in the next-layer of vertices.
         for (let i=0; i < groups[j].length; i++) {
-            let group = groups[0][i];
-            for (let v of group) {
+            let group = groups[j][i];
+            for (let v of group.members) {
                 //For each child of this vertex in 'group', add an association tracker element, to indicate group linkage.
                 for (let edge of v.outgoingEdges) {
-                    edge.vertex.groupIndexes.push(i);
-                    edge.vertex.groupIncomingEdges.push(group);
+                    edge.vertex.groupIndexes.add(i);
+                    edge.vertex.groupIncomingEdges.add(group);
                 }
             }
         }
@@ -345,7 +351,11 @@ function buildGroupsByAssociation(layerMatrix) {
 }
 
 //helper
-function generateGroupKeyString(indexArray) {
+function generateGroupKeyString(indexSet) {
+    let indexArray = [];
+    for (let idx of indexSet) {
+        indexArray.push(idx);
+    }
     indexArray.sort();
     let ret = "";
     for (let i of indexArray) {
@@ -380,8 +390,8 @@ class Vertex {
 
         this.layer = -1;    //Int used to track which 'layer' a vertex belongs in. 0 will refer to a root node, and so on. < 0 will indicate that a layer has not been calculated.
 
-        this.groupIndexes = [];     //Used for building groups later in the algorithm.
-        this.groupIncomingEdges = [];
+        this.groupIndexes = new Set();     //Used for building groups later in the algorithm.
+        this.groupIncomingEdges = new Set();
     }
 
     //Functions used to build the graph, during the setup phase.
