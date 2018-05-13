@@ -26,13 +26,27 @@ function autoArrangeVisibleNodes() {
     //Assign layer numbers to each visible node.
     let layerAssigned = assignVerticesToLayers(topSorted);
 
+    //DEBUG:
     console.log(layerAssigned);
 
+    //Build dummy vertices (point to a NULL contentNode) in each layer, to represent relationships that span across more
+    //than one layer. This is done so that we can encompass spanning relationships in our layer-by-layer permutation calculations
+    //when we try to find a layer ordering which results in the fewest relationship line cross-overs.
+    let layersWithDummyVerts = addDummyVertices(layerAssigned);
+
     //DEBUG:
-    console.log("Topologically sorted ordering with layer assignments:");
-    for (let layer of layerAssigned) {
+    console.log(layersWithDummyVerts);
+    for (let layer of layersWithDummyVerts) {
         for (let v of layer) {
-            console.log(v.contentNode.titleText + " has layer " + v.layer);
+            if (v.contentNode == null) {
+                let str = "Dummy vert going from";
+                for (let e of v.incomingEdges) {
+                    str = str + ", ";
+                    str = str + (e.contentNode ? e.contentNode.titleText : "DUMMY");
+                }
+                str = str + ", to "+ (v.outgoingEdges[0].vertex.contentNode ? v.outgoingEdges[0].vertex.contentNode.titleText : "DUMMY");
+                console.log(str);
+            }
         }
     }
 }
@@ -174,6 +188,56 @@ function assignVerticesToLayers(topologicallySortedNodes) {
     */
 
     //Done!
+    return layerMatrix;
+}
+
+function addDummyVertices(layerMatrix) {
+
+    //Loop through each vertex in the graph, in layer order. We will then identify outgoing edges which span across more
+    //than one layer, and assign dummy verts into that layer matrix list (for the layers which are spanned 'over')
+    for (let layer of layerMatrix) {
+        for (let v of layer) {
+
+            //Look through each outgoing edge..
+            for (let edge of v.outgoingEdges) {
+                //Alright. Check if it spans more than one layer.
+                if (edge.vertex.layer > v.layer + 1) {
+                    //We will need to replace this outgoing edge with one which goes to a dummy node, instead...
+                    //However, we need to make sure that there is not already a dummy node in this layer which represents
+                    //relationships going to this particular child, so that spanning relationships from different parents but to same child
+                    //may be grouped together with the same dummy vertex.
+
+                    let dummy = null;
+                    //Look through the next layer's list to see if a corresponding dummy already exists..
+                    for (let potentialDummy of layerMatrix[v.layer+1]) {
+                        if (potentialDummy.contentNode == null && potentialDummy.outgoingEdges.length === 1 && potentialDummy.outgoingEdges[0].vertex === edge.vertex) {
+                            //Found a corrsponding dummy! Woohoo!
+                            dummy = potentialDummy;
+                            break;  //Stop looking boi.
+                        }
+                    }
+
+                    //If the 'dummy' is still null, that means there was no existing one. So i'm going to create it now!
+                    if (dummy == null) {
+                        dummy = new Vertex(null);   //Pass null so that we know it's a dummy; it doesn't directly represent an original ContentNode!
+                        dummy.layer = v.layer+1;    //Dummy vertex will sit in the layer directly below the currently examined vertex.
+                        dummy.addOutgoingEdge(edge.vertex, edge.label); //Dummy should look to the original target child.
+
+                        //WARNING: THIS WILL FUCK UP THE CHILD'S INCOMING EDGE LISTING!! DO NOT USE FROM NOW ON
+                        //TODO: AVOID THIS ISSUE BY EFFICIENTLY MUTATING INCOMING NODE LIST IN CHILD VERTEX, IF NEED BE
+
+                        //Finally, push this new dummy into the corresponding layer.
+                        layerMatrix[dummy.layer].push(dummy);
+                    }
+
+                    //Alright! Now, we need to remove the original outgoing edge, and replace it with an outgoing edge going to this dummy instead!
+                    edge.vertex = dummy;
+                    dummy.incomingEdges.push(v);
+                }
+            }
+        }
+    }
+
     return layerMatrix;
 }
 
