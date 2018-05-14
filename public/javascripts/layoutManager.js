@@ -394,10 +394,10 @@ function generateGroupKeyString(indexSet) {
  *
  * @param layerMatrix
  */
-function findLeastCrossoverOrdering(groupMatrix, vertMatrix) {
+function findLeastCrossoverOrdering(groupMatrix) {
     //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
     groupArrangement(groupMatrix);
-    baseVertexArrangement(groupMatrix, vertMatrix);
+    baseVertexArrangement(groupMatrix);
 }
 
 function groupArrangement(matrix) {
@@ -407,6 +407,19 @@ function groupArrangement(matrix) {
     for (let i=1; i < matrix.length; i++) {
         arrangeLayer(matrix[i], 3);     //3 scans for now as a test..
         insertParentIndexCollectionIntoChildren_Groups(matrix[i]);
+    }
+}
+
+function baseVertexArrangement(groupMatrix) {
+    //First, just leave the root layer ordering as is
+    insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[0]);
+
+    for (let i=1; i < groupMatrix.length; i++) {
+        //For each layer, arrange each vertex subset based on the groupings.
+        for (let group of groupMatrix[i]) {
+            arrangeLayer(group.members, 3);
+        }
+        insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[i]);
     }
 }
 
@@ -425,14 +438,16 @@ function insertParentIndexCollectionIntoChildren_Groups(orderedLayerArray) {
 }
 function insertParentIndexCollectionIntoChildren_BaseVerts(orderedLayerArray) {
     for (let i=0; i < orderedLayerArray.length; i++) {
-        let curr = orderedLayerArray[i];
-        for (let edge of curr.outgoingEdges) {
-            let child = edge.vertex;
-            if (child.incomingEdgeOrderingIndexes === undefined) {
-                child.incomingEdgeOrderingIndexes = [i];
-            }
-            else {
-                child.incomingEdgeOrderingIndexes.push(i);
+        let group = orderedLayerArray[i];
+        for (let v of group.members) {
+            for (let edge of v.outgoingEdges) {
+                let child = edge.vertex;
+                if (child.incomingEdgeOrderingIndexes === undefined) {
+                    child.incomingEdgeOrderingIndexes = [i];
+                }
+                else {
+                    child.incomingEdgeOrderingIndexes.push(i);
+                }
             }
         }
     }
@@ -445,6 +460,7 @@ function insertParentIndexCollectionIntoChildren_BaseVerts(orderedLayerArray) {
  * ABOVE LAYER ORDERING! THIS SHOULD BE DONE AS A PRELIMINARY STEP!
  *
  * @param layer
+ * @param numScans
  */
 function arrangeLayer(layer, numScans) {
     //For now, scan through successively and make swaps if it improves things.. Later we might do multiple scans in a more intelligent way.
@@ -455,6 +471,16 @@ function arrangeLayer(layer, numScans) {
         numScans--;
     }
 }
+/*
+function arrangeLayerSubset(layerGroups, groupToSortIndex, numScans) {
+    while(numScans > 0) {
+        for (let i=1; i < layer.length; i++) {
+            swapVerticesIfItImproves(layer, i-1, i);
+        }
+        numScans--;
+    }
+}
+*/
 
 /**
  * FUNCTION RELIES ON THE CALLING FUNCTION HAVING SET UP INCOMING EDGE COLLECTION IN THE CHILDREN WHICH INDICATES THE INDEX OF THE PARENT IN THE
