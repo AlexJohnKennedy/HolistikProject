@@ -65,11 +65,26 @@ function autoArrangeVisibleNodes() {
     //DEBUG2:
     console.log(groupMatrix);
 
-    groupMatrix = findLeastCrossoverOrdering(groupMatrix);
+    let verticesWithGroupBoundaries = findLeastCrossoverOrdering(groupMatrix);
 
     //DEBUG3:
     console.log("AFTER ARRANGEING WITH CROSSOVER HEURISTICS:");
-    console.log(groupMatrix);
+    console.log(verticesWithGroupBoundaries);
+    let layerNum=0;
+    for (let layer of verticesWithGroupBoundaries.vertexMatrix) {
+        console.log("--- Layer "+(layerNum)+"---");
+        let str = "|";
+        let i=0, j=1;
+        for (let v of layer) {
+            str = str + " "+(v.contentNode ? v.contentNode.titleText : "DUMMY") + ",";
+            if (++i === verticesWithGroupBoundaries.groupBoundaryMatrix[layerNum][j]) {
+                str = str + " |";
+                j++;
+            }
+        }
+        console.log(str);
+        layerNum++;
+    }
 }
 
 
@@ -403,9 +418,9 @@ function generateGroupKeyString(indexSet) {
 function findLeastCrossoverOrdering(groupMatrix) {
     //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
     groupArrangement(groupMatrix);
-    baseVertexArrangement(groupMatrix);
+    let verticesWithGroupBoundaries = baseVertexArrangement(groupMatrix);
 
-    return groupMatrix;
+    return verticesWithGroupBoundaries;
 }
 
 function groupArrangement(matrix) {
@@ -419,16 +434,44 @@ function groupArrangement(matrix) {
 }
 
 function baseVertexArrangement(groupMatrix) {
-    //First, just leave the root layer ordering as is
+    //First, convert the group matrix into an object which has a vertex matrix, and a group-index-boundary matrix.
+    let toRet = {
+        vertexMatrix : [],
+        groupBoundaryMatrix : []
+    };
+    for (let i=0; i < groupMatrix.length; i++) {
+        //For each layer, add a new row in both matrices
+        toRet.vertexMatrix[i] = [];
+        toRet.groupBoundaryMatrix[i] = [];
+
+        //For each layer, reset the group boundaries offset to zero.
+        let boundary = 0;
+
+        //loop through each group in this layer, adding the members into the array and tracking the boundaries appropriately
+        for (let j=0; j < groupMatrix[i].length; j++) {
+            //For each group, indicate which index the group starts at.
+            toRet.groupBoundaryMatrix[i].push(boundary);
+
+            for (let v of groupMatrix[i][j].members) {
+                toRet.vertexMatrix[i].push(v);
+            }
+
+            boundary += groupMatrix[i][j].members.length;
+        }
+        toRet.groupBoundaryMatrix[i].push(boundary);   // Should be the size of the layer array of verts.
+    }
+
+    //Begin the swapping process!
     insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[0]);
 
     for (let i=1; i < groupMatrix.length; i++) {
-        //For each layer, arrange each vertex subset based on the groupings.
-        for (let group of groupMatrix[i]) {
-            arrangeLayer(group.members, 3);
+        for (let j=1; j < toRet.groupBoundaryMatrix[i].length; j++) {
+            arrangeLayerSubset(toRet.vertexMatrix[i], toRet.groupBoundaryMatrix[i][j-1], toRet.groupBoundaryMatrix[i][j], 3);
         }
         insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[i]);
     }
+
+    return toRet;
 }
 
 function insertParentIndexCollectionIntoChildren_Groups(orderedLayerArray) {
@@ -479,16 +522,16 @@ function arrangeLayer(layer, numScans) {
         numScans--;
     }
 }
-/*
-function arrangeLayerSubset(layerGroups, groupToSortIndex, numScans) {
+
+function arrangeLayerSubset(layer, start, stop, numScans) {
     while(numScans > 0) {
-        for (let i=1; i < layer.length; i++) {
+        for (let i=start+1; i < stop; i++) {
             swapVerticesIfItImproves(layer, i-1, i);
         }
         numScans--;
     }
 }
-*/
+
 
 /**
  * FUNCTION RELIES ON THE CALLING FUNCTION HAVING SET UP INCOMING EDGE COLLECTION IN THE CHILDREN WHICH INDICATES THE INDEX OF THE PARENT IN THE
