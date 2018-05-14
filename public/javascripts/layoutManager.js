@@ -399,6 +399,24 @@ function findLeastCrossoverOrdering(layerMatrix) {
 }
 
 /**
+ * Function which invoked the swap-if-required function repeatedly on a layer of vertices
+ *
+ * FUNCTION RELIES ON THE CALLING FUNCTION HAVING SET UP INCOMING EDGE COLLECTION IN THE CHILDREN WHICH INDICATES THE INDEX OF THE PARENT IN THE
+ * ABOVE LAYER ORDERING! THIS SHOULD BE DONE AS A PRELIMINARY STEP!
+ *
+ * @param layer
+ */
+function arrangeLayer(layer, numScans) {
+    //For now, scan through successively and make swaps if it improves things.. Later we might do multiple scans in a more intelligent way.
+    while(numScans > 0) {
+        for (let i=1; i < layer.length; i++) {
+            swapVerticesIfItImproves(layer, i-1, i);
+        }
+        numScans--;
+    }
+}
+
+/**
  * FUNCTION RELIES ON THE CALLING FUNCTION HAVING SET UP INCOMING EDGE COLLECTION IN THE CHILDREN WHICH INDICATES THE INDEX OF THE PARENT IN THE
  * ABOVE LAYER ORDERING! THIS SHOULD BE DONE AS A PRELIMINARY STEP!
  * @param parentLayer
@@ -421,6 +439,11 @@ function swapVerticesIfItImproves(childLayer, v1index, v2index) {
         let tmp = childLayer[v1index];
         childLayer[v1index] = childLayer[v2index];
         childLayer[v2index] = tmp;
+
+        return false;   //indicate no swap was made
+    }
+    else {
+        return true;    //indicate we swapped!
     }
 }
 
