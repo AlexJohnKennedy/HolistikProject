@@ -402,11 +402,11 @@ function findLeastCrossoverOrdering(groupMatrix, vertMatrix) {
 
 function groupArrangement(matrix) {
     //First, just leave the root ordering as is!
-    insertParentIndexCollectionIntoChildren(matrix[0]);
+    insertParentIndexCollectionIntoChildren_Groups(matrix[0]);
 
     for (let i=1; i < matrix.length; i++) {
         arrangeLayer(matrix[i], 3);     //3 scans for now as a test..
-        insertParentIndexCollectionIntoChildren(matrix[i]);
+        insertParentIndexCollectionIntoChildren_Groups(matrix[i]);
     }
 }
 
