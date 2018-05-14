@@ -64,6 +64,12 @@ function autoArrangeVisibleNodes() {
 
     //DEBUG2:
     console.log(groupMatrix);
+
+    groupMatrix = findLeastCrossoverOrdering(groupMatrix);
+
+    //DEBUG3:
+    console.log("AFTER ARRANGEING WITH CROSSOVER HEURISTICS:");
+    console.log(groupMatrix);
 }
 
 
@@ -398,6 +404,8 @@ function findLeastCrossoverOrdering(groupMatrix) {
     //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
     groupArrangement(groupMatrix);
     baseVertexArrangement(groupMatrix);
+
+    return groupMatrix;
 }
 
 function groupArrangement(matrix) {
