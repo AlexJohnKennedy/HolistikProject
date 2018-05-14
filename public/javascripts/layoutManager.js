@@ -331,6 +331,11 @@ function buildGroupsByAssociation(layerMatrix) {
             for (let m of group.members) { console.log((m.contentNode ? m.contentNode.titleText : "DUMMY")); }
         }
 
+        //TODO: For any group which only has one parent, and where that parent only has one child (this), then split that group
+        //TODO: into a separate sub-groups where each new group is a single vertex in the original group. This is to avoid grouping stagnation
+        //TODO: where one-to-one group relationships emerge. (the rationale here is that groups with a 1-1 indicate that the upper group can
+        //TODO: behave as a new 'root' group, allowing us to essentially restart the grouping process recursively within that group's sub-tree.
+
         //Okay, now we can loop through each edge in each vertex in each group in this layer, and begin the set up for the
         //next layer of group construction by once again tagging associations to parent groups in the next-layer of vertices.
         for (let i=0; i < groups[j].length; i++) {
@@ -362,6 +367,119 @@ function generateGroupKeyString(indexSet) {
         ret = ret+"_"+i;
     }
     return ret;
+}
+
+
+/**
+ * Takes a graph of vertices (either base vertices or group vertices) and permutes layer ordering to find the minimum relationship crossovers.
+ *
+ * Doing FUCKING RAW permutations is way too expensive. Instead, we will do the following approximations to try find a decent ordering:
+ *
+ * Place nodes under parents in 'positions' determined by the average position of any vertex's parents. (the layers above any layer
+ * being processed has a fixed ordering, as layers are processed sequentially).
+ *
+ * Scan through the layer, and pick each pair of adjacent vertexes. If swapping these two vertices reduces the number of line
+ * overlaps between the two layers, swap them, and continue.
+ *      (optional) Keep scanning until no more swaps, or some set limit of scans (??) Not sure if feasible..
+ *
+ *      To determine no. of crossovers for a pair of vertices, labelled v1 and v2, compute: (INSIDE HELPER FUNCTION)
+ *      - compare each edge-to-parent of v1 to every edge which doesn't go to v1, and count crossovers.
+ *      - compare each edge-to-parent of v2 to every edge which doesn't go to v1 or v2, and count crossovers.
+ *      - add results together to get the 'score' for v1 and v2 in that arrangement.
+ *
+ *      - SWAP POSITIONS OF v1 and v2, and do the above calculation again.
+ *      - If the score is higher than on the first arrangement, swap v1 and v2 back to their original positions, else do nothing.
+ *
+ *      - return.
+ *
+ * @param layerMatrix
+ */
+function findLeastCrossoverOrdering(layerMatrix) {
+
+}
+
+/**
+ * FUNCTION RELIES ON THE CALLING FUNCTION HAVING SET UP INCOMING EDGE COLLECTION IN THE CHILDREN WHICH INDICATES THE INDEX OF THE PARENT IN THE
+ * ABOVE LAYER ORDERING! THIS SHOULD BE DONE AS A PRELIMINARY STEP!
+ * @param parentLayer
+ * @param childLayer
+ * @param v1index
+ * @param v2index
+ */
+function swapVerticesIfItImproves(childLayer, v1index, v2index) {
+    let originalOverlaps = countOverlapsForPair(childLayer, v1index, v2index);
+
+    //Swap the vertices and count again..
+    let tmp = childLayer[v1index];
+    childLayer[v1index] = childLayer[v2index];
+    childLayer[v2index] = tmp;
+
+    let newOverlaps      = countOverlapsForPair(childLayer, v1index, v2index);
+
+    //If the made things worse, swap back
+    if (newOverlaps > originalOverlaps) {
+        let tmp = childLayer[v1index];
+        childLayer[v1index] = childLayer[v2index];
+        childLayer[v2index] = tmp;
+    }
+}
+
+function countOverlapsForPair(childLayer, v1index, v2index) {
+    let overlaps = 0;
+
+    //Check all potential overlaps with each edge-line to v1
+    for (let v1Edge of childLayer[v1index].incomingEdgeOrderingIndexes) {
+        //for child-layer vertices which PRECEDE v1 in the ordering, it will be an overlap if the parent coordinate for a tested edge is HIGHER than the v1 parent index.
+        for (let i=0; i < v1index; i++) {
+            //Check all edges for preceding verts
+            for (let candidateEdge of childLayer[i].incomingEdgeOrderingIndexes) {
+                if (candidateEdge > v1Edge) {
+                    //OVERLAPS!
+                    overlaps++;
+                }
+            }
+        }
+        //for child-layer vertices which SUCCEED v1 in the ordering, it will be an overlap if the parent coordinate is LOWER than the v1 parent.
+        for (let i = v1index+1; i < childLayer.length; i++) {
+            //Check all edges for succeeding verts
+            for (let candidateEdge of childLayer[i].incomingEdgeOrderingIndexes) {
+                if (candidateEdge < v1Edge) {
+                    //OVERLAPS!
+                    overlaps++;
+                }
+            }
+        }
+    }
+    //Check all potential overlaps with each edge-line to v2, except those which go to v1, since they have already been checked.
+    for (let v2Edge of childLayer[v2index].incomingEdgeOrderingIndexes) {
+        for (let i=0; i < v2index; i++) {
+            if (i == v1index) {
+                continue;   //Skip this iteration if we are to be comparing with v1
+            }
+
+            //Check all edges for preceding verts
+            for (let candidateEdge of childLayer[i].incomingEdgeOrderingIndexes) {
+                if (candidateEdge > v2Edge) {
+                    //OVERLAPS!
+                    overlaps++;
+                }
+            }
+        }
+        for (let i = v2index+1; i < childLayer.length; i++) {
+            if (i == v1index) {
+                continue;   //Skip this iteration if we are to be comparing with v1
+            }
+
+            //Check all edges for succeeding verts
+            for (let candidateEdge of childLayer[i].incomingEdgeOrderingIndexes) {
+                if (candidateEdge < v2Edge) {
+                    //OVERLAPS!
+                    overlaps++;
+                }
+            }
+        }
+    }
+    return overlaps;
 }
 
 /**
