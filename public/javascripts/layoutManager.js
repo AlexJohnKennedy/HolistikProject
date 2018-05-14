@@ -394,8 +394,48 @@ function generateGroupKeyString(indexSet) {
  *
  * @param layerMatrix
  */
-function findLeastCrossoverOrdering(layerMatrix) {
+function findLeastCrossoverOrdering(groupMatrix, vertMatrix) {
+    //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
+    groupArrangement(groupMatrix);
+    baseVertexArrangement(groupMatrix, vertMatrix);
+}
 
+function groupArrangement(matrix) {
+    //First, just leave the root ordering as is!
+    insertParentIndexCollectionIntoChildren(matrix[0]);
+
+    for (let i=1; i < matrix.length; i++) {
+        arrangeLayer(matrix[i], 3);     //3 scans for now as a test..
+        insertParentIndexCollectionIntoChildren(matrix[i]);
+    }
+}
+
+function insertParentIndexCollectionIntoChildren_Groups(orderedLayerArray) {
+    for (let i=0; i < orderedLayerArray.length; i++) {
+        let curr = orderedLayerArray[i];
+        for (let child of curr.outgoingEdges) {
+            if (child.incomingEdgeOrderingIndexes === undefined) {
+                child.incomingEdgeOrderingIndexes = [i];
+            }
+            else {
+                child.incomingEdgeOrderingIndexes.push(i);
+            }
+        }
+    }
+}
+function insertParentIndexCollectionIntoChildren_BaseVerts(orderedLayerArray) {
+    for (let i=0; i < orderedLayerArray.length; i++) {
+        let curr = orderedLayerArray[i];
+        for (let edge of curr.outgoingEdges) {
+            let child = edge.vertex;
+            if (child.incomingEdgeOrderingIndexes === undefined) {
+                child.incomingEdgeOrderingIndexes = [i];
+            }
+            else {
+                child.incomingEdgeOrderingIndexes.push(i);
+            }
+        }
+    }
 }
 
 /**
