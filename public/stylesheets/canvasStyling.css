@@ -164,6 +164,29 @@ html {
     fill: rgb(170,70,52);
 }
 
+#svgObject text {
+    display: none;
+
+    font-family: 'Open Sans', sans;
+
+    stroke: black;
+    fill: grey;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* make a thicc transparent line that we can use to detect if the mouse is near the label */
+.megaline {
+    stroke-width: 50px !important;
+    stroke:rgba(170,70,52,0) !important;
+    fill: rgba(170,70,52,0) !important;
+}
+
 #getHelpButton {
     float: right;
     z-index: 8998;

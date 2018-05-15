@@ -2,7 +2,12 @@
 // --- RenderLine object prototype -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-function RenderLine(sourceNode, destNode) {
+//shift the label up and to the right slightly (PIXELS)
+const LABEL_X_TRANS = 10;
+const LABEL_Y_TRANS = (0-5);
+
+function RenderLine(sourceNode, destNode, displayedLabel) {
+
     console.log("a new RenderLine was created, from "+sourceNode.idString+" and "+destNode.idString);
 
     //Store reference to the information we are going to need.
@@ -18,16 +23,43 @@ function RenderLine(sourceNode, destNode) {
     //Create a <polyline> and store it as a property of this object.
     let line = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
     //string concatenation to for a line with a point in the middle to allow for a mid-line svg object
-    let x1 = (sourceNode.translation.x + 0.5*sourceNode.size.width).toString();
-    let y1 = (sourceNode.translation.y + 0.5*sourceNode.size.height).toString();
-    let x2 = (destNode.translation.x + 0.5*sourceNode.size.width).toString();
-    let y2 = (destNode.translation.y + 0.5*sourceNode.size.height).toString();
-    let pointsString = x1+","+y1+" "+((x1+x2)/2)+","+((y1+y2)/2)+" "+x2+","+y2;
+    let x1 = (sourceNode.translation.x + 0.5*sourceNode.size.width);
+    let y1 = (sourceNode.translation.y + 0.5*sourceNode.size.height);
+    let x2 = (destNode.translation.x + 0.5*sourceNode.size.width);
+    let y2 = (destNode.translation.y + 0.5*sourceNode.size.height);
+    let xMidpoint = ((x1+x2)/2);
+    let yMidpoint = ((y1+y2)/2);
+    let pointsString = x1+","+y1+" "+xMidpoint.toString()+","+yMidpoint.toString()+" "+x2+","+y2;
     line.setAttribute("points", pointsString);
     line.setAttribute("marker-mid", "url(#Triangle)");
     svg.appendChild(line);
 
+    //make an invisible mega line to detect mouse enter/leave
+    let megaLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    megaLine.setAttribute("points", pointsString);
+    megaLine.setAttribute("class", "megaline");
+    svg.appendChild(megaLine);
+
+    //label
+    let label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", (xMidpoint + LABEL_X_TRANS).toString());
+    label.setAttribute("y", (yMidpoint + LABEL_Y_TRANS).toString());
+    label.innerHTML = displayedLabel;
+    svg.appendChild(label);
+
+    //line listeners to make the hover over thing work
+    megaLine.addEventListener("mouseenter", function(event) {
+        console.log("mouseenter line area");
+        event.currentTarget.nextSibling.style.display = "block";
+    });
+    megaLine.addEventListener("mouseleave", function(event) {
+        console.log("mouseleave line area");
+        event.currentTarget.nextSibling.style.display = "none";
+    });
+
     this.line = line;
+    this.megaLine = megaLine;
+    this.label = label;
 
     //The line objects will also have a 'isVisible' flag which we can use to determine visibility in the same way
     //as the nodes.
@@ -57,6 +89,11 @@ RenderLine.prototype.update = function() {
                        (y2.toString());
     this.line.setAttribute("points", pointsString);
     this.line.setAttribute("marker-mid", "url(#Triangle)");
+
+    this.megaLine.setAttribute("points", pointsString);
+
+    this.label.setAttribute("x", (((x1+x2)/2)+LABEL_X_TRANS).toString());
+    this.label.setAttribute("y", (((y1+y2)/2)+LABEL_Y_TRANS).toString());
 };
 
 RenderLine.prototype.hideLine = function() {
