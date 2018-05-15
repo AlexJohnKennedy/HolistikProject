@@ -454,16 +454,18 @@ function insertParentIndexCollectionIntoChildren_Groups(orderedLayerArray) {
 function insertParentIndexCollectionIntoChildren_BaseVerts(orderedLayerArray) {
     for (let i=0; i < orderedLayerArray.length; i++) {
         let group = orderedLayerArray[i];
+        let index = 0;
         for (let v of group.members) {
             for (let edge of v.outgoingEdges) {
                 let child = edge.vertex;
                 if (child.incomingEdgeOrderingIndexes === undefined) {
-                    child.incomingEdgeOrderingIndexes = [i];
+                    child.incomingEdgeOrderingIndexes = [index];
                 }
                 else {
-                    child.incomingEdgeOrderingIndexes.push(i);
+                    child.incomingEdgeOrderingIndexes.push(index);
                 }
             }
+            index++;
         }
     }
 }
@@ -534,7 +536,7 @@ function swapVerticesIfItImproves(childLayer, v1index, v2index) {
 function countOverlapsForPair(childLayer, v1index, v2index) {
     let overlaps = 0;
 
-    debugPrintLayer(childLayer);
+    debugPrintLayer_DuringOverlapCounting(childLayer);
 
     //Check all potential overlaps with each edge-line to v1
     for (let v1Edge of childLayer[v1index].incomingEdgeOrderingIndexes) {
@@ -699,10 +701,24 @@ class GroupVertex {
 // --- Debugging helpers -----------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-function debugPrintLayer(layer) {
+function debugPrintLayer_DuringOverlapCounting(layer) {
+    let str = "Layer Verts:      ";
     for (let i=0; i < layer.length; i++) {
-
+        let v = layer[i];
+        str = str + "[" + i + "] " + (v.contentNode ? v.contentNode.titleText : "DUMMY") + " ";
     }
+    console.log(str);
+
+    str = "Incoming indexes: ";
+    for (let i=0; i < layer.length; i++) {
+        let v = layer[i];
+        str = str + "[" + i + "] - ";
+
+        for (let e of v.incomingEdgeOrderingIndexes) {
+            str = str + e + " ";
+        }
+    }
+    console.log(str);
 }
 
 function debugPrint_LayersWithDummyVerts(layersWithDummyVerts) {
