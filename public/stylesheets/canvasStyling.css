@@ -166,8 +166,15 @@ html {
 
 #svgObject text {
     display: none;
+
+    font-family: 'Open Sans', sans;
+
+    stroke: black;
+    fill: grey;
+
 }
 
+/* make a thicc transparent line that we can use to detect if the mouse is near the label */
 .megaline {
     stroke-width: 50px !important;
     stroke:rgba(170,70,52,0) !important;

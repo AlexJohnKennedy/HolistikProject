@@ -3,8 +3,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 
 //shift the label up and to the right slightly (PIXELS)
-const LABEL_X_TRANS = 20;
-const LABEL_Y_TRANS = (0-20);
+const LABEL_X_TRANS = 10;
+const LABEL_Y_TRANS = (0-5);
 
 function RenderLine(sourceNode, destNode, displayedLabel) {
 
