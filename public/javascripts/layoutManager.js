@@ -380,6 +380,8 @@ function generateGroupKeyString(indexSet) {
 function findLeastCrossoverOrdering(groupMatrix) {
     //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
     groupArrangement(groupMatrix);
+
+
     let verticesWithGroupBoundaries = baseVertexArrangement(groupMatrix);
 
     return verticesWithGroupBoundaries;
@@ -390,8 +392,43 @@ function groupArrangement(matrix) {
     insertParentIndexCollectionIntoChildren_Groups(matrix[0]);
 
     for (let i=1; i < matrix.length; i++) {
+        //First, place each group at a position based on the average index of it's parents..
+        matrix[i] = preliminaryArrangements(matrix[i]);
+
+        //Make swaps to arrange better, after using this averaging technique
         arrangeLayer(matrix[i], 3);     //3 scans for now as a test..
+
+        //Now that this layer has been finalised, set up the 'parent indexes' information in the children groups.
         insertParentIndexCollectionIntoChildren_Groups(matrix[i]);
+    }
+}
+function preliminaryArrangements(list) {
+    //for each group in the layer, calculate the average parent index.
+    let resultingOrdering = [];
+    for (let member of list) {
+        member.averageParentOrderingIndex = calcAvgParentOrderingIndex(member);
+
+        let i=0;    //Used to determine insertion location
+        while (i < resultingOrdering.length && member.averageParentOrderingIndex > resultingOrdering[i].averageParentOrderingIndex) {
+            i++;    //Keep looking...
+        }
+
+        //Okay, the correct position to insert is at position i.
+        resultingOrdering.splice(i, 0, member);
+    }
+
+    return resultingOrdering;
+}
+function calcAvgParentOrderingIndex(v) {
+    let total = 0;
+    for (let parIdx of v.incomingEdgeOrderingIndexes) {
+        total += parIdx;
+    }
+    if (v.incomingEdgeOrderingIndexes.length === 0) {
+        return -1; /*ERROR CASE*/
+    }
+    else {
+        return total / v.incomingEdgeOrderingIndexes.length;
     }
 }
 
@@ -411,6 +448,7 @@ function baseVertexArrangement(groupMatrix) {
 
         //loop through each group in this layer, adding the members into the array and tracking the boundaries appropriately
         for (let j=0; j < groupMatrix[i].length; j++) {
+
             //For each group, indicate which index the group starts at.
             toRet.groupBoundaryMatrix[i].push(boundary);
 
