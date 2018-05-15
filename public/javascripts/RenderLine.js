@@ -29,6 +29,12 @@ function RenderLine(sourceNode, destNode, displayedLabel) {
     line.setAttribute("marker-mid", "url(#Triangle)");
     svg.appendChild(line);
 
+    //make an invisible mega line to detect mouse enter/leave
+    let megaLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    megaLine.setAttribute("points", pointsString);
+    megaLine.setAttribute("class", "megaline");
+    svg.appendChild(megaLine);
+
     //label
     let label = document.createElementNS("http://www.w3.org/2000/svg", "text");
     label.setAttribute("x", xMidpoint.toString());
@@ -37,16 +43,17 @@ function RenderLine(sourceNode, destNode, displayedLabel) {
     svg.appendChild(label);
 
     //line listeners to make the hover over thing work
-    line.addEventListener("mouseenter", function(event) {
+    megaLine.addEventListener("mouseenter", function(event) {
         console.log("mouseenter line area");
         event.currentTarget.nextSibling.style.display = "block";
     });
-    line.addEventListener("mouseleave", function(event) {
+    megaLine.addEventListener("mouseleave", function(event) {
         console.log("mouseleave line area");
         event.currentTarget.nextSibling.style.display = "none";
     });
 
     this.line = line;
+    this.megaLine = megaLine;
     this.label = label;
 
     //The line objects will also have a 'isVisible' flag which we can use to determine visibility in the same way
@@ -77,6 +84,8 @@ RenderLine.prototype.update = function() {
                        (y2.toString());
     this.line.setAttribute("points", pointsString);
     this.line.setAttribute("marker-mid", "url(#Triangle)");
+
+    this.megaLine.setAttribute("points", pointsString);
 
     this.label.setAttribute("x", ((x1+x2)/2).toString());
     this.label.setAttribute("y", ((y1+y2)/2).toString());
