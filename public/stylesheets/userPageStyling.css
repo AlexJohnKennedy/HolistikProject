@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+
+#settings{
+    font-size: 33px;
+}
+
+.userSetting {
+    font-size: 20px;
+}
+
+.btn, editSettingsBt{
+    float: right;
+    width: 79px;
+    margin-right: 267px;
+}
+
+#settingsList {
+    list-style-type: none;
+    margin-top: 11%;
+}
+
+.settingsListItem {
+    height: 50px;
+    padding-left: 18%;
+}
+
+.userSetting {
+}

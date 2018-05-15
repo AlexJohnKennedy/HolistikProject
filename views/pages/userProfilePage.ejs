@@ -2,42 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile Page - Holistik</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/stylesheets/userProfileStyling.css">
+    <title>User Page</title>
+
+    <link rel="stylesheet" href="/stylesheets/profileStyling.css">
     <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/footerStyling.css">
-
-    <script src="/javascripts/userProfilePageController.js"></script>
+    <link rel="stylesheet" href="/stylesheets/userPageStyling.css">
+    <script src="/javascripts/projectPageController.js"></script>
 </head>
+
 <body>
+    <header>
+        <% include ../partials/header.ejs %>
+    </header>
 
-<!-- ejs to present the profile page which shows the information about the user and the notes created by the user -->
+    <div class="wrapper">
+        <div class="container-fluid" id="contentHolder">
+            <h1 id="settings">Settings</h1>
 
-<header>
-    <% include ../partials/header.ejs %>
-</header>
+            <div class="divisionLine"></div>
 
-<div class="content">
+            <ul id="settingsList">
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Username: <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Email: <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Bio: <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Password(hashed): <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
 
-    <form action="/updateUserDetails" method="post" class="updateUserDetailsSection" enctype="application/x-www-form-urlencoded">
+    </div>
 
-        <label class="input" for="username">Username:</label>
-        <input class="input" type="text" name="username" placeholder="Username">
-        <label class="input" for="email">Email:</label>
-        <input class="input" type="text" name="email" placeholder="Email">
-        <label class="input" for="bio">Bio:</label>
-        <input class="input" type="text" name="bio" placeholder="Bio">
-        <label class="input" for="password">Password:</label>
-        <input class="input" type="password" name="password" placeholder="Password">
 
-        <input class="btn" id="loginBtn" type="submit" value="Submit!">
-    </form>
-
-</div>
-
-<footer>
-    <% include ../partials/footer.ejs %>
-</footer>
-
+    <footer>
+        <% include ../partials/footer.ejs %>
+    </footer>
 </body>
