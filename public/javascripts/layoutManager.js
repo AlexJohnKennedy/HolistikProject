@@ -46,6 +46,9 @@ function autoArrangeVisibleNodes() {
 
     //DEBUG3:
     debugPrint_LayersAfterArrangement(verticesWithGroupBoundaries);
+
+    //Pray..
+    animateToFinalPositions(verticesWithGroupBoundaries);
 }
 
 
@@ -879,12 +882,13 @@ class GroupVertex {
 // ---------------------------------------------------------------------------------------------------------------------
 
 const LAYER_SPACING = MAX_NODE_HEIGHT*1.5 + 100;  //Vertical pixels between the tops of nodes on separate layers.
-const NODE_SPACING  = 25;
-const GROUP_SPACING = 125;
-const DUMMY_SPACING = 50;
+const NODE_SPACING  = 40;
+const GROUP_SPACING = 100;
+const DUMMY_SPACING = 0;
 const HORIZONTAL_WIDTH_PADDING_RATIO = 0.5;
 
-function calculateFinalPositions(verticesWithGroupBoundaries) {
+function animateToFinalPositions(verticesWithGroupBoundaries) {
+    console.log("Logging the verticesWithGroupBoundaries object passed to ")
     //find the layer with the greatest width, and use that as our 'base'
     let layerWidths = [];
     let layerNum = 0;
@@ -909,12 +913,17 @@ function calculateFinalPositions(verticesWithGroupBoundaries) {
 
     let layerHorizontalOffsets = [];
 
-    for (let i=0; verticesWithGroupBoundaries.vertexMatrix.length; i++) {
+    for (let i=0; i < verticesWithGroupBoundaries.vertexMatrix.length; i++) {
         let layer = verticesWithGroupBoundaries.vertexMatrix[i];
+        let width = layerWidths[i];
         let groupBoundaries = verticesWithGroupBoundaries.groupBoundaryMatrix[i];
         let hOffsets = distributeLayerOverWidth(layer, groupBoundaries, width, maxWidth, HORIZONTAL_WIDTH_PADDING_RATIO);  //0.5 indicates edge to edge padding ratio
 
         layerHorizontalOffsets[i] = hOffsets;
+
+        //DEBUG:
+        console.log("LOGGING hOffsets for layer "+i);
+        console.log(hOffsets);
     }
 
     //We should just whack this arrangement as centrally as we can, in the drawing canvas..
@@ -928,9 +937,9 @@ function calculateFinalPositions(verticesWithGroupBoundaries) {
         let j=0;
         for (let v of verticesWithGroupBoundaries.vertexMatrix[i]) {
             //For every vert, if it is not a dummy, assign it's position based on the top offset and the leftOffset+currOffset
-            if (v.contextNode) {
+            if (v.contentNode) {
                 //Not a dummy! move that boy! (increments j AFTER indexing, so that the next node gets the correct offset
-                v.moveNodeTo(leftOffset + hOffsets[j++], topOffset, true);
+                v.contentNode.moveNodeTo(leftOffset + hOffsets[j++], topOffset, true);
             }
         }
 
@@ -952,6 +961,8 @@ function calculateFinalPositions(verticesWithGroupBoundaries) {
 }
 
 function distributeLayerOverWidth(layer, groupBoundariesArray, layerWidth, widthToDistributeOver, differentialPaddingRatio) {
+    console.log(layer);
+
     let offsets = [];   //length should end up being equal to the number of non-dummy nodes in the layer.
 
     //First, we need to calculate how much 'padding' there needs to be on the left and right side.

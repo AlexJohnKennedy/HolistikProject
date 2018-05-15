@@ -54,10 +54,10 @@ interact('.draggable').draggable({
     //Minimum size for nodes will be equal to the default node size (starting size).
     restrictSize: {
         min: {
-            width: MIN_NODE_WIDTH, height: MIN_NODE_HEIGHT
+            width: 100, height: 50
         },
         max: {
-            width: MAX_NODE_WIDTH, height: MAX_NODE_HEIGHT
+            width: 300, height: 200
         }
     },
 
