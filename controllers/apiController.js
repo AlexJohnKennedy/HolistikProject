@@ -132,6 +132,29 @@ function logoutUser(req, res) {
     res.redirect('/');
 }
 
+async function editEmailUser(req, res) {
+    logRequestDetails("User requested to change their email address!", req);
+
+    //authenticate
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
+        return res.redirect("/");
+    }
+
+    //tell the db class to make the appropriate changes and save them remotely
+    let user = await db.getOneUserByUsername(req.body.username);
+    if (user === null) {
+        console.log("User email update failed. Redirecting to home.");
+        return res.redirect("/");
+    } else {
+        db.updateUserEmail(user, req.body.newEmail);
+    }
+
+    //All succeeded!
+    res.redirect("/profile");   //Refresh the page so that the new entry shows up
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Functions which will be invoked by the router. ------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
@@ -393,6 +416,8 @@ module.exports = {
     registerNewUser          : registerNewUser,
     loginUser                : loginUser,
     logoutUser               : logoutUser,
+
+    editEmailUser             : editEmailUser,
 
     passport                 : passport
 };

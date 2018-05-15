@@ -42,18 +42,20 @@ const REGISTER_USER_URL            = "/register";
 const LOGIN_URL                    = "/login";
 const LOGOUT_URL                   = "/logout";
 
+const EDIT_USER_EMAIL_URL          = "/editUserEmail";
+
 const GET_USER_PROJECTS_URL        = "/getprojectlist";
 
 router.post(REGISTER_USER_URL, controller.apiController.registerNewUser);
-
 router.post(LOGIN_URL, controller.apiController.passport.authenticate('local', {
         successRedirect: '/projects',
         failureRedirect: '/'
     }),
     controller.apiController.loginUser
 );
-
 router.get(LOGOUT_URL, controller.apiController.logoutUser);
+
+router.get(EDIT_USER_EMAIL_URL, controller.apiController.editEmailUser);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------

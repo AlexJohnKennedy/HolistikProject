@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/stylesheets/headerStyling.css">
     <link rel="stylesheet" href="/stylesheets/footerStyling.css">
     <link rel="stylesheet" href="/stylesheets/userPageStyling.css">
-    <script src="/javascripts/projectPageController.js"></script>
+    <script src="/javascripts/userProfilePageController.js"></script>
 </head>
 
 <body>
@@ -26,13 +26,12 @@
                 <li class="settingsListItem">
                     <div class="userSetting">
                         Username: <%= %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
                     </div>
                 </li>
                 <li class="settingsListItem">
                     <div class="userSetting">
                         Email: <%= %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditEmailWindow()">Edit</div>
                     </div>
                 </li>
                 <li class="settingsListItem">
@@ -43,15 +42,25 @@
                 </li>
                 <li class="settingsListItem">
                     <div class="userSetting">
-                        Password(hashed): <%= %>
+                        Password: <%= %>
                         <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
                     </div>
                 </li>
             </ul>
         </div>
-
     </div>
 
+    <div class="layer" id="editEmail">
+        <div class="container" id="editContent">
+            <a id="aCross" onclick="unseeTheEditEmailWindow()">X</a>
+            <p id="editProject">Edit Email</p>
+            <form method="post" action="/editUserEmail" enctype="application/x-www-form-urlencoded">
+                <input type="text" name="newEmail">
+                <input type="hidden" id="username" name='<%= username %>'>
+                <input class="btn" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
 
     <footer>
         <% include ../partials/footer.ejs %>

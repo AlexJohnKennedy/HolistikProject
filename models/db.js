@@ -540,6 +540,7 @@ module.exports = {
     getOneUserByUsername: getOneUserByUsername,
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
+    updateUserEmail: updateUserEmail,
     updateProject: updateProject,
     updateProjectName: updateProjectName,
     deleteProject: deleteProject,
