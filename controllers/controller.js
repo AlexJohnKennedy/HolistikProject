@@ -35,7 +35,6 @@ function homeDirectoryGet(req, res) {
     });
 }
 
-
 //Define behaviour and access data to get user list
 function generateUserList(req, res) {
     res.render('usersDirectory', {
@@ -131,6 +130,17 @@ function signupPageGet(req,res) {
     res.render('pages/signupPage');
 }
 
+function userPageGet(req, res){
+    let username = null;
+
+    if (req.user && req.isAuthenticated()) {
+        //User failed to authenticate! Redirect to the login screen
+        username = req.user.username;
+    }
+
+    res.render('pages/userPage', { username: username });
+};
+
 //Define behaviour and access data to get specific user page
 function userDetail(req, res) {
     //-------------------------------------------------------------------------------------------------------------------------------
@@ -177,6 +187,7 @@ module.exports = {
     helpPageGet : helpPageGet,
     profilePageGet: projectsPageGet,
     signupPageGet : signupPageGet,
+    userPageGet : userPageGet,
 
     apiController : apiController
 };

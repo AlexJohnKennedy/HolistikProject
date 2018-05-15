@@ -31,6 +31,8 @@ router.get('/help', controller.helpPageGet);
 //Route for the profile page
 router.get('/profile', controller.profilePageGet);
 
+router.get('/user', controller.userPageGet);
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- User information gathering api routes ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------

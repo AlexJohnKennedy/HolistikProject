@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Page</title>
+
+    <link rel="stylesheet" href="/stylesheets/profileStyling.css">
+    <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+    <link rel="stylesheet" href="/stylesheets/userPageStyling.css">
+    <script src="/javascripts/projectPageController.js"></script>
+</head>
+
+<body>
+    <header>
+        <% include ../partials/header.ejs %>
+    </header>
+
+    <div class="wrapper">
+        <div class="container-fluid" id="contentHolder">
+            <h1 id="settings">Settings</h1>
+
+            <div class="divisionLine"></div>
+
+            <ul id="settingsList">
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Username: <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Email: <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Bio: <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+                <li class="settingsListItem">
+                    <div class="userSetting">
+                        Password(hashed): <%= %>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+
+    <footer>
+        <% include ../partials/footer.ejs %>
+    </footer>
+</body>
