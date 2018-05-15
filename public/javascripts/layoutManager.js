@@ -378,14 +378,107 @@ function generateGroupKeyString(indexSet) {
  * @param layerMatrix
  */
 function findLeastCrossoverOrdering(groupMatrix) {
+    //use the number of shared leaf descendants to approximate the best root node ordering.
+    //(place roots which have the most shared desendants together)
+    groupMatrix[0] = findBestRootLayerOrdering(groupMatrix[0], groupMatrix[groupMatrix.length-1]);
+
     //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
     groupArrangement(groupMatrix);
-
-
     let verticesWithGroupBoundaries = baseVertexArrangement(groupMatrix);
 
     return verticesWithGroupBoundaries;
 }
+
+/**
+ * Use the number of shared leaf descendents as an estimate for the priority of pairing roots closesly next to each other
+ * @param roots
+ */
+function findBestRootLayerOrdering(roots, leaves) {
+    //Set up auxiliary data structures for the roots
+    for (let root of roots) {
+        root.sharedDescendents = new Map();
+        for (let innerRoot of roots) {
+            if (root !== innerRoot) {
+                root.sharedDescendents.set(innerRoot, 0);   //Number represents the number of shared leaf descendants.
+            }
+        }
+    }
+
+    //Okay. From each leaf group, traverse UP to each root to figure out which root is accessible from each leaf.
+    for (let leaf of leaves) {
+        discoverSharedRootsFrom(leaf);
+    }
+
+    //ALRIGHT. We can now begin searching through the root objects and chaining them together based on their most closesly 'bound' partners.
+    //Start with the most highly coupled root in the center.
+    let finalOrdering = [];
+    let max = 0, maxIdx = 0;
+    for (let i=0; i < roots.length; i++) {
+        let currNum = 0;
+        for (let [root, num] of roots[i].sharedDescendents) {
+            currNum += num;
+        }
+        if (currNum > max) {
+            max = currNum;
+            maxIdx = i;
+        }
+    }
+
+    //We just found the most tightly coupled root. This should go in the middle of the list!
+    let centralRoot = roots[maxIdx];
+    finalOrdering.push(roots[maxIdx]);
+    roots.splice(maxIdx, 1); //Remove from original list as it's location has already been placed.
+
+    let frontAdd = true;
+    while (roots.length > 0) {
+        if (frontAdd) {
+            //Add nearest neighbor to front of list
+            let closest = findMostCoupledRemainingNeighbour(finalOrdering[0], roots);    //This function will pop the closest remaining neighbor from the passed in list
+            finalOrdering.unshift(closest);
+        }
+        else {
+            //Add nearest neighbor to end of list
+            let closest = findMostCoupledRemainingNeighbour(finalOrdering[finalOrdering.length-1], roots);    //This function will pop the closest remaining neighbor from the passed in list
+            finalOrdering.push(closest);
+        }
+        frontAdd = !frontAdd;   //Alternate inserting neighbors from front and back of list, to get a better average spread.
+    }
+
+    return finalOrdering;   //Return the new ordering as an an array of root verts/groups.
+}
+
+function discoverSharedRootsFrom(leaf) {
+    //Start with an empty list. This list will be populated with a list of all root groups accessible from
+    //this leaf group. (the recursive function will do this!)
+    let rootsAccessible = [];
+
+    recurseUp(leaf, rootsAccessible);
+
+    //Alright, the list should now contain all of the roots. Now we simply tell those roots that they share this leaf
+    //as a descendant!
+    for (let i=0; i<rootsAccessible.length; i++) {
+        for (let j=0; j<rootsAccessible.length; j++) {
+            if (i !== j) {
+                //Increment the value!
+                rootsAccessible[i].sharedDescendents.set(rootsAccessible[j], rootsAccessible[i].sharedDescendents.get(rootsAccessible[j]) + 1);
+            }
+        }
+    }
+}
+function recurseUp(curr, list) {
+    //If the current vert has no parents, then it is a root! Add to list and return
+    if (curr.incomingEdges.length === 0) {
+        list.push(curr);
+        return;
+    }
+    else {
+        //Recurse to all parents
+        for (let par of curr.incomingEdges) {
+            recurseUp(par, list);
+        }
+    }
+}
+
 
 function groupArrangement(matrix) {
     //First, just leave the root ordering as is!
