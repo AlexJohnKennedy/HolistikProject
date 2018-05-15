@@ -2,7 +2,12 @@
 // --- RenderLine object prototype -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
+//shift the label up and to the right slightly (PIXELS)
+const LABEL_X_TRANS = 20;
+const LABEL_Y_TRANS = (0-20);
+
 function RenderLine(sourceNode, destNode, displayedLabel) {
+
     console.log("a new RenderLine was created, from "+sourceNode.idString+" and "+destNode.idString);
 
     //Store reference to the information we are going to need.
@@ -37,8 +42,8 @@ function RenderLine(sourceNode, destNode, displayedLabel) {
 
     //label
     let label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", xMidpoint.toString());
-    label.setAttribute("y", yMidpoint.toString());
+    label.setAttribute("x", (xMidpoint + LABEL_X_TRANS).toString());
+    label.setAttribute("y", (yMidpoint + LABEL_Y_TRANS).toString());
     label.innerHTML = displayedLabel;
     svg.appendChild(label);
 
@@ -87,8 +92,8 @@ RenderLine.prototype.update = function() {
 
     this.megaLine.setAttribute("points", pointsString);
 
-    this.label.setAttribute("x", ((x1+x2)/2).toString());
-    this.label.setAttribute("y", ((y1+y2)/2).toString());
+    this.label.setAttribute("x", (((x1+x2)/2)+LABEL_X_TRANS).toString());
+    this.label.setAttribute("y", (((y1+y2)/2)+LABEL_Y_TRANS).toString());
 };
 
 RenderLine.prototype.hideLine = function() {
