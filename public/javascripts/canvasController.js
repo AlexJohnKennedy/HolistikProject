@@ -34,8 +34,13 @@ const defaultNodeSize = {
 const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
 const MAX_NODE_TITLE_LENGTH                      = 50;
 const MAX_NODES_SHOWING_CONCURRENT_INFO          = 4;
-const CANVAS_HEIGHT                              = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!
-const CANVAS_WIDTH                               = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!
+const CANVAS_HEIGHT                              = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!)
+const CANVAS_WIDTH                               = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!)
+
+const MIN_NODE_WIDTH  = 100;
+const MAX_NODE_WIDTH  = 300;
+const MIN_NODE_HEIGHT = 50;
+const MAX_NODE_HEIGHT = 200;
 
 const defaultNodeTitle = "New concept";
 const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";

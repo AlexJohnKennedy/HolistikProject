@@ -18,7 +18,6 @@
 //as part of the algorithm. This counter will be used to more efficiently detect when the number of incoming edges reaches zero
 //(i.e., when a newly reached node can be added to the set of nodes which are no longer dependent on anything.)
 
-
 function autoArrangeVisibleNodes() {
     //Topologically sort visible nodes.
     let topSorted = topologicalSortVisibleNodes();
@@ -873,6 +872,115 @@ class GroupVertex {
             this.members.splice(i,1);
         }
     }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Calculate position coordinates -----------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+const LAYER_SPACING = MAX_NODE_HEIGHT*1.5 + 100;  //Vertical pixels between layers.
+const NODE_SPACING  = 25;
+const GROUP_SPACING = 125;
+const DUMMY_SPACING = 50;
+
+function calculateFinalPositions(verticesWithGroupBoundaries) {
+    //find the layer with the greatest width, and use that as our 'base'
+    let layerWidths = [];
+    let layerNum = 0;
+    let maxWidth = 0;
+    for (let layer of verticesWithGroupBoundaries.vertexMatrix) {
+        let width = calculateLayerWidth(layer, verticesWithGroupBoundaries.groupBoundaryMatrix[layerNum]);
+
+        if (width > maxWidth) {
+            maxWidth = width;
+        }
+
+        layerWidths.push(width);
+        layerNum++;
+    }
+
+    let layerHorizontalOffsets = [];
+
+    for (let i=0; verticesWithGroupBoundaries.vertexMatrix.length; i++) {
+        let layer = verticesWithGroupBoundaries.vertexMatrix[i];
+        let hOffsets = distributeLayerOverWidth(layer, verticesWithGroupBoundaries.groupBoundaryMatrix[i], width, maxWidth, 0.5);  //0.5 indicates edge to edge padding ratio
+    }
+}
+
+function distributeLayerOverWidth(layer, groupBoundariesArray, layerWidth, widthToDistributeOver, differentialPaddingRatio) {
+    let offsets = [];   //length should end up being equal to the number of non-dummy nodes in the layer.
+
+    //First, we need to calculate how much 'padding' there needs to be on the left and right side.
+    let padding = differentialPaddingRatio * (widthToDistributeOver - layerWidth);
+
+    //Set up the initial offset (the 'offset' will be continuously added to, to determine the placements of each node sequentially in the layer)
+    let currOffset = padding/2; //Half, since we will want to equally pad on each side.
+
+    //Okay, in order to determine the amount to 'stretch' the spacings by, we will need to know the total width of the vertices (minus spacings)
+    let nospacingwidth = 0;
+    let numVertSpacings = 0;    //These two counters will be used to adjust spacings!
+    let numGroupSpacings = 0;
+    let i=0, j=1;
+    for (let v of layer) {
+        nospacingwidth += (v.contentNode ? v.contentNode.size.width : DUMMY_SPACING);
+
+        if (++i === groupBoundariesArray[j]) {
+            //Group boundary reached!
+            numGroupSpacings++;
+            j++;
+        }
+        else {
+            numVertSpacings++;
+        }
+    }
+    numGroupSpacings--; //Take this off, since there is always an extra counted at the end of loop.
+
+    //This 'stretch factor' will tell us how much to scale each spacing value by, to get the correct distribution.
+    let spacingWidth       = numVertSpacings * NODE_SPACING + numGroupSpacings * GROUP_SPACING;
+
+    let spacingScaleFactor = (spacingWidth + widthToDistributeOver - layerWidth - padding) / spacingWidth;
+
+    //Okay! now all we have to do, is distribute the layer matey!
+    i=0, j=1;
+    for (let v of layer) {
+        if (v.contentNode) {
+            offsets.push(currOffset);   //Current nodes offsets
+        }
+
+        //Count the width of this vert's node
+        currOffset += (v.contentNode ? v.contentNode.size.width : DUMMY_SPACING);
+
+        if (++i === groupBoundariesArray[j]) {
+            //Group boundary reached!
+            currOffset += GROUP_SPACING * spacingScaleFactor;
+            j++;
+        }
+        else {
+            currOffset += NODE_SPACING * spacingScaleFactor;
+        }
+    }
+
+    //Done! we now have an array for this layer containing all the horizontal offsets of the nodes, evenly distributed
+    return offsets;
+}
+
+function calculateLayerWidth(layer, groupBoundariesArray) {
+    let i=0, j=1;
+    let width=0;
+    for (let v of layer) {
+        //Count the width of this vert's node
+        width += (v.contentNode ? v.contentNode.size.width : DUMMY_SPACING);
+
+        if (++i === groupBoundariesArray[j]) {
+            //Group boundary reached!
+            width += GROUP_SPACING;
+            j++;
+        }
+        else {
+            width += NODE_SPACING;
+        }
+    }
+    return (width - GROUP_SPACING); //Take this off because it's always going to falsely add one at the end
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
