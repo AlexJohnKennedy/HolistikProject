@@ -2,7 +2,7 @@
 // --- RenderLine object prototype -------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-function RenderLine(sourceNode, destNode) {
+function RenderLine(sourceNode, destNode, displayedLabel) {
     console.log("a new RenderLine was created, from "+sourceNode.idString+" and "+destNode.idString);
 
     //Store reference to the information we are going to need.
@@ -18,16 +18,26 @@ function RenderLine(sourceNode, destNode) {
     //Create a <polyline> and store it as a property of this object.
     let line = document.createElementNS('http://www.w3.org/2000/svg', "polyline");
     //string concatenation to for a line with a point in the middle to allow for a mid-line svg object
-    let x1 = (sourceNode.translation.x + 0.5*sourceNode.size.width).toString();
-    let y1 = (sourceNode.translation.y + 0.5*sourceNode.size.height).toString();
-    let x2 = (destNode.translation.x + 0.5*sourceNode.size.width).toString();
-    let y2 = (destNode.translation.y + 0.5*sourceNode.size.height).toString();
-    let pointsString = x1+","+y1+" "+((x1+x2)/2)+","+((y1+y2)/2)+" "+x2+","+y2;
+    let x1 = (sourceNode.translation.x + 0.5*sourceNode.size.width);
+    let y1 = (sourceNode.translation.y + 0.5*sourceNode.size.height);
+    let x2 = (destNode.translation.x + 0.5*sourceNode.size.width);
+    let y2 = (destNode.translation.y + 0.5*sourceNode.size.height);
+    let xMidpoint = ((x1+x2)/2);
+    let yMidpoint = ((y1+y2)/2);
+    let pointsString = x1+","+y1+" "+xMidpoint.toString()+","+yMidpoint.toString()+" "+x2+","+y2;
     line.setAttribute("points", pointsString);
     line.setAttribute("marker-mid", "url(#Triangle)");
     svg.appendChild(line);
 
+    //label
+    let label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", xMidpoint.toString());
+    label.setAttribute("y", yMidpoint.toString());
+    label.innerHTML = displayedLabel;
+    svg.appendChild(label);
+
     this.line = line;
+    this.label = label;
 
     //The line objects will also have a 'isVisible' flag which we can use to determine visibility in the same way
     //as the nodes.
@@ -57,6 +67,9 @@ RenderLine.prototype.update = function() {
                        (y2.toString());
     this.line.setAttribute("points", pointsString);
     this.line.setAttribute("marker-mid", "url(#Triangle)");
+
+    this.label.setAttribute("x", ((x1+x2)/2).toString());
+    this.label.setAttribute("y", ((y1+y2)/2).toString());
 };
 
 RenderLine.prototype.hideLine = function() {
