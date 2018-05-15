@@ -89,7 +89,9 @@ function topologicalSortVisibleNodes() {
     //STEP 3: Find the current root node vertices, and add them to our starting list, since those will be the parentless nodes if we're only using visible ones.
     let independentVertices = [];
     for (let contentNode of canvasState.rootNodes) {
-        independentVertices.push(contentNode.vertexWrapper);
+        if (contentNode.vertexWrapper.incomingEdges.length === 0) {
+            independentVertices.push(contentNode.vertexWrapper);
+        }
     }
 
     //STEP 4: REMOVE the temporary attribute from the original nodes, so as to not clutter them with auxiliary bullshit.
@@ -380,7 +382,7 @@ function generateGroupKeyString(indexSet) {
 function findLeastCrossoverOrdering(groupMatrix) {
     //use the number of shared leaf descendants to approximate the best root node ordering.
     //(place roots which have the most shared desendants together)
-    groupMatrix[0] = findBestRootLayerOrdering(groupMatrix[0], groupMatrix[groupMatrix.length-1]);
+    groupMatrix[0] = findBestRootLayerOrdering(groupMatrix[0], findLeaves(groupMatrix));
 
     //For now, we just have one layer of groupings. So do group arrangements once, then vert arrangements once.
     groupArrangement(groupMatrix);
@@ -388,7 +390,17 @@ function findLeastCrossoverOrdering(groupMatrix) {
 
     return verticesWithGroupBoundaries;
 }
-
+function findLeaves(matrix) {
+    let toRet = [];
+    for (let i=1; i < matrix.length; i++) {
+        for (let member of matrix[i]) {
+            if (member.incomingEdges.length === 0) {
+                 toRet.push(member);
+            }
+        }
+    }
+    return toRet;
+}
 /**
  * Use the number of shared leaf descendents as an estimate for the priority of pairing roots closesly next to each other
  * @param roots
@@ -403,8 +415,8 @@ function findBestRootLayerOrdering(roots, leaves) {
                 root.sharedDescendents.set(innerRoot, 0);   //Number represents the number of shared leaf descendants.
             }
         }
-        console.log("TESTING DIS SHIT");
-        console.log(root.sharedDescendents);
+        //console.log("TESTING DIS SHIT");
+        //console.log(root.sharedDescendents);
     }
 
     //Okay. From each leaf group, traverse UP to each root to figure out which root is accessible from each leaf.
