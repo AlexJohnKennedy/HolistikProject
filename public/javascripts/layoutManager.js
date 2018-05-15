@@ -425,7 +425,7 @@ function findBestRootLayerOrdering(roots, leaves) {
     }
 
     //We just found the most tightly coupled root. This should go in the middle of the list!
-    let centralRoot = roots[maxIdx];
+    //let centralRoot = roots[maxIdx];
     finalOrdering.push(roots[maxIdx]);
     roots.splice(maxIdx, 1); //Remove from original list as it's location has already been placed.
 
@@ -445,6 +445,25 @@ function findBestRootLayerOrdering(roots, leaves) {
     }
 
     return finalOrdering;   //Return the new ordering as an an array of root verts/groups.
+}
+
+function findMostCoupledRemainingNeighbour(root, remainingRoots) {
+    let max = 0;
+    let maxIdx = 0;
+    let closestNeighbour = null;
+    for (let i=0; i < remainingRoots.length; i++) {
+        let count = root.sharedDescendents.get(remainingRoots[i]);
+        if (count >= max) {
+            closestNeighbour = remainingRoots[i];
+            maxIdx = i;
+            max = count;
+        }
+    }
+
+    //make sure to remove the chosen neighbor from the remaining root list..
+    remainingRoots.splice(maxIdx, 1);
+
+    return closestNeighbour;
 }
 
 function discoverSharedRootsFrom(leaf) {
