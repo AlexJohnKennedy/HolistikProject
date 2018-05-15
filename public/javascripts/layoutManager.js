@@ -392,6 +392,7 @@ function findLeastCrossoverOrdering(groupMatrix) {
 /**
  * Use the number of shared leaf descendents as an estimate for the priority of pairing roots closesly next to each other
  * @param roots
+ * @param leaves
  */
 function findBestRootLayerOrdering(roots, leaves) {
     //Set up auxiliary data structures for the roots
@@ -402,12 +403,17 @@ function findBestRootLayerOrdering(roots, leaves) {
                 root.sharedDescendents.set(innerRoot, 0);   //Number represents the number of shared leaf descendants.
             }
         }
+        console.log("TESTING DIS SHIT");
+        console.log(root.sharedDescendents);
     }
 
     //Okay. From each leaf group, traverse UP to each root to figure out which root is accessible from each leaf.
     for (let leaf of leaves) {
         discoverSharedRootsFrom(leaf);
     }
+
+    //DEBUG:
+    debugPrint_sharedRoots(roots);
 
     //ALRIGHT. We can now begin searching through the root objects and chaining them together based on their most closesly 'bound' partners.
     //Start with the most highly coupled root in the center.
@@ -453,6 +459,11 @@ function findMostCoupledRemainingNeighbour(root, remainingRoots) {
     let closestNeighbour = null;
     for (let i=0; i < remainingRoots.length; i++) {
         let count = root.sharedDescendents.get(remainingRoots[i]);
+
+        console.log(root);
+        console.log(remainingRoots);
+        console.log("Count is: "+count+", current max is "+max);
+
         if (count >= max) {
             closestNeighbour = remainingRoots[i];
             maxIdx = i;
@@ -463,37 +474,42 @@ function findMostCoupledRemainingNeighbour(root, remainingRoots) {
     //make sure to remove the chosen neighbor from the remaining root list..
     remainingRoots.splice(maxIdx, 1);
 
+    console.log("Closest Neighbor is: "+closestNeighbour);
+
     return closestNeighbour;
 }
 
 function discoverSharedRootsFrom(leaf) {
     //Start with an empty list. This list will be populated with a list of all root groups accessible from
     //this leaf group. (the recursive function will do this!)
-    let rootsAccessible = [];
+    let rootsAccessible = new Set();
 
     recurseUp(leaf, rootsAccessible);
 
+    console.log("ROOTS REACHABLE FROM LEAF GROUP WITH: "+leaf.members[0].contentNode.titleText);
+    console.log(rootsAccessible);
+
     //Alright, the list should now contain all of the roots. Now we simply tell those roots that they share this leaf
     //as a descendant!
-    for (let i=0; i<rootsAccessible.length; i++) {
-        for (let j=0; j<rootsAccessible.length; j++) {
-            if (i !== j) {
+    for (let r of rootsAccessible) {
+        for (let r2 of rootsAccessible) {
+            if (r !== r2) {
                 //Increment the value!
-                rootsAccessible[i].sharedDescendents.set(rootsAccessible[j], rootsAccessible[i].sharedDescendents.get(rootsAccessible[j]) + 1);
+                r.sharedDescendents.set(r2, r.sharedDescendents.get(r2) + 1);
             }
         }
     }
 }
-function recurseUp(curr, list) {
+function recurseUp(curr, set) {
     //If the current vert has no parents, then it is a root! Add to list and return
     if (curr.incomingEdges.length === 0) {
-        list.push(curr);
+        set.add(curr);
         return;
     }
     else {
         //Recurse to all parents
         for (let par of curr.incomingEdges) {
-            recurseUp(par, list);
+            recurseUp(par, set);
         }
     }
 }
@@ -577,9 +593,9 @@ function baseVertexArrangement(groupMatrix) {
     insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[0]);
 
     for (let i=1; i < groupMatrix.length; i++) {
-        console.log("ARRANGING BASE VERTEX LAYER: "+i);
+        //console.log("ARRANGING BASE VERTEX LAYER: "+i);
         for (let j=1; j < toRet.groupBoundaryMatrix[i].length; j++) {
-            console.log("Group subset: "+j);
+            //console.log("Group subset: "+j);
             arrangeLayerSubset(toRet.vertexMatrix[i], toRet.groupBoundaryMatrix[i][j-1], toRet.groupBoundaryMatrix[i][j], 3);
         }
         insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[i]);
@@ -642,7 +658,7 @@ function arrangeLayer(layer, numScans) {
 function arrangeLayerSubset(layer, start, stop, numScans) {
     while(numScans > 0) {
         for (let i=start+1; i < stop; i++) {
-            console.log("Considering verts "+ (i-1) + " and "+i);
+            //console.log("Considering verts "+ (i-1) + " and "+i);
             swapVerticesIfItImproves(layer, i-1, i);
         }
         numScans--;
@@ -674,11 +690,11 @@ function swapVerticesIfItImproves(childLayer, v1index, v2index) {
         childLayer[v1index] = childLayer[v2index];
         childLayer[v2index] = tmp;
 
-        console.log("DID NOT SWAP: orig had "+originalOverlaps+" overlaps, swapped had "+newOverlaps+" overlaps");
+        //console.log("DID NOT SWAP: orig had "+originalOverlaps+" overlaps, swapped had "+newOverlaps+" overlaps");
         return false;   //indicate no swap was made
     }
     else {
-        console.log("SWAPPED: orig had "+originalOverlaps+" overlaps, swapped had "+newOverlaps+" overlaps");
+        //console.log("SWAPPED: orig had "+originalOverlaps+" overlaps, swapped had "+newOverlaps+" overlaps");
         return true;    //indicate we swapped!
     }
 }
@@ -686,7 +702,7 @@ function swapVerticesIfItImproves(childLayer, v1index, v2index) {
 function countOverlapsForPair(childLayer, v1index, v2index) {
     let overlaps = 0;
 
-    debugPrintLayer_DuringOverlapCounting(childLayer);
+    //debugPrintLayer_DuringOverlapCounting(childLayer);
 
     //Check all potential overlaps with each edge-line to v1
     for (let v1Edge of childLayer[v1index].incomingEdgeOrderingIndexes) {
@@ -714,7 +730,7 @@ function countOverlapsForPair(childLayer, v1index, v2index) {
     //Check all potential overlaps with each edge-line to v2, except those which go to v1, since they have already been checked.
     for (let v2Edge of childLayer[v2index].incomingEdgeOrderingIndexes) {
         for (let i=0; i < v2index; i++) {
-            if (i == v1index) {
+            if (i === v1index) {
                 continue;   //Skip this iteration if we are to be comparing with v1
             }
 
@@ -727,7 +743,7 @@ function countOverlapsForPair(childLayer, v1index, v2index) {
             }
         }
         for (let i = v2index+1; i < childLayer.length; i++) {
-            if (i == v1index) {
+            if (i === v1index) {
                 continue;   //Skip this iteration if we are to be comparing with v1
             }
 
@@ -758,7 +774,7 @@ class Vertex {
                                     //group/sort by relationship label, for example, this list will associate each edge
                                     //with a label string, as well.
 
-        //Temporary edge storage for alogrithm processing.
+        //Temporary edge storage for algorithm processing.
         this.removedOutgoingEdges = []; //When we 'remove' outgoing edges from the wrapper graph (as part of the Kahn's algorithm, we should still keep them
                                         //here, so algorithms that FOLLOW the topological sort can still access them correctly (E.g. the layer-by-layer arrangement
                                         //algorithm which relies on the topological sort).
@@ -914,5 +930,12 @@ function debugPrint_LayersAfterArrangement(verticesWithGroupBoundaries) {
         }
         console.log(str);
         layerNum++;
+    }
+}
+
+function debugPrint_sharedRoots(roots) {
+    console.log("SHARED ROOTS MAP");
+    for (let r of roots) {
+        console.log(r.sharedDescendents);
     }
 }
