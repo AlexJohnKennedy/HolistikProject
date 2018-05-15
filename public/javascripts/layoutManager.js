@@ -878,10 +878,11 @@ class GroupVertex {
 // --- Calculate position coordinates -----------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-const LAYER_SPACING = MAX_NODE_HEIGHT*1.5 + 100;  //Vertical pixels between layers.
+const LAYER_SPACING = MAX_NODE_HEIGHT*1.5 + 100;  //Vertical pixels between the tops of nodes on separate layers.
 const NODE_SPACING  = 25;
 const GROUP_SPACING = 125;
 const DUMMY_SPACING = 50;
+const HORIZONTAL_WIDTH_PADDING_RATIO = 0.5;
 
 function calculateFinalPositions(verticesWithGroupBoundaries) {
     //find the layer with the greatest width, and use that as our 'base'
@@ -899,12 +900,55 @@ function calculateFinalPositions(verticesWithGroupBoundaries) {
         layerNum++;
     }
 
+    //ERROR if the canvas is too small for the proposed arrangement.
+    if (maxWidth > CANVAS_WIDTH - 5 || verticesWithGroupBoundaries.vertexMatrix.length * LAYER_SPACING > CANVAS_HEIGHT - 5) {
+        console.log("ERROR: Canvas is too small for auto arrangement!! Aborting arrangement attempt!!!");
+        console.log("ERROR: Canvas is too small for auto arrangement!! Aborting arrangement attempt!!!");
+        return;
+    }
+
     let layerHorizontalOffsets = [];
 
     for (let i=0; verticesWithGroupBoundaries.vertexMatrix.length; i++) {
         let layer = verticesWithGroupBoundaries.vertexMatrix[i];
-        let hOffsets = distributeLayerOverWidth(layer, verticesWithGroupBoundaries.groupBoundaryMatrix[i], width, maxWidth, 0.5);  //0.5 indicates edge to edge padding ratio
+        let groupBoundaries = verticesWithGroupBoundaries.groupBoundaryMatrix[i];
+        let hOffsets = distributeLayerOverWidth(layer, groupBoundaries, width, maxWidth, HORIZONTAL_WIDTH_PADDING_RATIO);  //0.5 indicates edge to edge padding ratio
+
+        layerHorizontalOffsets[i] = hOffsets;
     }
+
+    //We should just whack this arrangement as centrally as we can, in the drawing canvas..
+    let leftOffset = (CANVAS_WIDTH - maxWidth) / 2;
+    let topOffset  = (CANVAS_HEIGHT - verticesWithGroupBoundaries.vertexMatrix.length * LAYER_SPACING) / 2;
+
+    //Rightio! let's fkn do this shit.
+    for (let i=0; i < verticesWithGroupBoundaries.vertexMatrix.length; i++) {
+        let hOffsets = layerHorizontalOffsets[i];
+
+        let j=0;
+        for (let v of verticesWithGroupBoundaries.vertexMatrix[i]) {
+            //For every vert, if it is not a dummy, assign it's position based on the top offset and the leftOffset+currOffset
+            if (v.contextNode) {
+                //Not a dummy! move that boy! (increments j AFTER indexing, so that the next node gets the correct offset
+                v.moveNodeTo(leftOffset + hOffsets[j++], topOffset, true);
+            }
+        }
+
+        //Before we move to the next layer, update the top offset!
+        topOffset += LAYER_SPACING;
+    }
+
+    //FINALLY FUCKING DONE AFTER 1000 LINES OF PURE CANCER.
+    //-----------------------------------------------------
+    //TO ANYONE READING THIS. PLEASE FOR THE LOVE OF GOD ACTUALLY PLAN YOUR ALGORITHMS BEFORE YOU START CODING. I MADE THE MISTAKE OF
+    //TRYING TO IMPROVISE THIS AFTER COMPLETELY UNDERESTIMATING THE COMPLEXITY OF THIS PROBLEM ON A HUNGOVER, NO SLEEP, SUNDAY MORNING.
+    //DUE TO DEADLINES, I DID NOT HAVE TIME TO START FROM SCRATCH. THIS FILE IS OVER ONE THOUSAND LINES OF PURE, CANCEROUS SPAGHETTI.
+    //I APOLOGISE TO ALL WHO HAVE THE MISFORTUNE OF COMING ACROSS THIS. TAKE SOLACE IN THE FACT THIS IT CAUSED ME AS MUCH PAIN CODING IT AS
+    // IT CAUSED YOU TO HAVE TO READ IT.
+
+    //I AM SORRY AND ASHAMED.
+
+    //Sincerely, Alex Kennedy
 }
 
 function distributeLayerOverWidth(layer, groupBoundariesArray, layerWidth, widthToDistributeOver, differentialPaddingRatio) {
