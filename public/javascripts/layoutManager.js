@@ -38,29 +38,7 @@ function autoArrangeVisibleNodes() {
     let groupMatrix = buildGroupsByAssociation(layersWithDummyVerts);
 
     //DEBUG:
-    console.log(layersWithDummyVerts);
-    for (let layer of layersWithDummyVerts) {
-        for (let v of layer) {
-            if (v.contentNode == null) {
-                let str = "Dummy vert going from";
-                for (let e of v.incomingEdges) {
-                    str = str + ", ";
-                    str = str + (e.contentNode ? e.contentNode.titleText : "DUMMY");
-                }
-                str = str + ", to "+ (v.outgoingEdges[0].vertex.contentNode ? v.outgoingEdges[0].vertex.contentNode.titleText : "DUMMY");
-                console.log(str);
-            }
-
-            //If there is an outgoing edge which still spans more than one layer, we have FUCKING FAILED CUNT.
-            for (let e of v.outgoingEdges) {
-                if (e.vertex.layer > v.layer + 1) {
-                    console.log("ERROR: Relationship from "+ (v.contentNode ? v.contentNode.titleText : "DUMMY")
-                                + " to " + (e.vertex.contentNode ? e.vertex.contentNode.titleText : "DUMMY")
-                                + " spans " + (e.vertex.layer - v.layer) + "layers :(");
-                }
-            }
-        }
-    }
+    debugPrint_LayersWithDummyVerts(layersWithDummyVerts);
 
     //DEBUG2:
     console.log(groupMatrix);
@@ -68,23 +46,7 @@ function autoArrangeVisibleNodes() {
     let verticesWithGroupBoundaries = findLeastCrossoverOrdering(groupMatrix);
 
     //DEBUG3:
-    console.log("AFTER ARRANGEING WITH CROSSOVER HEURISTICS:");
-    console.log(verticesWithGroupBoundaries);
-    let layerNum=0;
-    for (let layer of verticesWithGroupBoundaries.vertexMatrix) {
-        console.log("--- Layer "+(layerNum)+"---");
-        let str = "|";
-        let i=0, j=1;
-        for (let v of layer) {
-            str = str + " "+(v.contentNode ? v.contentNode.titleText : "DUMMY") + ",";
-            if (++i === verticesWithGroupBoundaries.groupBoundaryMatrix[layerNum][j]) {
-                str = str + " |";
-                j++;
-            }
-        }
-        console.log(str);
-        layerNum++;
-    }
+    debugPrint_LayersAfterArrangement(verticesWithGroupBoundaries);
 }
 
 
@@ -465,7 +427,9 @@ function baseVertexArrangement(groupMatrix) {
     insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[0]);
 
     for (let i=1; i < groupMatrix.length; i++) {
+        console.log("ARRANGING BASE VERTEX LAYER: "+i);
         for (let j=1; j < toRet.groupBoundaryMatrix[i].length; j++) {
+            console.log("Group subset: "+j);
             arrangeLayerSubset(toRet.vertexMatrix[i], toRet.groupBoundaryMatrix[i][j-1], toRet.groupBoundaryMatrix[i][j], 3);
         }
         insertParentIndexCollectionIntoChildren_BaseVerts(groupMatrix[i]);
@@ -526,6 +490,7 @@ function arrangeLayer(layer, numScans) {
 function arrangeLayerSubset(layer, start, stop, numScans) {
     while(numScans > 0) {
         for (let i=start+1; i < stop; i++) {
+            console.log("Considering verts "+ (i-1) + " and "+i);
             swapVerticesIfItImproves(layer, i-1, i);
         }
         numScans--;
@@ -552,20 +517,24 @@ function swapVerticesIfItImproves(childLayer, v1index, v2index) {
     let newOverlaps      = countOverlapsForPair(childLayer, v1index, v2index);
 
     //If the made things worse, swap back
-    if (newOverlaps > originalOverlaps) {
+    if (newOverlaps >= originalOverlaps) {
         let tmp = childLayer[v1index];
         childLayer[v1index] = childLayer[v2index];
         childLayer[v2index] = tmp;
 
+        console.log("DID NOT SWAP: orig had "+originalOverlaps+" overlaps, swapped had "+newOverlaps+" overlaps");
         return false;   //indicate no swap was made
     }
     else {
+        console.log("SWAPPED: orig had "+originalOverlaps+" overlaps, swapped had "+newOverlaps+" overlaps");
         return true;    //indicate we swapped!
     }
 }
 
 function countOverlapsForPair(childLayer, v1index, v2index) {
     let overlaps = 0;
+
+    debugPrintLayer(childLayer);
 
     //Check all potential overlaps with each edge-line to v1
     for (let v1Edge of childLayer[v1index].incomingEdgeOrderingIndexes) {
@@ -726,3 +695,58 @@ class GroupVertex {
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Debugging helpers -----------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+function debugPrintLayer(layer) {
+    for (let i=0; i < layer.length; i++) {
+
+    }
+}
+
+function debugPrint_LayersWithDummyVerts(layersWithDummyVerts) {
+    console.log(layersWithDummyVerts);
+    for (let layer of layersWithDummyVerts) {
+        for (let v of layer) {
+            if (v.contentNode == null) {
+                let str = "Dummy vert going from";
+                for (let e of v.incomingEdges) {
+                    str = str + ", ";
+                    str = str + (e.contentNode ? e.contentNode.titleText : "DUMMY");
+                }
+                str = str + ", to "+ (v.outgoingEdges[0].vertex.contentNode ? v.outgoingEdges[0].vertex.contentNode.titleText : "DUMMY");
+                console.log(str);
+            }
+
+            //If there is an outgoing edge which still spans more than one layer, we have FUCKING FAILED CUNT.
+            for (let e of v.outgoingEdges) {
+                if (e.vertex.layer > v.layer + 1) {
+                    console.log("ERROR: Relationship from "+ (v.contentNode ? v.contentNode.titleText : "DUMMY")
+                        + " to " + (e.vertex.contentNode ? e.vertex.contentNode.titleText : "DUMMY")
+                        + " spans " + (e.vertex.layer - v.layer) + "layers :(");
+                }
+            }
+        }
+    }
+}
+
+function debugPrint_LayersAfterArrangement(verticesWithGroupBoundaries) {
+    console.log("AFTER ARRANGEING WITH CROSSOVER HEURISTICS:");
+    console.log(verticesWithGroupBoundaries);
+    let layerNum=0;
+    for (let layer of verticesWithGroupBoundaries.vertexMatrix) {
+        console.log("--- Layer "+(layerNum)+"---");
+        let str = "|";
+        let i=0, j=1;
+        for (let v of layer) {
+            str = str + " "+(v.contentNode ? v.contentNode.titleText : "DUMMY") + ",";
+            if (++i === verticesWithGroupBoundaries.groupBoundaryMatrix[layerNum][j]) {
+                str = str + " |";
+                j++;
+            }
+        }
+        console.log(str);
+        layerNum++;
+    }
+}
