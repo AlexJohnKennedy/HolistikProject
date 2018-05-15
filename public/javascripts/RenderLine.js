@@ -36,6 +36,16 @@ function RenderLine(sourceNode, destNode, displayedLabel) {
     label.innerHTML = displayedLabel;
     svg.appendChild(label);
 
+    //line listeners to make the hover over thing work
+    line.addEventListener("mouseenter", function(event) {
+        console.log("mouseenter line area");
+        event.currentTarget.nextSibling.style.display = "block";
+    });
+    line.addEventListener("mouseleave", function(event) {
+        console.log("mouseleave line area");
+        event.currentTarget.nextSibling.style.display = "none";
+    });
+
     this.line = line;
     this.label = label;
 

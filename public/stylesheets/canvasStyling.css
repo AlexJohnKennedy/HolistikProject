@@ -164,6 +164,10 @@ html {
     fill: rgb(170,70,52);
 }
 
+#svgObject text {
+    display: none;
+}
+
 #getHelpButton {
     float: right;
     z-index: 8998;
