@@ -176,7 +176,7 @@ function profilePageGet(req, res) {
         email = req.user.email;
         bio = req.user.bio;
     }
-    res.render('pages/userProfilePage', { username: username, email : email, bio : bio });
+    res.render('pages/userProfilePage', { username: username, email : email, bio : bio, passwordChangeSuccess : false });
 }
 
 

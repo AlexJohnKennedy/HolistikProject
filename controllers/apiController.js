@@ -152,7 +152,7 @@ async function editEmailUser(req, res) {
     }
 
     //All succeeded!
-    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio });
+    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio, passwordChangeSuccess: false });
 }
 
 async function editBioUser(req, res) {
@@ -175,7 +175,7 @@ async function editBioUser(req, res) {
     }
 
     //All succeeded!
-    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio });
+    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio, passwordChangeSuccess: false });
 }
 
 async function editPasswordUser(req, res) {
@@ -202,8 +202,8 @@ async function editPasswordUser(req, res) {
         });
     }
 
-    //All succeeded!
-    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio });
+    //All succeeded!j
+    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio, passwordChangeSuccess: true });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
