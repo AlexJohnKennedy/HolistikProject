@@ -34,11 +34,12 @@ html {
     border-width: 3px;
     border-radius: 3px;
 
-    padding: 30px;
+    /*padding: 30px;*/
 
     height : 3000px;    /* Make sure we have enough room for a ton of nodes and such! */
     width :  3000px;
-    /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
+
+    transform: scale(1);
 }
 
 /* Style the 'context box indicator' (thing which sits in the corner and tells you what the current context is */
