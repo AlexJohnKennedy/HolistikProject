@@ -42,6 +42,9 @@ const MAX_NODE_WIDTH  = 300;
 const MIN_NODE_HEIGHT = 50;
 const MAX_NODE_HEIGHT = 200;
 
+const TOOLBAR_FADEOUT_TIME_MS = 5000;   //Millisecond; how long to wait until the toolbar should fade out if the mouse has not entered it.
+let toolbarFadeTimeoutId;
+
 const defaultNodeTitle = "New concept";
 const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
 const defaultHierarchicalRelationshipLabel = "Child";
@@ -101,7 +104,45 @@ window.onload = function() {
             saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
+
+    setupToolbarFading();
 };
+
+function setupToolbarFading() {
+    //Set up faded in and out callbacks for the toolbar. This will make it fade away to invisible if the mouse has not entered it for a specified time.
+    let toolbar = document.getElementById("toolbar");
+    toolbar.addEventListener("mouseenter", function(event) {
+        //Cancel any previous timeout event!
+        if (toolbarFadeTimeoutId !== undefined) {
+            clearTimeout(toolbarFadeTimeoutId);
+        }
+
+        let elem = event.currentTarget;
+
+        //Make it instantly visible!
+        elem.style.transitionProperty = "opacity";
+        elem.style.transitionDuration = "0s";
+        elem.style.opacity = "1.0";
+    });
+    toolbar.addEventListener("mouseleave", function(event) {
+        //Set a timeout callback, to invoke the fade out after some specified time...
+        //Make sure to save the id! that way we can cancel the timer if the mouse reenters the toolbar!!
+        toolbarFadeTimeoutId = setTimeout(function(elem) {
+            //Make the passed element fade out.
+            elem.style.transitionProperty = "opacity";
+            elem.style.transitionDuration = "1s";
+            elem.style.opacity = "0.0";
+        }, TOOLBAR_FADEOUT_TIME_MS, event.currentTarget);
+    });
+
+    //Set up the intial fade timeout event..
+    toolbarFadeTimeoutId = setTimeout(function(elem) {
+        //Make the passed element fade out.
+        elem.style.transitionProperty = "opacity";
+        elem.style.transitionDuration = "1s";
+        elem.style.opacity = "0.0";
+    }, TOOLBAR_FADEOUT_TIME_MS, toolbar);
+}
 
 function saveProject() {
     if (ajaxHandler !== undefined && ajaxHandler != null) {
