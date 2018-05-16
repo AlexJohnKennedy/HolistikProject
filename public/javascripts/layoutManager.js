@@ -991,7 +991,7 @@ function animateToFinalPositions(verticesWithGroupBoundaries, setHeights) {
     let leftOffset = (CANVAS_WIDTH - maxWidth) / 2;
     let topOffset  = (CANVAS_HEIGHT - verticesWithGroupBoundaries.vertexMatrix.length * LAYER_SPACING) / 2;
 
-    centreCoordinatesOnCanvas(CANVAS_WIDTH/2, topOffset + document.getElementById("canvasWindow").offsetHeight/2*0.75);
+    centreCoordinatesOnCanvas(CANVAS_WIDTH/2, topOffset + document.getElementById("canvasWindow").offsetHeight/2 * 0.75);
 
     //Rightio! let's fkn do this shit.
     for (let i=0; i < verticesWithGroupBoundaries.vertexMatrix.length; i++) {

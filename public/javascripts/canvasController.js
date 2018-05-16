@@ -1033,6 +1033,9 @@ function centreCoordinatesOnCanvas(x, y) {
     }
 
     //Set the scroll!
-    canvasWindow.scrollLeft = scrollLeft;
-    canvasWindow.scrollTop  = scrollTop;
+    canvasWindow.scroll({
+        top: scrollTop,
+        left: scrollLeft,
+        behavior: 'smooth'
+    });
 }
