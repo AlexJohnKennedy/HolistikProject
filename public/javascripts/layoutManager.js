@@ -18,7 +18,15 @@
 //as part of the algorithm. This counter will be used to more efficiently detect when the number of incoming edges reaches zero
 //(i.e., when a newly reached node can be added to the set of nodes which are no longer dependent on anything.)
 
-function autoArrangeVisibleNodes() {
+const SET_NODE_HEIGHT = 85;
+const LAYER_ADDITIONAL_SPACING   = 130;  //Vertical pixels between the tops of nodes on separate layers.
+const NODE_SPACING    = 40;
+let   GROUP_SPACING   = 100;
+const GROUP_SPACING_ORIGINAL_METHOD = 100;
+const DUMMY_SPACING   = 0;
+const HORIZONTAL_WIDTH_PADDING_RATIO = 0.5;     //Ratio of horizontal padding to adjust for layer width differences (0.5 means pad half the difference)
+
+function autoArrangeVisibleNodes(useSimpleGrouping) {
     //Topologically sort visible nodes.
     let topSorted = topologicalSortVisibleNodes();
 
@@ -26,7 +34,7 @@ function autoArrangeVisibleNodes() {
     let layerAssigned = assignVerticesToLayers(topSorted);
 
     //DEBUG:
-    console.log(layerAssigned);
+    //console.log(layerAssigned);
 
     //Build dummy vertices (point to a NULL contentNode) in each layer, to represent relationships that span across more
     //than one layer. This is done so that we can encompass spanning relationships in our layer-by-layer permutation calculations
@@ -34,10 +42,18 @@ function autoArrangeVisibleNodes() {
     let layersWithDummyVerts = addDummyVertices(layerAssigned);
 
     //Construct a 'group meta graph' based on grouping vertices with similar parent paths.
-    let groupMatrix = buildGroupsByAssociation(layersWithDummyVerts);
+    let groupMatrix;
+    if (useSimpleGrouping) {
+        GROUP_SPACING = NODE_SPACING;
+        groupMatrix = buildGroupsByAssociation_SIMPLE_METHOD(layersWithDummyVerts);
+    }
+    else {
+        GROUP_SPACING = GROUP_SPACING_ORIGINAL_METHOD;
+        groupMatrix = buildGroupsByAssociation_ORIGINAL_METHOD(layersWithDummyVerts);
+    }
 
     //DEBUG:
-    debugPrint_LayersWithDummyVerts(layersWithDummyVerts);
+    //debugPrint_LayersWithDummyVerts(layersWithDummyVerts);
 
     //DEBUG2:
     console.log(groupMatrix);
@@ -76,7 +92,8 @@ function topologicalSortVisibleNodes() {
 
     //STEP 2: Now that all the vertex wrapper objects exists, loop through the nodes again, and add all the outgoing edges for each node to each wrapper!
     for (let contentNode of canvasState.contentNodeList) {
-        if (contentNode.isVisible) {
+        //Only consider the outgoing relationships if the node is both visible AND expanded!
+        if (contentNode.isVisible && contentNode.isExpanded) {
             for (let rel of contentNode.childrenList) {
                 for (let child of rel.children) {
                     //Add this edge to the wrapper vertex, with the same label as the relationships original one.
@@ -254,7 +271,46 @@ function addDummyVertices(layerMatrix) {
 }
 
 
-function buildGroupsByAssociation(layerMatrix) {
+/**
+ * The grouping method was sort of a failure, but because of how coupled this bad-code is, i need to create group verts anyway to keep the rest of
+ * the algorithm working.. So i'm just going to assign every vertex to it's own group, to simulate the effects of not having grouping to begin with.
+ * Yes, this does mean pointless work is done on the base-vertex calculation level, but it should be negligible to the outer layer complexity anyway, and it
+ * serves as a sufficient workaround unitl i have time to rewrite the ararngment logic from scratch with the stuff i learned from my partially failed attempt here...
+ * @param layerMatrix
+ */
+function buildGroupsByAssociation_SIMPLE_METHOD(layerMatrix) {
+    //Just make every vertex it's own group as a 'workaround' for removing grouping logic entirely...
+    let groups = [];
+    for (let layer of layerMatrix) {
+        let layerGroups = [];
+        for (let v of layer) {
+            let g = new GroupVertex([v]);
+            v.g = g;    //Temp
+            layerGroups.push(g);
+        }
+        groups.push(layerGroups);
+    }
+
+    //Assign group relationships directly to simulate base vertex relationships..
+    for (let groupLayer of groups) {
+        for (let g of groupLayer) {
+            //Should only be one member in each, for 'simple' method..
+            let v = g.members[0];
+            for (let edge of v.outgoingEdges) {
+                g.addOutgoingEdge(edge.vertex.g);
+            }
+        }
+    }
+
+    return groups;
+}
+
+/**
+ * original way of forming groups, which ended up resulting in sorta weird behaviour that wasn't consistent.
+ * For now i am considering replacing it with a less sophisicated method, which might sometimes give a less pretty arrangement, but is more consistent
+ * and doesn't create unexpected/janky arrangements as often.(see 'simple method' version)
+ */
+function buildGroupsByAssociation_ORIGINAL_METHOD(layerMatrix) {
     //First, instantiate an empty matrix object which we will use to add groups into.
     let groups = [];
     groups[0] = [];     //Empty list is the first element of the outer list..
@@ -396,7 +452,7 @@ function findLeaves(matrix) {
     let toRet = [];
     for (let i=1; i < matrix.length; i++) {
         for (let member of matrix[i]) {
-            if (member.incomingEdges.length === 0) {
+            if (member.outgoingEdges.length === 0) {
                  toRet.push(member);
             }
         }
@@ -880,13 +936,6 @@ class GroupVertex {
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Calculate position coordinates -----------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
-
-const SET_NODE_HEIGHT = 85;
-const LAYER_ADDITIONAL_SPACING   = 130;  //Vertical pixels between the tops of nodes on separate layers.
-const NODE_SPACING    = 40;
-const GROUP_SPACING   = 100;
-const DUMMY_SPACING   = 0;
-const HORIZONTAL_WIDTH_PADDING_RATIO = 0.5;
 
 function animateToFinalPositions(verticesWithGroupBoundaries, setHeights) {
     console.log("Logging the verticesWithGroupBoundaries object passed to ")
