@@ -31,7 +31,7 @@ const defaultNodeSize = {
 
 //Define a threshold constant for determining how tall a content node needs to be in order for the title text to
 //appear CENTRED (vertically), as oppossed to sticking at the top of the element!
-const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
+const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 90;
 const MAX_NODE_TITLE_LENGTH                      = 50;
 const MAX_NODES_SHOWING_CONCURRENT_INFO          = 4;
 const CANVAS_HEIGHT                              = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!)

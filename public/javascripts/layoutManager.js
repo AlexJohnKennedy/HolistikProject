@@ -48,7 +48,7 @@ function autoArrangeVisibleNodes() {
     debugPrint_LayersAfterArrangement(verticesWithGroupBoundaries);
 
     //Pray..
-    animateToFinalPositions(verticesWithGroupBoundaries);
+    animateToFinalPositions(verticesWithGroupBoundaries, true);
 }
 
 
@@ -881,15 +881,18 @@ class GroupVertex {
 // --- Calculate position coordinates -----------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-const LAYER_SPACING = MAX_NODE_HEIGHT*1.5 + 100;  //Vertical pixels between the tops of nodes on separate layers.
-const NODE_SPACING  = 40;
-const GROUP_SPACING = 100;
-const DUMMY_SPACING = 0;
+const SET_NODE_HEIGHT = 85;
+const LAYER_ADDITIONAL_SPACING   = 130;  //Vertical pixels between the tops of nodes on separate layers.
+const NODE_SPACING    = 40;
+const GROUP_SPACING   = 100;
+const DUMMY_SPACING   = 0;
 const HORIZONTAL_WIDTH_PADDING_RATIO = 0.5;
 
-function animateToFinalPositions(verticesWithGroupBoundaries) {
+function animateToFinalPositions(verticesWithGroupBoundaries, setHeights) {
     console.log("Logging the verticesWithGroupBoundaries object passed to ")
     //find the layer with the greatest width, and use that as our 'base'
+    let LAYER_SPACING = (setHeights ? SET_NODE_HEIGHT + LAYER_ADDITIONAL_SPACING : MAX_NODE_HEIGHT + LAYER_ADDITIONAL_SPACING);
+
     let layerWidths = [];
     let layerNum = 0;
     let maxWidth = 0;
@@ -939,6 +942,9 @@ function animateToFinalPositions(verticesWithGroupBoundaries) {
             //For every vert, if it is not a dummy, assign it's position based on the top offset and the leftOffset+currOffset
             if (v.contentNode) {
                 //Not a dummy! move that boy! (increments j AFTER indexing, so that the next node gets the correct offset
+                if (setHeights) {
+                    v.contentNode.resizeNode(v.contentNode.size.width, SET_NODE_HEIGHT, true);
+                }
                 v.contentNode.moveNodeTo(leftOffset + hOffsets[j++], topOffset, true);
             }
         }
