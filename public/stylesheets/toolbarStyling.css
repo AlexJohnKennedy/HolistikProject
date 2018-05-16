@@ -14,14 +14,29 @@
 
 #autoArrangeButton {
     position: absolute;
-    width: 30px;
-    height: 18px;
-    background-color: #f10000;
+    width: 35px;
+    height: 28px;
+    background: url("../images/treeStructureIcon.svg") no-repeat;
+    background-size: cover;
 
-    top: 12px;
-    right: 10%;
+    top: 6px;
+    right: 15%;
 }
 #autoArrangeButton:hover {
+    cursor: pointer;
+}
+
+#resetZoomButton {
+    position: absolute;
+    width: 35px;
+    height: 28px;
+    background: url("../images/100-percent-zoom-symbol.svg") no-repeat;
+    background-size: cover;
+
+    top: 6px;
+    right: 30%;
+}
+#resetZoomButton:hover {
     cursor: pointer;
 }
 
@@ -46,7 +61,7 @@
 }
 
 /* the slider handle */
-.sliderHandle {
+#sliderHandle {
     display: block;
     position: relative;
     top: -5px;

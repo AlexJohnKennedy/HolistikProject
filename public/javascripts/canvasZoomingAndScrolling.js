@@ -42,6 +42,16 @@ function convertCoordinateByZoomScale(value) {
     return value / canvasScale;
 }
 
+/**
+ * This function will reset the zoom of the canvas to 100% zoom
+ */
+function resetCanvasScale() {
+    setCanvasZoomScale(1.0);
+
+    //Update the slider position accordingly, to 50%
+    document.getElementById("sliderHandle").style.left = "50%";
+}
+
 /** This function will calculate the scrollx and scrolly settings to centre the given coordinates on the canvas.
  *  If the coord cannot be centred, it will get as close as it can.
  * @param x

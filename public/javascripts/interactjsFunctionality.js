@@ -645,7 +645,7 @@ interact('#drawingCanvas').draggable({
 // --- Toolbar zooming slider functionality ----------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-interact('.sliderHandle').draggable({                        // make the element fire drag events
+interact('#sliderHandle').draggable({                        // make the element fire drag events
     restrict: {
         drag: 'self'
     },

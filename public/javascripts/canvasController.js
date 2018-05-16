@@ -709,12 +709,9 @@ function traverseForVisibility(curr, depth) {
  * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
  * render the new context.
  *
- * TODO: also invoke node repositioning, once that is implemented.
- *
  * @param newContextNode the new node object to become the new context, OR null, to imply global context.
  */
 function switchContext(newContextNode) {
-    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
 
     //Attain access to the context display object.
     let contextBox = document.getElementById("contextIndicatorBox");
@@ -773,6 +770,8 @@ function switchContext(newContextNode) {
 
 /** invoked to zoom out the context. For safety, performs a null check even though it should never be called with null. */
 function zoomContextOut() {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     if (canvasState.contextNode === null) { return; }
 
     //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
@@ -798,6 +797,8 @@ function zoomContextOut() {
  * @param event MouseDoubleClick DOM event
  */
 function zoomContextIn(event) {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     //Gain access to the node, then context switch to it!
     let node = getContentNode(event.currentTarget);     //NOTE: using currentTarget instead of target because we only want to access the element the
                                                         //listener is ATTATCHED TO (i.e. the node div itself) rather than the element which triggered the
