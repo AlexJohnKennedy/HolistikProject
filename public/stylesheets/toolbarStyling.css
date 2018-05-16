@@ -1,0 +1,91 @@
+
+#toolbar {
+    position: absolute;
+    width: 300px;
+    height: 65px;
+    bottom: 26px;
+    right: 26px;
+    z-index: 5;
+    background-color: rgb(237, 237, 237);
+    border-style: solid;
+    border-color: grey;
+    border-width: 1px;
+}
+
+#autoArrangeButton {
+    position: absolute;
+    width: 35px;
+    height: 28px;
+    background: url("../images/treeStructureIcon.svg") no-repeat;
+    background-size: cover;
+
+    top: 6px;
+    right: 15%;
+}
+#autoArrangeButton:hover {
+    cursor: pointer;
+}
+
+#resetZoomButton {
+    position: absolute;
+    width: 35px;
+    height: 28px;
+    background: url("../images/100-percent-zoom-symbol.svg") no-repeat;
+    background-size: cover;
+
+    top: 6px;
+    right: 30%;
+}
+#resetZoomButton:hover {
+    cursor: pointer;
+}
+
+/* the slider bar */
+.slider {
+    position: absolute;
+    bottom: 15px;
+
+    width: 80%;
+    height: 3px;
+    margin-left: 10%;
+    margin-right: 10%;
+
+    background-color: lightgrey;
+    border-radius: 0.5em;
+    box-sizing: border-box;
+
+    -ms-touch-action: none;
+    touch-action: none;
+
+    z-index: 1;
+}
+
+/* the slider handle */
+#sliderHandle {
+    display: block;
+    position: relative;
+    top: -5px;
+
+    /*Start the handle in the center*/
+    left: 50%;
+
+    width: 20px;
+    height: 14px;
+    margin-left: -1em;
+    border: solid 0.1em #1b1b1b;
+    border-radius: 1em;
+    background-color: #ad9d7f;
+
+    box-sizing: border-box;
+}
+
+/* display the value */
+.slider:after {
+    content: attr(data-value);
+    position: absolute;
+    top: -1.5em;
+    width: 2em;
+    line-height:1em;
+    margin-left: -1em;
+    text-align: center;
+}

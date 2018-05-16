@@ -42,6 +42,9 @@ const MAX_NODE_WIDTH  = 300;
 const MIN_NODE_HEIGHT = 50;
 const MAX_NODE_HEIGHT = 200;
 
+const TOOLBAR_FADEOUT_TIME_MS = 5000;   //Millisecond; how long to wait until the toolbar should fade out if the mouse has not entered it.
+let toolbarFadeTimeoutId;
+
 const defaultNodeTitle = "New concept";
 const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
 const defaultHierarchicalRelationshipLabel = "Child";
@@ -101,7 +104,45 @@ window.onload = function() {
             saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
+
+    setupToolbarFading();
 };
+
+function setupToolbarFading() {
+    //Set up faded in and out callbacks for the toolbar. This will make it fade away to invisible if the mouse has not entered it for a specified time.
+    let toolbar = document.getElementById("toolbar");
+    toolbar.addEventListener("mouseenter", function(event) {
+        //Cancel any previous timeout event!
+        if (toolbarFadeTimeoutId !== undefined) {
+            clearTimeout(toolbarFadeTimeoutId);
+        }
+
+        let elem = event.currentTarget;
+
+        //Make it instantly visible!
+        elem.style.transitionProperty = "opacity";
+        elem.style.transitionDuration = "0s";
+        elem.style.opacity = "1.0";
+    });
+    toolbar.addEventListener("mouseleave", function(event) {
+        //Set a timeout callback, to invoke the fade out after some specified time...
+        //Make sure to save the id! that way we can cancel the timer if the mouse reenters the toolbar!!
+        toolbarFadeTimeoutId = setTimeout(function(elem) {
+            //Make the passed element fade out.
+            elem.style.transitionProperty = "opacity";
+            elem.style.transitionDuration = "1s";
+            elem.style.opacity = "0.0";
+        }, TOOLBAR_FADEOUT_TIME_MS, event.currentTarget);
+    });
+
+    //Set up the intial fade timeout event..
+    toolbarFadeTimeoutId = setTimeout(function(elem) {
+        //Make the passed element fade out.
+        elem.style.transitionProperty = "opacity";
+        elem.style.transitionDuration = "1s";
+        elem.style.opacity = "0.0";
+    }, TOOLBAR_FADEOUT_TIME_MS, toolbar);
+}
 
 function saveProject() {
     if (ajaxHandler !== undefined && ajaxHandler != null) {
@@ -668,12 +709,9 @@ function traverseForVisibility(curr, depth) {
  * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
  * render the new context.
  *
- * TODO: also invoke node repositioning, once that is implemented.
- *
  * @param newContextNode the new node object to become the new context, OR null, to imply global context.
  */
 function switchContext(newContextNode) {
-    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
 
     //Attain access to the context display object.
     let contextBox = document.getElementById("contextIndicatorBox");
@@ -732,6 +770,8 @@ function switchContext(newContextNode) {
 
 /** invoked to zoom out the context. For safety, performs a null check even though it should never be called with null. */
 function zoomContextOut() {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     if (canvasState.contextNode === null) { return; }
 
     //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
@@ -757,6 +797,8 @@ function zoomContextOut() {
  * @param event MouseDoubleClick DOM event
  */
 function zoomContextIn(event) {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     //Gain access to the node, then context switch to it!
     let node = getContentNode(event.currentTarget);     //NOTE: using currentTarget instead of target because we only want to access the element the
                                                         //listener is ATTATCHED TO (i.e. the node div itself) rather than the element which triggered the
@@ -987,55 +1029,4 @@ function hideAllInfo() {
     for (let i = canvasState.showingNodes.length - 1; i >= 0; i--) {
         canvasState.showingNodes[i].hideInfo()
     }
-}
-
-/** This function will calculate the scrollx and scrolly settings to centre the given coordinates on the canvas.
- *  If the coord cannot be centred, it will get as close as it can.
- * @param x
- * @param y
- */
-function centreCoordinatesOnCanvas(x, y) {
-    //Use the canvas window to determins the offsets to scroll, since it will tell us how large the viewing window currently is.
-    let canvasWindow = document.getElementById("canvasWindow");
-
-    let windowwidth = canvasWindow.offsetWidth;
-    let windowheight = canvasWindow.offsetHeight;
-
-    let scrollLeft;
-    let scrollTop;
-
-    //Calculate the left scroll.
-    if (windowwidth/2 >= x) {
-        //scroll all the way to the left.. clamping!
-        scrollLeft = 0;
-    }
-    else if (windowwidth/2 >= (CANVAS_WIDTH - x)) {
-        //Scroll all the way to the right.. clamping!
-        scrollLeft = CANVAS_WIDTH - windowwidth - 3;    //3 is only there for small padding and so forth.
-    }
-    else {
-        //No need to clamp!
-        scrollLeft = x - windowwidth/2;
-    }
-
-    //Calculate the top scroll.
-    if (windowheight/2 >= y) {
-        //scroll all the way to the left.. clamping!
-        scrollTop = 0;
-    }
-    else if (windowheight/2 >= (CANVAS_HEIGHT - y)) {
-        //Scroll all the way to the right.. clamping!
-        scrollTop = CANVAS_HEIGHT - windowheight - 3;    //3 is only there for small padding and so forth.
-    }
-    else {
-        //No need to clamp!
-        scrollTop = y - windowheight/2;
-    }
-
-    //Set the scroll!
-    canvasWindow.scroll({
-        top: scrollTop,
-        left: scrollLeft,
-        behavior: 'smooth'
-    });
 }

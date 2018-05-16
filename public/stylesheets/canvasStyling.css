@@ -24,21 +24,22 @@ html {
 
     height: 100%;
     width:  100%;
-    background-color: rgb(223,220,217);
 }
 
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */
 #drawingCanvas {
     position: absolute;
-    background-color : lightgrey;
+    /*background-color: rgb(237, 237, 237); Background is actually set in the SVG OBJECT*/
     border-width: 3px;
     border-radius: 3px;
 
-    padding: 30px;
+    /*padding: 30px;*/
 
     height : 3000px;    /* Make sure we have enough room for a ton of nodes and such! */
     width :  3000px;
-    /*transform: scale(1); TODO -- figure out a way to scale everything together without breaking everything */
+
+    transform: scale(1);
+    transform-style: preserve-3d;
 }
 
 /* Style the 'context box indicator' (thing which sits in the corner and tells you what the current context is */
@@ -172,12 +173,14 @@ html {
 /* Style the 'drag here to delete' box */
 .utilityDropZone {
     display: inline-block;  /* relavtively positioned inline block */
-    position: relative;     /* move them relative to the canvas, but not absolute, so they still tile themselves amongst each other */
+    /*position: relative;*/     /* move them relative to the canvas, but not absolute, so they still tile themselves amongst each other */
 
+    /*
     transform-origin: bottom left;
-    transform: translate(6px, 565px); /* Sit in the bottom left corner, by translating distance downwards*/
-
+    transform: translate(6px, 565px);
+    */
     z-index: 1;     /* don't let this render on top of nodes */
+
 
     height: 50px;
     width:  100px;
@@ -194,6 +197,16 @@ html {
     /* Future CHANGES to the border should have a graceful transition time */
     transition-property: border-width, border-color, border-style;
     transition-duration: 0.25s;
+}
+#deleteNodeDropZone {
+    position: absolute;
+    bottom: 25px;
+    left: 6px;
+}
+#detachNodeDropZone {
+    position: absolute;
+    bottom: 25px;
+    left: 116px;
 }
 
 /*  --------------------- NODE RELATED STYLING ---------------------------------------------------------------------- */

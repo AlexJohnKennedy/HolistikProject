@@ -300,6 +300,8 @@ class AjaxProjectLoader {
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * OBSOLETE BY PASSPORT
+ *
  * Define an ES6 class to handle sending user login data and new-user registration data. This will be sent to the server
  * and the server will handle generating session cookies and so forth.
  *
