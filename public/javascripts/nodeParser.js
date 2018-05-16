@@ -231,11 +231,11 @@ function parseAllNodeStatesFromJSON(jsonString) {
     //Sweet! now we can iterate through the data packages and build ContentNode objects! Note that this will also update the DOM
     let contentNodes = new Map();
     for (let data of stateData_noRels) {
-        let newNode = buildContentNode(data.idString);
+        let newNode = buildContentNode(data.idString, false);
         newNode.setTitleText(data.titleText);
         newNode.setDescriptionText(data.descriptionText);
         //TODO - newNode.setColour(data.colour);
-        newNode.colour = data.colour;    //TEMPORARY (until above to do get's done)
+        newNode.colour = data.colour;    //TEMPORARY (until above to do gets done)
 
         contentNodes.set(newNode.idString, newNode);
     }

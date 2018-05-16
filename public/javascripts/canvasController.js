@@ -186,7 +186,7 @@ function createNewContentNode() {
     let idString = idPrefix + currIdNum;
     currIdNum++;
 
-    let newNode = buildContentNode(idString);
+    let newNode = buildContentNode(idString, true);  //True to indicate we are adding it as a root.
 
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
@@ -204,7 +204,7 @@ function createNewContentNode() {
  * The HTML element will have a unique id, and have the associated class types to allow interact.js library to
  * apply it's drag/drop/resize functionality to the node.
  */
-function buildContentNode(idString) {
+function buildContentNode(idString, buildAsRoot) {
     //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
     let canvasWindow = document.getElementById("canvasWindow");
     let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
@@ -214,6 +214,10 @@ function buildContentNode(idString) {
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
     let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
+
+    if (!buildAsRoot) {
+        removeRootNode(newNode);    //Don't add this boy as a root!
+    }
 
     return newNode;
 }
@@ -610,12 +614,12 @@ function removeRootNode(node) {
     let index = canvasState.rootNodes.indexOf(node);
     if (index !== -1) {
         //Add custom root node styling
-        node.htmlElement.classList.add("rootNode");
+        //node.htmlElement.classList.add("rootNode");
         canvasState.rootNodes.splice(index, 1);
     }
 
     //Remove custom root node styling
-    node.htmlElement.classList.add("rootNode");
+    node.htmlElement.classList.remove("rootNode");
 
     //Make the root node 'border effect' invisible by accessing the hidden child element with said border.
     node.htmlElement.getElementsByClassName('rootNodeBorderElement').item(0).style.display = "none";

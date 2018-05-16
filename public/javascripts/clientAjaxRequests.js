@@ -350,5 +350,5 @@ function handleServerSideError(responseText, request) {
     ajaxHandler.cancelPendingLoadRequests();
 
     addBlackoutEffect();
-    showErrorWindow("Whoops! Something went wrong.. Try again in a few minutes. "+responseText);
+    showErrorWindow("Whoops! Something went wrong. "+responseText);
 }
