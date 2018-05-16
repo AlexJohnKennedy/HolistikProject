@@ -6,4 +6,5 @@ function clearLocalStorage() {
     //Clear the local storage
     window.localStorage.removeItem("projectId");
     window.localStorage.removeItem("projectName");
+    window.localStorage.removeItem("writePermission");
 }

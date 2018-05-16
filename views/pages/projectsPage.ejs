@@ -61,7 +61,7 @@
                         <% writeProjects.forEach(function(project) { %>
                         <li>
                             <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
-                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>" writePermission="true">
                                 <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
                                     <input type="hidden" name="projectId" value="<%= project.projectId %>">
                                     <input class="btn deleteProjectBtn" type="submit" value="Delete">
@@ -69,7 +69,7 @@
                                 <div class="btn editProjectBtn" onclick="showMeTheEditWindow('<%= project.projectId %>')">Edit</div>
                                 <div class="btn loadProjectBtn">Load</div>
                                 <div class="projectNameText"> <%= project.projectName %> </div>
-                                <img src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
+                                <img class="thumbnail" src="<%= project.projectImage %>" alt="No project preview available at this time" width="100" height="80">
                                 <div class="projectTimestampText"> <%= project.timestamp %> </div>
 
                             </div>
@@ -98,14 +98,13 @@
                         <% readOnlyProjects.forEach(function(project) { %>
                         <li>
                             <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
-                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>" writePermission="false">
 
                                 <!--<div class="projectTimestampText"> <%= project.timestamp %> </div>-->
                                 <div class="btn loadProjectBtn">Load</div>
 
                                 <div class="projectNameText"> <%= project.projectName %> </div>
-                                <img src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">
-
+                                <img class="thumbnail" src="<%= project.projectImage %>" alt="Project preview" width="100" height="80">
                                 <div class="clearfix">&nbsp;</div> <!-- FLOAT FIX HACK FROM STACKOVERFLOW (??) -->
                             </div>
                         </li>
@@ -134,7 +133,7 @@
     <div class="layer" id="edit">
         <div class="container" id="editContent">
             <a id="aCross" onclick="unseeTheEditWindow()">X</a>
-            <p id="editProject">Edit Project</p>
+            <p id="editProject">Edit Project Name</p>
             <form method="post" action="/editProject" enctype="application/x-www-form-urlencoded">
                 <input type="text" name="newName">
                 <input type="hidden" id="editProjectId" name="projectId">

@@ -24,7 +24,13 @@
 
     </div>
 
-    <!-- <button id="getHelpButton" onclick="spawnHelpWindow()">Help!</button> -->
+    <!-- html elements to display saving feedback -->
+    <div id="savingIndicator">
+        Saving...
+        <div class="spinningIcon" id="savingIcon">
+            <!-- EMPTY DIV. CSS WILL MAKE THIS INTO A SPINNING ICON -->
+        </div>
+    </div>
 
     <!-- Create a button to create a new node -->
     <button id="newNodeButton" onclick="createNewContentNode()">
@@ -46,8 +52,6 @@
             Save current project state
         </button>
     <% } %>
-
-
 
     <!-- Create a box which deletes nodes that are dragged into them. -->
     <div id="deleteNodeDropZone" class="utilityDropZone">
