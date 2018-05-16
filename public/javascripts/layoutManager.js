@@ -38,6 +38,8 @@ function autoArrangeVisibleNodes(useSimpleGrouping) {
     //Topologically sort visible nodes.
     let topSorted = topologicalSortVisibleNodes();
 
+    if (topSorted === null || topSorted === undefined) { return; }
+
     //Assign layer numbers to each visible node.
     let layerAssigned = assignVerticesToLayers(topSorted);
 
