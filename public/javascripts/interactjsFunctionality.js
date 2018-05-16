@@ -64,7 +64,6 @@ interact('.draggable').draggable({
     //NO intertia for resizing.
     inertia: true,
 }).on('resizestart', function (event) {
-    console.log("Resize event started on node");
     let targetElem = event.target;
     targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
     currTopZIndex++;
@@ -74,13 +73,19 @@ interact('.draggable').draggable({
 
 }).on('resizemove', function (event) {
     let target = event.target;
+    let node = getContentNode(target);
+
+    //FIRSTLY: If this node is 'showing info', then do not allow any resize actions. Doing so would completely break everything!
+    if (node.isShowingInfo) {
+        //DO NOTHING IN THIS CASE
+        return;
+    }
 
     // update the element's style
     target.style.width  = event.rect.width + 'px';
     target.style.height = event.rect.height + 'px';
 
     //Access the logical node and directly update the size.
-    let node = getContentNode(target);
     node.size.height = event.rect.height;
     node.size.width  = event.rect.width;
 
@@ -124,23 +129,20 @@ interact('.draggable').draggable({
 function onDragStart (event) {
     console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
 
-    //this.htmlElement.style.transitionProperty = "transform";
-    //this.htmlElement.style.transitionDuration = "0s";
-
     //Firstly, we want any item that is being dragged by the user to render ON TOP of everything else, so they can
     //always see what they are doing.
     let targetElem = event.target;
     targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
     currTopZIndex++;
 
-    //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
-    targetElem.classList.add("noTransitions");
-
     //Since the user is about to move this node, we should take this oppurtunity to save the current position in the
     //'previousTranslation' variable. That way, return to previous position funcitonality will work!
     let contentNode = getContentNode(targetElem);
     contentNode.previousTranslation.x = contentNode.translation.x;
     contentNode.previousTranslation.y = contentNode.translation.y;
+
+    //Set the transform transition to be zero, so any loitering transition settings do not affect this drag action
+    targetElem.classList.add("noTransitions");
 
     /*Now, this dragging event will trigger the follow up event of activating all potential dropzones.
       To avoid insanely confusing structures, we will ENFORCE that this dragged node cannot be nested inside one of its children/descendents.
@@ -192,6 +194,9 @@ function onDragMoveFinished(event) {
     //Finally, re-add the 'dropzone' class to this node and all descendants, so that other nodes may use them as dropzones for nesting if they need.
     let contentNode = getContentNode(targetElement);
     addHtmlClassFromAllDescendants(contentNode, "dropzone");
+
+    //If this node was showing info, when we finish dragging it, we should hide it's info? possibly? //TODO Figure this shit out
+    if (contentNode.isShowingInfo) { contentNode.hideInfo(); }
 }
 
 /**
