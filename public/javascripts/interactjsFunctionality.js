@@ -276,7 +276,7 @@ interact('.dropzone').dropzone({
 });
 
 function onDropzoneActivate(event) {
-    console.log("onDropzoneActive event fired! HTML element is "+event.target.getAttribute('id'));
+    //console.log("onDropzoneActive event fired! HTML element is "+event.target.getAttribute('id'));
 
     let beingDragged = event.relatedTarget;
     let dropzone     = event.target;

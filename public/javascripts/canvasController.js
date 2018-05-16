@@ -31,11 +31,16 @@ const defaultNodeSize = {
 
 //Define a threshold constant for determining how tall a content node needs to be in order for the title text to
 //appear CENTRED (vertically), as oppossed to sticking at the top of the element!
-const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 70;
+const CENTRE_VERTICAL_ALIGNMENT_HEIGHT_THRESHOLD = 90;
 const MAX_NODE_TITLE_LENGTH                      = 50;
 const MAX_NODES_SHOWING_CONCURRENT_INFO          = 4;
-const CANVAS_HEIGHT                              = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!
-const CANVAS_WIDTH                               = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!
+const CANVAS_HEIGHT                              = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!)
+const CANVAS_WIDTH                               = 3000;    //Pixels (MAKE SURE IT MATCHES THE CSS VALUE!)
+
+const MIN_NODE_WIDTH  = 100;
+const MAX_NODE_WIDTH  = 300;
+const MIN_NODE_HEIGHT = 50;
+const MAX_NODE_HEIGHT = 200;
 
 const defaultNodeTitle = "New concept";
 const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
@@ -88,6 +93,12 @@ window.onload = function() {
         let wp = window.localStorage.getItem("writePermission");
         if (wp !== undefined && wp != null && wp === "true") {
             hasWritePermission = true;  //Set a flag, so tha we know not to attempt to send save requests during this session, since they will just fail.
+        }
+        else {
+            //Disable the save button, and inform them that pressing save is not allowed.
+            let saveBtn = document.getElementById("testButton2");
+            saveBtn.setAttribute("disabled","true");
+            saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
 };
@@ -581,8 +592,9 @@ function rebuildVisibility() {
     //let visibleNodes = [];     //New list, that is going to be used to store references to nodes we calculate as 'visible'
 
     //DEBUG
-    console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
-    printTestSerialistation();
+    //console.log("REBUILDING VISIBILITY: Currently have "+canvasState.rootNodes.length+" root node");
+    //printTestSerialistation();
+
 
     // Set the visibility flag for all nodes to be invisible, so we can then calculate the visibility from roots
     for (let node of canvasState.contentNodeList) {
