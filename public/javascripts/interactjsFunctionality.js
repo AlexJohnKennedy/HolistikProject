@@ -130,7 +130,12 @@ function onDragStart (event) {
     console.log("Drag event fired! HTML element is "+event.target.getAttribute('id'));
 
     //Firstly, we want any item that is being dragged by the user to render ON TOP of everything else, so they can
-    //always see what they are doing.
+    //always see what they are doing. Equally, set the utility zone elements to be just below the node being dragged.
+    let utilityZones = document.getElementsByClassName("utilityDropZone");
+    for (let utilityElem of utilityZones) {
+        utilityElem.style.zIndex = currTopZIndex-1;
+    }
+
     let targetElem = event.target;
     targetElem.style.zIndex = currTopZIndex;   //Sets to be at the front!
     currTopZIndex++;
@@ -197,6 +202,12 @@ function onDragMoveFinished(event) {
 
     //If this node was showing info, when we finish dragging it, we should hide it's info? possibly? //TODO Figure this shit out
     if (contentNode.isShowingInfo) { contentNode.hideInfo(); }
+
+    //Set the utlity zones to be back on top, since things are no longer being dragged!
+    let utilityZones = document.getElementsByClassName("utilityDropZone");
+    for (let utilityElem of utilityZones) {
+        utilityElem.style.zIndex = currTopZIndex++;
+    }
 }
 
 /**
