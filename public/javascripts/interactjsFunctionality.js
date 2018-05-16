@@ -640,3 +640,22 @@ interact('#drawingCanvas').draggable({
         //Do nothing.
     }
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Toolbar zooming slider functionality ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+interact('.slider').draggable({                        // make the element fire drag events
+    //max: Infinity                     // allow drags on multiple elements
+    restrict: {
+        drag: 'self'
+    },
+    origin: 'self',
+    inertia: false
+}).on('dragmove', function (event) {  // call this function on every move
+    let sliderWidth = interact.getElementRect(event.target.parentNode).width,
+        value = event.pageX / sliderWidth;
+
+    event.target.style.paddingLeft = (value * 100) + '%';
+    event.target.setAttribute('data-value', value.toFixed(2));
+});

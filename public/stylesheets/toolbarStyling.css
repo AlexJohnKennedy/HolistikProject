@@ -1,0 +1,61 @@
+
+#toolbar {
+    position: absolute;
+    width: 300px;
+    height: 75px;
+    bottom: 20px;
+    right: 24px;
+    z-index: 99995;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+
+/* the slider bar */
+.slider {
+    position: absolute;
+    bottom: 15px;
+
+    width: 80%;
+    height: 3px;
+    margin-left: 10%;
+    margin-right: 10%;
+
+    background-color: lightgrey;
+    border-radius: 0.5em;
+    box-sizing: border-box;
+
+    -ms-touch-action: none;
+    touch-action: none;
+
+    z-index: 1;
+}
+
+/* the slider handle */
+.slider:before {
+    content: "";
+    display: block;
+    position: relative;
+    top: -5px;
+
+    width: 20px;
+    height: 14px;
+    margin-left: -1em;
+    border: solid 0.1em #1b1b1b;
+    border-radius: 1em;
+    background-color: #ad9d7f;
+
+    box-sizing: border-box;
+}
+
+/* display the value */
+.slider:after {
+    content: attr(data-value);
+    position: absolute;
+    top: -1.5em;
+    width: 2em;
+    line-height:1em;
+    margin-left: -1em;
+    text-align: center;
+}
