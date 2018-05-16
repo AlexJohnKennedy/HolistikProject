@@ -43,7 +43,7 @@ function buildListElements(nodeList) {
 
 /**
 depth first search to construct the indented lists. note that nodes may appear more than once since node structure
-is not a DAG.
+is not a Tree, but a DAG.
 */
 function constructTree(curr, depth, parentListElem) {
     //Firstly, we should append a list element corresponding to this node into our parently list!
@@ -54,6 +54,19 @@ function constructTree(curr, depth, parentListElem) {
     //Style visible-node list elements differently to invisible ones, for visual indication. Let CSS handle the styling!
     if (curr.isVisible) {
         newSidebarElem.htmlElement.classList.add("visibleListElem");
+
+        //Set up a double click listener to centre on corresponding canvas node, when the user double clicks on a sidebar element (given the node is visible..)
+        newSidebarElem.htmlElement.addEventListener("dblclick", function(event) {
+            let sbElem = event.currentTarget;
+            let sidebarLogicElem = getSidebarElement(sbElem);
+            let contentNodeId = sidebarLogicElem.nodeId;
+
+            for (let contentNode of canvasState.contentNodeList) {
+                if (contentNode.idString === contentNodeId) {
+                    centreCoordinatesOnCanvas(contentNode.translation.x + contentNode.size.width/2, contentNode.translation.y + contentNode.size.height/2);
+                }
+            }
+        });
     }
     else {
         newSidebarElem.htmlElement.classList.add("invisibleListElem");

@@ -56,7 +56,7 @@ let childrenHorizontalSpacing = 20;   //pixels. Horizontal space between childre
 let verticalSpacing           = 50;   //pixels. Vertical space between un-related nodes. (not including semantic relationships).
 let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
-let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
+let currTopZIndex = 2;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Initialisation logic for when page first loads ------------------------------------------------------------------
@@ -673,6 +673,8 @@ function traverseForVisibility(curr, depth) {
  * @param newContextNode the new node object to become the new context, OR null, to imply global context.
  */
 function switchContext(newContextNode) {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     //Attain access to the context display object.
     let contextBox = document.getElementById("contextIndicatorBox");
     let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
@@ -738,7 +740,7 @@ function zoomContextOut() {
     //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
 
     //For now, i'm just going to pick the first parent in the list, although this is a bad solution. I'm doing this just
-    //to facilitate further development of features and not get stuck.
+    //to facilitate further development of features and not getting stuck.
     if (canvasState.contextNode.parentList.length === 0) {
         //The current context has no parent! Thus, we should move to global context.
         switchContext(null);
@@ -761,8 +763,8 @@ function zoomContextIn(event) {
                                                         //the event!
     //We DO NOT want to zoom if the item clicked is not the outer node element itself. This is becuase if the double click ocurred on one of the
     //utility buttons, we don't want to also zoom. That would be confusing.
-    //we also do not want to allow zoom in event if ANY node is showing info
-    if (event.target.classList.contains("utilityButton") || node.isShowingInfo || canvasState.showingNodes.length > 0) {
+    //we also do not want to allow zoom in event if ANY node is showing info -- REVERTED 16/05/2018
+    if (event.target.classList.contains("utilityButton") /* ##REVERTED## || node.isShowingInfo ##REVERTED## */ ) {
         return;
     }
 
@@ -974,4 +976,66 @@ function showErrorWindow(errorMessage) {
 function hideErrorWindow() {
     document.getElementById("errorWindow").style.display = "none";
     removeBlackoutEffect();
+}
+
+/**
+ * This function simply 'minimises' all nodes which are currently showing info. After invoking this, you should be confident there
+ * are no nodes showing info anymoe
+ */
+function hideAllInfo() {
+    //Iterate backwards through the list, since it will be removing items as we go.
+    for (let i = canvasState.showingNodes.length - 1; i >= 0; i--) {
+        canvasState.showingNodes[i].hideInfo()
+    }
+}
+
+/** This function will calculate the scrollx and scrolly settings to centre the given coordinates on the canvas.
+ *  If the coord cannot be centred, it will get as close as it can.
+ * @param x
+ * @param y
+ */
+function centreCoordinatesOnCanvas(x, y) {
+    //Use the canvas window to determins the offsets to scroll, since it will tell us how large the viewing window currently is.
+    let canvasWindow = document.getElementById("canvasWindow");
+
+    let windowwidth = canvasWindow.offsetWidth;
+    let windowheight = canvasWindow.offsetHeight;
+
+    let scrollLeft;
+    let scrollTop;
+
+    //Calculate the left scroll.
+    if (windowwidth/2 >= x) {
+        //scroll all the way to the left.. clamping!
+        scrollLeft = 0;
+    }
+    else if (windowwidth/2 >= (CANVAS_WIDTH - x)) {
+        //Scroll all the way to the right.. clamping!
+        scrollLeft = CANVAS_WIDTH - windowwidth - 3;    //3 is only there for small padding and so forth.
+    }
+    else {
+        //No need to clamp!
+        scrollLeft = x - windowwidth/2;
+    }
+
+    //Calculate the top scroll.
+    if (windowheight/2 >= y) {
+        //scroll all the way to the left.. clamping!
+        scrollTop = 0;
+    }
+    else if (windowheight/2 >= (CANVAS_HEIGHT - y)) {
+        //Scroll all the way to the right.. clamping!
+        scrollTop = CANVAS_HEIGHT - windowheight - 3;    //3 is only there for small padding and so forth.
+    }
+    else {
+        //No need to clamp!
+        scrollTop = y - windowheight/2;
+    }
+
+    //Set the scroll!
+    canvasWindow.scroll({
+        top: scrollTop,
+        left: scrollLeft,
+        behavior: 'smooth'
+    });
 }
