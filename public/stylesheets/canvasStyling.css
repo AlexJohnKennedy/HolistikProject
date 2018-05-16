@@ -198,7 +198,7 @@ html {
     position: relative;     /* move them relative to the canvas, but not absolute, so they still tile themselves amongst each other */
 
     transform-origin: bottom left;
-    transform: translate(6px, 573px); /* Sit in the bottom left corner, by translating distance downwards*/
+    transform: translate(6px, 565px); /* Sit in the bottom left corner, by translating distance downwards*/
 
     z-index: 1;     /* don't let this render on top of nodes */
 
