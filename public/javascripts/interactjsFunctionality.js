@@ -5,6 +5,10 @@
  * event listeners are triggered.
  */
 
+let min_height = 50;
+let max_height = 200;
+let min_width  = 100;
+let max_width  = 300;
 
 /**
  * Define 'draggable' behaviour for all HTML elements which have the 'draggable' class associated to them.
@@ -50,17 +54,17 @@ interact('.draggable').draggable({
         outer: 'parent',
         endOnly: true,
     },
-
     //Minimum size for nodes will be equal to the default node size (starting size).
+    /* INORDER TO SUPPORT CANVAS ZOOMING, WE NEED TO MANUALLY RESTRICT SIZES INSTEAD OF USING THE BUILD IN FUNCTIONALITY
     restrictSize: {
         min: {
-            width: 100, height: 50
+            width: min_width, height: min_height
         },
         max: {
-            width: 300, height: 200
+            width: max_width, height: max_height
         }
     },
-
+    */
     //NO intertia for resizing.
     inertia: true,
 }).on('resizestart', function (event) {
@@ -82,12 +86,30 @@ interact('.draggable').draggable({
     }
 
     // update the element's style
-    target.style.width  = (event.rect.width/canvasScale) + 'px';
-    target.style.height = (event.rect.height/canvasScale) + 'px';
+    let zoomAdjustedHeight = event.rect.height/canvasScale;
+    let zoomAdjustedWidth  = event.rect.width/canvasScale;
+
+    //Clamp to max and min values manually. This is necessary because the scaling breaks the interact.js inherent min maxing
+    if (zoomAdjustedHeight > max_height) {
+        zoomAdjustedHeight = max_height;
+    }
+    else if (zoomAdjustedHeight < min_height) {
+        zoomAdjustedHeight = min_height;
+    }
+
+    if (zoomAdjustedWidth > max_width) {
+        zoomAdjustedWidth = max_width;
+    }
+    else if (zoomAdjustedWidth < min_width) {
+        zoomAdjustedWidth = min_width;
+    }
+
+    target.style.width  = zoomAdjustedWidth + 'px';
+    target.style.height = zoomAdjustedHeight + 'px';
 
     //Access the logical node and directly update the size.
-    node.size.height = event.rect.height/canvasScale;
-    node.size.width  = event.rect.width/canvasScale;
+    node.size.height = zoomAdjustedHeight;
+    node.size.width  = zoomAdjustedWidth;
 
     //Now, we need to reposition the 'buttons' on the node itself to make sure they stay in the corners.
     //We also need to resize the 'root node border' sub-element!
@@ -583,7 +605,7 @@ function sidebarOnElementDropped(event) {
     dropzone.classList.remove("potentialSidebarDropzoneHasItemHovering");
 
     //make a new node for the thing that just got dropped and pass the new x y to dump it where the mouse was
-    reinstantiateExistingNode(beingDragged.getAttribute("nodeId"), parseFloat(beingDragged.getAttribute("xTranslation"))-240, parseFloat(beingDragged.getAttribute("yTranslation"))); //Adjust left by width of canvas
+    reinstantiateExistingNode(beingDragged.getAttribute("nodeId"), (parseFloat(beingDragged.getAttribute("xTranslation"))-240)/canvasScale, (parseFloat(beingDragged.getAttribute("yTranslation")))/canvasScale); //Adjust left by width of canvas
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

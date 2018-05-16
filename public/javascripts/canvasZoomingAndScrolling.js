@@ -51,6 +51,12 @@ function centreCoordinatesOnCanvas(x, y) {
     //Use the canvas window to determins the offsets to scroll, since it will tell us how large the viewing window currently is.
     let canvasWindow = document.getElementById("canvasWindow");
 
+    //Adjust by zoom factor
+    x = canvasScale * x;
+    y = canvasScale * y;
+    let canvasWidth  = CANVAS_WIDTH * canvasScale;
+    let canvasHeight = CANVAS_HEIGHT * canvasScale;
+
     let windowwidth = canvasWindow.offsetWidth;
     let windowheight = canvasWindow.offsetHeight;
 
@@ -62,9 +68,9 @@ function centreCoordinatesOnCanvas(x, y) {
         //scroll all the way to the left.. clamping!
         scrollLeft = 0;
     }
-    else if (windowwidth/2 >= (CANVAS_WIDTH - x)) {
+    else if (windowwidth/2 >= (canvasWidth - x)) {
         //Scroll all the way to the right.. clamping!
-        scrollLeft = CANVAS_WIDTH - windowwidth - 3;    //3 is only there for small padding and so forth.
+        scrollLeft = canvasWidth - windowwidth - 3;    //3 is only there for small padding and so forth.
     }
     else {
         //No need to clamp!
@@ -76,9 +82,9 @@ function centreCoordinatesOnCanvas(x, y) {
         //scroll all the way to the left.. clamping!
         scrollTop = 0;
     }
-    else if (windowheight/2 >= (CANVAS_HEIGHT - y)) {
+    else if (windowheight/2 >= (canvasHeight - y)) {
         //Scroll all the way to the right.. clamping!
-        scrollTop = CANVAS_HEIGHT - windowheight - 3;    //3 is only there for small padding and so forth.
+        scrollTop = canvasHeight - windowheight - 3;    //3 is only there for small padding and so forth.
     }
     else {
         //No need to clamp!
