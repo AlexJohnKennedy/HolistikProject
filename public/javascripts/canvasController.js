@@ -673,6 +673,8 @@ function traverseForVisibility(curr, depth) {
  * @param newContextNode the new node object to become the new context, OR null, to imply global context.
  */
 function switchContext(newContextNode) {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     //Attain access to the context display object.
     let contextBox = document.getElementById("contextIndicatorBox");
     let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
@@ -738,7 +740,7 @@ function zoomContextOut() {
     //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
 
     //For now, i'm just going to pick the first parent in the list, although this is a bad solution. I'm doing this just
-    //to facilitate further development of features and not get stuck.
+    //to facilitate further development of features and not getting stuck.
     if (canvasState.contextNode.parentList.length === 0) {
         //The current context has no parent! Thus, we should move to global context.
         switchContext(null);
@@ -974,4 +976,15 @@ function showErrorWindow(errorMessage) {
 function hideErrorWindow() {
     document.getElementById("errorWindow").style.display = "none";
     removeBlackoutEffect();
+}
+
+/**
+ * This function simply 'minimises' all nodes which are currently showing info. After invoking this, you should be confident there
+ * are no nodes showing info anymoe
+ */
+function hideAllInfo() {
+    //Iterate backwards through the list, since it will be removing items as we go.
+    for (let i = canvasState.showingNodes.length - 1; i >= 0; i--) {
+        canvasState.showingNodes[i].hideInfo()
+    }
 }
