@@ -192,6 +192,11 @@ async function updateUserEmail(userModel, freshEmail) {
         return userModel;
     }
 
+    if(!validateEmail(freshEmail)) {
+        console.log("Supplied email address does not conform to the usual email format. Aborting");
+        return userModel;
+    }
+
     //if we passed the above stuff we can update the field
     userModel.email = freshEmail;
 
@@ -246,6 +251,11 @@ async function updateUserHash(userModel, freshHash) {
         //indicate that an error has occurred by returning undefined
         return undefined;
     });
+}
+
+function validateEmail(email) {
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
 }
 
 //injection protection
@@ -365,17 +375,6 @@ async function deleteProject(body, user) {
 
     //loop from the back of the projects array
     for (let i = user.projects.length-1; i>= 0; i--) {
-        //TODO figure out the correct way to compare ids, mongodb IDs have a compare function - investigate
-        //the shit below ignores that the two project ids are of different type
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log(typeof(user.projects[i].projectId) + " " + typeof(projectId));
-        console.log(new mongoose.Types.ObjectId(projectId) === user.projects[i].projectId);
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
-        //double equals?
         if (user.projects[i].projectId == projectId) {
             //we have a match! delete the project
             console.log("We have a match, fuck the item off the array :)");

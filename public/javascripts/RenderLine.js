@@ -5,8 +5,9 @@
 //shift the label up and to the right slightly (PIXELS)
 const LABEL_X_TRANS = 10;
 const LABEL_Y_TRANS = (0-5);
+const TAG_Y_TRANS = 15;
 
-function RenderLine(sourceNode, destNode, displayedLabel) {
+function RenderLine(sourceNode, destNode, displayedLabel, categoryLabel) {
 
     console.log("a new RenderLine was created, from "+sourceNode.idString+" and "+destNode.idString);
 
@@ -47,19 +48,27 @@ function RenderLine(sourceNode, destNode, displayedLabel) {
     label.innerHTML = displayedLabel;
     svg.appendChild(label);
 
+    //category label
+    let tags = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    tags.setAttribute("x", (xMidpoint + LABEL_X_TRANS).toString());
+    tags.setAttribute("y", (yMidpoint + TAG_Y_TRANS).toString());
+    tags.innerHTML = categoryLabel;
+    svg.appendChild(tags);
+
     //line listeners to make the hover over thing work
     megaLine.addEventListener("mouseenter", function(event) {
-        console.log("mouseenter line area");
         event.currentTarget.nextSibling.style.display = "block";
+        event.currentTarget.nextSibling.nextSibling.style.display = "block";
     });
     megaLine.addEventListener("mouseleave", function(event) {
-        console.log("mouseleave line area");
         event.currentTarget.nextSibling.style.display = "none";
+        event.currentTarget.nextSibling.nextSibling.style.display = "none";
     });
 
     this.line = line;
     this.megaLine = megaLine;
     this.label = label;
+    this.tags = tags;
 
     //The line objects will also have a 'isVisible' flag which we can use to determine visibility in the same way
     //as the nodes.
@@ -87,13 +96,17 @@ RenderLine.prototype.update = function() {
                        ((y1+y2)/2).toString()+" "+
                        (x2.toString())+","+
                        (y2.toString());
+
     this.line.setAttribute("points", pointsString);
     this.line.setAttribute("marker-mid", "url(#Triangle)");
 
     this.megaLine.setAttribute("points", pointsString);
 
-    this.label.setAttribute("x", (((x1+x2)/2)+LABEL_X_TRANS).toString());
-    this.label.setAttribute("y", (((y1+y2)/2)+LABEL_Y_TRANS).toString());
+    this.label.setAttribute("x", (((x1+x2)/2) + LABEL_X_TRANS).toString());
+    this.label.setAttribute("y", (((y1+y2)/2) + LABEL_Y_TRANS).toString());
+
+    this.tags.setAttribute("x", (((x1+x2)/2) + LABEL_X_TRANS).toString());
+    this.tags.setAttribute("y", (((y1+y2)/2) + TAG_Y_TRANS).toString());
 };
 
 RenderLine.prototype.hideLine = function() {

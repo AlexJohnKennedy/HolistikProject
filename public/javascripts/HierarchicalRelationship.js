@@ -39,7 +39,7 @@ HierarchicalRelationship.prototype.addChild = function(node) {
     node.parentList.push(this);
 
     //Next, we need to create a new 'RenderLine', which is handle the logic for drawing the connecting lines between the parent and the new child.
-    let newLine = new RenderLine(this.parentNode, node, this.displayedLabel);
+    let newLine = new RenderLine(this.parentNode, node, this.displayedLabel, this.categoryLabel);
     this.lineList.push(newLine);
 
     //For now, whenever we add a new child, we will reposition all the children nodes to be underneath the parent
