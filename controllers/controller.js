@@ -174,9 +174,9 @@ function profilePageGet(req, res) {
     if (req.user) {
         username = req.user.username;
         email = req.user.email;
-
+        bio = req.user.bio;
     }
-    res.render('pages/userProfilePage', { username: username});
+    res.render('pages/userProfilePage', { username: username, email : email, bio : bio });
 }
 
 

@@ -222,7 +222,7 @@ function updateUserUsername(userModel, freshUsername) {
         return undefined;
     });
 }
-function updateUserEmail(userModel, freshEmail) {
+async function updateUserEmail(userModel, freshEmail) {
     console.log("Attempting to change a users' email from: "+userModel.email+" to: " + freshEmail);
 
     if (!validateString(freshEmail, userModel.email)) {

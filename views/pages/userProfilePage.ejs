@@ -25,24 +25,24 @@
             <ul id="settingsList">
                 <li class="settingsListItem">
                     <div class="userSetting">
-                        Username: <%= %>
+                        Username: <%= username %>
                     </div>
                 </li>
                 <li class="settingsListItem">
                     <div class="userSetting">
-                        Email: <%= %>
+                        Email: <%= email %>
                         <div class="btn editSettingsBtn" onclick="showMeTheEditEmailWindow()">Edit</div>
                     </div>
                 </li>
                 <li class="settingsListItem">
                     <div class="userSetting">
-                        Bio: <%= %>
+                        Bio: <%= bio %>
                         <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
                     </div>
                 </li>
                 <li class="settingsListItem">
                     <div class="userSetting">
-                        Password: <%= %>
+                        Password:
                         <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
                     </div>
                 </li>
@@ -56,7 +56,7 @@
             <p id="editProject">Edit Email</p>
             <form method="post" action="/editUserEmail" enctype="application/x-www-form-urlencoded">
                 <input type="text" name="newEmail">
-                <input type="hidden" id="username" name='<%= username %>'>
+                <input type="hidden" id="username" name="username" value=<%= username %>>
                 <input class="btn" type="submit" value="Submit">
             </form>
         </div>
