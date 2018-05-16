@@ -645,17 +645,21 @@ interact('#drawingCanvas').draggable({
 // --- Toolbar zooming slider functionality ----------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 
-interact('.slider').draggable({                        // make the element fire drag events
-    //max: Infinity                     // allow drags on multiple elements
+interact('.sliderHandle').draggable({                        // make the element fire drag events
     restrict: {
         drag: 'self'
     },
-    origin: 'self',
+    origin: '#zoomSlider',
     inertia: false
 }).on('dragmove', function (event) {  // call this function on every move
-    let sliderWidth = interact.getElementRect(event.target.parentNode).width,
-        value = event.pageX / sliderWidth;
+    let sliderWidth = interact.getElementRect(event.target.parentNode).width;   //The slider width is the width of the parent (the slider bar)
+    let sliderPercentage = event.pageX / sliderWidth;
+    console.log(sliderPercentage);
 
-    event.target.style.paddingLeft = (value * 100) + '%';
-    event.target.setAttribute('data-value', value.toFixed(2));
+    //Manually clamp
+    if (sliderPercentage > 1) { sliderPercentage = 1; }
+    else if (sliderPercentage < 0) { sliderPercentage = 0; }
+
+    event.target.style.left = (sliderPercentage * 100) + '%';
+    event.target.setAttribute('data-value', sliderPercentage.toFixed(2));
 });

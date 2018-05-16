@@ -33,8 +33,7 @@
 }
 
 /* the slider handle */
-.slider:before {
-    content: "";
+.sliderHandle {
     display: block;
     position: relative;
     top: -5px;
