@@ -131,14 +131,22 @@ function signupPageGet(req,res) {
 }
 
 function userPageGet(req, res){
-    let username = null;
+    let username,userEmail, userBio,userpw = null;
 
     if (req.user && req.isAuthenticated()) {
         //User failed to authenticate! Redirect to the login screen
         username = req.user.username;
+        userEmail = req.user.email;
+        userBio = req.user.bio;
+        userpw = req.user.hash;
     }
 
-    res.render('pages/userPage', { username: username });
+    res.render('pages/userPage', {
+        username: username,
+        userEmail : userEmail,
+        userBio : userBio,
+        userpw : userpw
+    });
 };
 
 //Define behaviour and access data to get specific user page

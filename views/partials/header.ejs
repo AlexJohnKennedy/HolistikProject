@@ -46,7 +46,7 @@
                 <li>
                     <!-- If the user is logged in, the 'username' field passed from the server will have their username there! -->
                     <% if (username !== undefined && username != null) { %>
-                        <name><%= username %></name>
+                        <a href="/user"><name><%= username %></name></a>
                     <% } else { %>
                         <name>Guest User</name>
                     <% } %>

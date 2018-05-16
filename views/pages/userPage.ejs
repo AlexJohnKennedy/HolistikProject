@@ -22,32 +22,48 @@
 
             <div class="divisionLine"></div>
 
-            <ul id="settingsList">
-                <li class="settingsListItem">
-                    <div class="userSetting">
-                        Username: <%= %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
-                    </div>
-                </li>
-                <li class="settingsListItem">
-                    <div class="userSetting">
-                        Email: <%= %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
-                    </div>
-                </li>
-                <li class="settingsListItem">
-                    <div class="userSetting">
-                        Bio: <%= %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
-                    </div>
-                </li>
-                <li class="settingsListItem">
-                    <div class="userSetting">
-                        Password(hashed): <%= %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
-                    </div>
-                </li>
-            </ul>
+            <div class="settingsContent">
+                <div class="leftColumn column">
+                    <ul class="settingsList lCln">
+                        <li>Username</li>
+                        <li>Bio</li>
+                        <li>Email</li>
+                        <li>Password:</li>
+                    </ul>
+                </div>
+
+                <div class="middleColumn column">
+                    <ul class="settingsList mCln">
+                        <li>: <%= username %></li>
+                        <li>: <%= userBio %></li>
+                        <li>: <%= userEmail %></li>
+                        <li>: ******</li>
+                    </ul>
+                </div>
+
+                <div class="rightColumn column">
+                    <ul class="settingsList rCln">
+                        <li>
+                            <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        </li>
+
+                        <li>
+                            <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        </li>
+
+                        <li>
+                            <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        </li>
+
+                        <li>
+                            <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+
         </div>
 
     </div>

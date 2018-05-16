@@ -5,9 +5,6 @@
     font-size: 33px;
 }
 
-.userSetting {
-    font-size: 20px;
-}
 
 .btn, editSettingsBt{
     float: right;
@@ -15,15 +12,22 @@
     margin-right: 267px;
 }
 
-#settingsList {
+.settingsList {
     list-style-type: none;
-    margin-top: 11%;
 }
 
-.settingsListItem {
+.settingsList > li {
     height: 50px;
     padding-left: 18%;
+    font-size: 20px;
 }
 
-.userSetting {
+.settingsContent {
+    margin-top: 11%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.lCln {
+    text-align: right;
 }
