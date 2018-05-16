@@ -38,6 +38,9 @@ function setCanvasZoomScale(scaleFactor) {
     drawingCanvas.style.top  = -(verticalReduction/2)   + "px";
 }
 
+function convertCoordinateByZoomScale(value) {
+    return value / canvasScale;
+}
 
 /** This function will calculate the scrollx and scrolly settings to centre the given coordinates on the canvas.
  *  If the coord cannot be centred, it will get as close as it can.

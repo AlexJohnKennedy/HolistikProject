@@ -82,12 +82,12 @@ interact('.draggable').draggable({
     }
 
     // update the element's style
-    target.style.width  = event.rect.width + 'px';
-    target.style.height = event.rect.height + 'px';
+    target.style.width  = (event.rect.width/canvasScale) + 'px';
+    target.style.height = (event.rect.height/canvasScale) + 'px';
 
     //Access the logical node and directly update the size.
-    node.size.height = event.rect.height;
-    node.size.width  = event.rect.width;
+    node.size.height = event.rect.height/canvasScale;
+    node.size.width  = event.rect.width/canvasScale;
 
     //Now, we need to reposition the 'buttons' on the node itself to make sure they stay in the corners.
     //We also need to resize the 'root node border' sub-element!
@@ -163,8 +163,8 @@ function onDragStart (event) {
 function onDragMove (event) {
     let target = event.target,
         // keep the dragged translation in attributes stored directly in the HTML element object. Allows easier access for interact.js
-        x = (parseFloat(target.getAttribute('xTranslation')) || 0) + event.dx,
-        y = (parseFloat(target.getAttribute('yTranslation')) || 0) + event.dy;
+        x = (parseFloat(target.getAttribute('xTranslation')) || 0) + (event.dx/canvasScale),
+        y = (parseFloat(target.getAttribute('yTranslation')) || 0) + (event.dy/canvasScale);
 
     // translate the element
     target.style.webkitTransform =
