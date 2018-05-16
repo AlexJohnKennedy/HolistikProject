@@ -61,7 +61,7 @@
                         <% writeProjects.forEach(function(project) { %>
                         <li>
                             <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
-                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>" writePermission="true">
                                 <form method="post" action="/deleteProject" enctype="application/x-www-form-urlencoded">
                                     <input type="hidden" name="projectId" value="<%= project.projectId %>">
                                     <input class="btn deleteProjectBtn" type="submit" value="Delete">
@@ -98,7 +98,7 @@
                         <% readOnlyProjects.forEach(function(project) { %>
                         <li>
                             <!-- each item in the list is a div box, containing the name of the project, an image (if it exists), and the rendered timestamp -->
-                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>">
+                            <div class="projectPreviewBox" projectName="<%= project.projectName %>" projectId="<%= project.projectId %>" writePermission="false">
 
                                 <!--<div class="projectTimestampText"> <%= project.timestamp %> </div>-->
                                 <div class="btn loadProjectBtn">Load</div>
