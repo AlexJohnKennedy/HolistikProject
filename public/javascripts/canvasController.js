@@ -451,7 +451,7 @@ function deleteContentNode(node, stitchTree) {
                 if (parentRel.compareLabel(childRel.categoryLabel)) {
                     //Matched! Add all children of this relationship to the corresponding parent label!
                     for (let matchedChildNode of childRel.children) {
-                        parentRel.addChild(matchedChildNode);
+                        parentRel.addChild(matchedChildNode, false);
                     }
                 }
             }
