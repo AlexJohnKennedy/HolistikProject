@@ -30,11 +30,12 @@ function unseeTheEditWindow() {
  * @param name
  * @param id
  */
-function setProjectDataInLocalBrowserStorage(name, id) {
+function setProjectDataInLocalBrowserStorage(name, id, writePermission) {
     //TODO - Enforce alphanumeric for project and user names
 
     window.localStorage.setItem("projectName", name);
     window.localStorage.setItem("projectId", id);
+    window.localStorage.setItem("writePermission", writePermission);
 
     console.log("projectName saved to local storage: "+window.localStorage.getItem("projectName"));
     console.log("projectId saved to local storage: "+window.localStorage.getItem("projectId"));
@@ -50,7 +51,7 @@ window.onload = function() {
         loadButton.addEventListener("click", function(event) {
             console.log("CLICKED LOAD");
             let e = event.target.parentElement;
-            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"));
+            setProjectDataInLocalBrowserStorage(e.getAttribute("projectName"), e.getAttribute("projectId"), e.getAttribute("writePermission"));
             //Redirect to the main page
             window.location.href = "/main";
         });

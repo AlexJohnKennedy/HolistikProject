@@ -13,8 +13,9 @@ const canvasState = {
     projectLoaded : false
 };
 
-//TODO -- MOVE THE CREATION OF THIS OBJECT TO SOME 'INIT' FUNCTION WHICH IS CALLED ON PAGE LOAD.
 let ajaxHandler = null;
+let hasWritePermission = false;
+
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
@@ -82,6 +83,11 @@ window.onload = function() {
         let title = window.localStorage.getItem("projectName");
         if (title !== undefined && title != null) {
             document.getElementById("sidebarProjectTitle").innerText = title;
+        }
+
+        let wp = window.localStorage.getItem("writePermission");
+        if (wp !== undefined && wp != null && wp === "true") {
+            hasWritePermission = true;  //Set a flag, so tha we know not to attempt to send save requests during this session, since they will just fail.
         }
     }
 };
