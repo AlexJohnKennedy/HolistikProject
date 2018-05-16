@@ -654,12 +654,16 @@ interact('.sliderHandle').draggable({                        // make the element
 }).on('dragmove', function (event) {  // call this function on every move
     let sliderWidth = interact.getElementRect(event.target.parentNode).width;   //The slider width is the width of the parent (the slider bar)
     let sliderPercentage = event.pageX / sliderWidth;
-    console.log(sliderPercentage);
 
     //Manually clamp
     if (sliderPercentage > 1) { sliderPercentage = 1; }
     else if (sliderPercentage < 0) { sliderPercentage = 0; }
 
+    //Move the slider handle based on the slider percentage value!
     event.target.style.left = (sliderPercentage * 100) + '%';
-    event.target.setAttribute('data-value', sliderPercentage.toFixed(2));
+
+    //Set the scale factor by some normalised amount.
+    setCanvasZoomScale(sliderPercentage + 0.5);     //makes the center of the slider 1.0 zoom, min 0.5, and max 1.5, etc.
+
+    //TODO: MAKE IT DISPLAY A ZOOM VALUE AS PERCENTAGE SOMEWHERE?
 });

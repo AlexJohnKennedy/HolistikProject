@@ -24,13 +24,12 @@ html {
 
     height: 100%;
     width:  100%;
-    background-color: rgb(223,220,217);
 }
 
 /* Lets make the 'drawing canvas' some big block which is relatively positioned. */
 #drawingCanvas {
     position: absolute;
-    background-color : lightgrey;
+    /*background-color: rgb(237, 237, 237); Background is actually set in the SVG OBJECT*/
     border-width: 3px;
     border-radius: 3px;
 
