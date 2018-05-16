@@ -172,7 +172,9 @@ function profilePageGet(req, res) {
     let username = null;
     //If the user is logged in, then we can supply the username
     if (req.user) {
-        username = req.user.username
+        username = req.user.username;
+        email = req.user.email;
+
     }
     res.render('pages/userProfilePage', { username: username});
 }
