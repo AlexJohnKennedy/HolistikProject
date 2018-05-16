@@ -184,23 +184,6 @@ function getProjectsByIds(arrayOfIds) {
     });
 }
 
-/**
- * Function to update the parameters of any particular user in the database.
- *
- * Note: null must be passed for fields that are to be ignored
- * @param userModel
- */
-function updateUserDetails(userModel, username, email, bio, image, hash) {
-    //call the update functions - these will handle internally whether the passed field is valid or not
-    userModel = updateUserUsername(userModel, username);
-    userModel = udateUserEmail(userModel, email);
-    userModel = updateUserBio(userModel, bio);
-    userModel = updateUserImage(userModel, image);
-    userModel = updateUserHash(userModel, hash);
-
-    return userModel;
-}
-
 async function updateUserEmail(userModel, freshEmail) {
     console.log("Attempting to change a users' email from: "+userModel.email+" to: " + freshEmail);
 
