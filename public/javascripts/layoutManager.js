@@ -494,8 +494,13 @@ function findBestRootLayerOrdering(roots, leaves) {
         for (let [root, num] of roots[i].sharedDescendents) {
             currNum += num;
         }
+
+        //If more coupled than the previous most coupled, pick it!. Tie break by the total number of children in general..
         if (currNum > max) {
             max = currNum;
+            maxIdx = i;
+        }
+        else if (currNum === max && roots[i].outgoingEdges.length > roots[maxIdx].outgoingEdges.length) {
             maxIdx = i;
         }
     }
@@ -534,7 +539,8 @@ function findMostCoupledRemainingNeighbour(root, remainingRoots) {
         console.log(remainingRoots);
         console.log("Count is: "+count+", current max is "+max);
 
-        if (count >= max) {
+        //If it's more tightly coupled, or equally, with more children in general (tiebreaker)
+        if ( (count > max) || ((count === max) && (closestNeighbour == null || remainingRoots[i].outgoingEdges.length > closestNeighbour.outgoingEdges.length)) ) {
             closestNeighbour = remainingRoots[i];
             maxIdx = i;
             max = count;
