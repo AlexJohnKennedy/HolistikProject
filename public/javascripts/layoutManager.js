@@ -27,6 +27,11 @@ const DUMMY_SPACING   = 0;
 const HORIZONTAL_WIDTH_PADDING_RATIO = 0.5;     //Ratio of horizontal padding to adjust for layer width differences (0.5 means pad half the difference)
 
 function autoArrangeVisibleNodes(useSimpleGrouping) {
+    //If there are no nodes, return immediately
+    if (canvasState.contentNodeList.length === 0) {
+        return;
+    }
+
     //Before we do anything, we should shrink all of the 'showing info' nodes
     hideAllInfo();
 
