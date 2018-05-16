@@ -947,7 +947,7 @@ class GroupVertex {
 // ---------------------------------------------------------------------------------------------------------------------
 
 function animateToFinalPositions(verticesWithGroupBoundaries, setHeights) {
-    console.log("Logging the verticesWithGroupBoundaries object passed to ")
+    console.log("Logging the verticesWithGroupBoundaries object passed to ");
     //find the layer with the greatest width, and use that as our 'base'
     let LAYER_SPACING = (setHeights ? SET_NODE_HEIGHT + LAYER_ADDITIONAL_SPACING : MAX_NODE_HEIGHT + LAYER_ADDITIONAL_SPACING);
 
@@ -990,6 +990,8 @@ function animateToFinalPositions(verticesWithGroupBoundaries, setHeights) {
     //We should just whack this arrangement as centrally as we can, in the drawing canvas..
     let leftOffset = (CANVAS_WIDTH - maxWidth) / 2;
     let topOffset  = (CANVAS_HEIGHT - verticesWithGroupBoundaries.vertexMatrix.length * LAYER_SPACING) / 2;
+
+    centreCoordinatesOnCanvas(CANVAS_WIDTH/2, topOffset + document.getElementById("canvasWindow").offsetHeight/2*0.75);
 
     //Rightio! let's fkn do this shit.
     for (let i=0; i < verticesWithGroupBoundaries.vertexMatrix.length; i++) {

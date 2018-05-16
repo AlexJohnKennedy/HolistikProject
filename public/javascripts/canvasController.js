@@ -988,3 +988,51 @@ function hideAllInfo() {
         canvasState.showingNodes[i].hideInfo()
     }
 }
+
+/** This function will calculate the scrollx and scrolly settings to centre the given coordinates on the canvas.
+ *  If the coord cannot be centred, it will get as close as it can.
+ * @param x
+ * @param y
+ */
+function centreCoordinatesOnCanvas(x, y) {
+    //Use the canvas window to determins the offsets to scroll, since it will tell us how large the viewing window currently is.
+    let canvasWindow = document.getElementById("canvasWindow");
+
+    let windowwidth = canvasWindow.offsetWidth;
+    let windowheight = canvasWindow.offsetHeight;
+
+    let scrollLeft;
+    let scrollTop;
+
+    //Calculate the left scroll.
+    if (windowwidth/2 >= x) {
+        //scroll all the way to the left.. clamping!
+        scrollLeft = 0;
+    }
+    else if (windowwidth/2 >= (CANVAS_WIDTH - x)) {
+        //Scroll all the way to the right.. clamping!
+        scrollLeft = CANVAS_WIDTH - windowwidth - 3;    //3 is only there for small padding and so forth.
+    }
+    else {
+        //No need to clamp!
+        scrollLeft = x - windowwidth/2;
+    }
+
+    //Calculate the top scroll.
+    if (windowheight/2 >= y) {
+        //scroll all the way to the left.. clamping!
+        scrollTop = 0;
+    }
+    else if (windowheight/2 >= (CANVAS_HEIGHT - y)) {
+        //Scroll all the way to the right.. clamping!
+        scrollTop = CANVAS_HEIGHT - windowheight - 3;    //3 is only there for small padding and so forth.
+    }
+    else {
+        //No need to clamp!
+        scrollTop = y - windowheight/2;
+    }
+
+    //Set the scroll!
+    canvasWindow.scrollLeft = scrollLeft;
+    canvasWindow.scrollTop  = scrollTop;
+}
