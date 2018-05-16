@@ -152,11 +152,10 @@ async function editEmailUser(req, res) {
     }
 
     //All succeeded!
-    res.render('pages/userProfilePage', { username: req.body.username, email : req.body.newEmail, bio : req.body.bio });
+    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio });
 }
 
-
-async function editBiolUser(req, res) {
+async function editBioUser(req, res) {
     logRequestDetails("User requested to change their bio!", req);
 
     //authenticate
@@ -169,14 +168,42 @@ async function editBiolUser(req, res) {
     //tell the db class to make the appropriate changes and save them remotely
     let user = await db.getOneUserByUsername(req.body.username);
     if (user === null) {
-        console.log("User email update failed. Redirecting to home.");
+        console.log("User bio update failed. Redirecting to home.");
         return res.redirect("/");
     } else {
-        await db.updateUserEmail(user, req.body.newEmail);
+        await db.updateUserBio(user, req.body.newBio);
     }
 
     //All succeeded!
-    res.render('pages/userProfilePage', { username: req.body.username, email : req.body.newEmail, bio : req.body.bio });
+    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio });
+}
+
+async function editPasswordUser(req, res) {
+    logRequestDetails("User requested to change their password!", req);
+
+    //authenticate
+    if (!isAuthenticatedRequest(req, NO_SESSION_ERR_MSG, AUTH_FAIL_ERR_MSG)) {
+        //AUTH FAIL. Redirect to login page, for now
+        //TODO - Work out better auth failure behaviour...
+        return res.redirect("/");
+    }
+
+    //tell the db class to make the appropriate changes and save them remotely
+    let user = await db.getOneUserByUsername(req.body.username);
+    if (user === null) {
+        console.log("User password update failed. Redirecting to home.");
+        return res.redirect("/");
+    } else {
+        //let's hash the new PW!
+        bcrypt.hash(req.body.newPassword, SALT_ROUNDS).then(async function(hashResult) {
+           await db.updateUserHash(user, hashResult);
+        }).catch(function(err) {
+            res.status(500).send("Bcrypt failed to fucking hash dat shit:\n"+err);
+        });
+    }
+
+    //All succeeded!
+    res.render('pages/userProfilePage', { username: user.username, email : user.email, bio : user.bio });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -441,7 +468,9 @@ module.exports = {
     loginUser                : loginUser,
     logoutUser               : logoutUser,
 
-    editEmailUser             : editEmailUser,
+    editEmailUser            : editEmailUser,
+    editBioUser              : editBioUser,
+    editPasswordUser         : editPasswordUser,
 
     passport                 : passport
 };

@@ -201,27 +201,6 @@ function updateUserDetails(userModel, username, email, bio, image, hash) {
     return userModel;
 }
 
-function updateUserUsername(userModel, freshUsername) {
-    console.log("Attempting to change a users' username from: "+userModel.username+" to: "+freshUsername);
-
-    if (!validateString(freshUsername, userModel.username)) {
-        console.log("Supplied parameter failed to pass validation. Aborting");
-        return userModel;
-    }
-
-    //if we made it here the new username is valid, change that shit
-    userModel.username = freshUsername;
-
-    //save and we're done!
-    return userModel.save().then(function(user) {
-       //return the user
-       return user;
-    }).catch(function(err) {
-        console.log("Error trying to update a user username in MongoDB. ERROR: "+err);
-        //indicate that an error has occurred by returning undefined
-        return undefined;
-    });
-}
 async function updateUserEmail(userModel, freshEmail) {
     console.log("Attempting to change a users' email from: "+userModel.email+" to: " + freshEmail);
 
@@ -243,7 +222,7 @@ async function updateUserEmail(userModel, freshEmail) {
         return undefined;
     });
 }
-function updateUserBio(userModel, freshBio) {
+async function updateUserBio(userModel, freshBio) {
     console.log("Attempting to change a users' bio from: "+userModel.bio+" to: " + freshBio);
 
     if (!validateString(freshBio, userModel.bio)) {
@@ -264,28 +243,13 @@ function updateUserBio(userModel, freshBio) {
         return undefined;
     });
 }
-function updateUserImage(userModel, freshImageURL) {
-    console.log("Attempting to change a users' image url from: "+userModel.image+" to: " + freshImageURL);
-
-    //TODO: Check that the url is valid
-
-    //if we passed the above stuff we can update the field
-    userModel.image = freshImageURL;
-
-    //save!
-    return userModel.save().then(function(user) {
-        //return the user
-        return user;
-    }).catch(function(err) {
-        console.log("Error trying to update a user image url in MongoDB. ERROR: "+err);
-        //indicate that an error has occurred by returning undefined
-        return undefined;
-    });
-}
-function updateUserHash(userModel, freshHash) {
+async function updateUserHash(userModel, freshHash) {
     console.log("Attempting to change a users' hash from: "+userModel.hash+" to: " + freshHash);
 
-    //TODO: Check that the hash is valid?
+    if (!validateString(freshHash, userModel.hash)) {
+        console.log("Supplied parameter failed to pass validation. Aborting");
+        return userModel;
+    }
 
     //if we passed the above stuff we can update the field
     userModel.hash = freshHash;
@@ -540,7 +504,11 @@ module.exports = {
     getOneUserByUsername: getOneUserByUsername,
     getOneProjectById: getOneProjectById,
     getProjectsByIds: getProjectsByIds,
+
     updateUserEmail: updateUserEmail,
+    updateUserBio: updateUserBio,
+    updateUserHash: updateUserHash,
+
     updateProject: updateProject,
     updateProjectName: updateProjectName,
     deleteProject: deleteProject,

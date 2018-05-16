@@ -37,13 +37,13 @@
                 <li class="settingsListItem">
                     <div class="userSetting">
                         Bio: <%= bio %>
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditBioWindow()">Edit</div>
                     </div>
                 </li>
                 <li class="settingsListItem">
                     <div class="userSetting">
                         Password:
-                        <div class="btn editSettingsBtn" onclick="showMeTheEditWindow()">Edit</div>
+                        <div class="btn editSettingsBtn" onclick="showMeTheEditPasswordWindow()">Edit</div>
                     </div>
                 </li>
             </ul>
@@ -56,6 +56,30 @@
             <p id="editProject">Edit Email</p>
             <form method="post" action="/editUserEmail" enctype="application/x-www-form-urlencoded">
                 <input type="text" name="newEmail">
+                <input type="hidden" id="username" name="username" value=<%= username %>>
+                <input class="btn" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+
+    <div class="layer" id="editBio">
+        <div class="container" id="editContent">
+            <a id="aCross" onclick="unseeTheEditBioWindow()">X</a>
+            <p id="editProject">Edit Bio</p>
+            <form method="post" action="/editUserBio" enctype="application/x-www-form-urlencoded">
+                <input type="text" name="newBio">
+                <input type="hidden" id="username" name="username" value=<%= username %>>
+                <input class="btn" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+
+    <div class="layer" id="editPassword">
+        <div class="container" id="editContent">
+            <a id="aCross" onclick="unseeTheEditPasswordWindow()">X</a>
+            <p id="editProject">Edit Password</p>
+            <form method="post" action="/editUserPassword" enctype="application/x-www-form-urlencoded">
+                <input type="text" name="newPassword">
                 <input type="hidden" id="username" name="username" value=<%= username %>>
                 <input class="btn" type="submit" value="Submit">
             </form>

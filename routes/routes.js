@@ -43,6 +43,8 @@ const LOGIN_URL                    = "/login";
 const LOGOUT_URL                   = "/logout";
 
 const EDIT_USER_EMAIL_URL          = "/editUserEmail";
+const EDIT_USER_BIO_URL            = "/editUserBio";
+const EDIT_USER_PASSWORD_URL       = "/editUserPassword";
 
 const GET_USER_PROJECTS_URL        = "/getprojectlist";
 
@@ -56,6 +58,8 @@ router.post(LOGIN_URL, controller.apiController.passport.authenticate('local', {
 router.get(LOGOUT_URL, controller.apiController.logoutUser);
 
 router.post(EDIT_USER_EMAIL_URL, controller.apiController.editEmailUser);
+router.post(EDIT_USER_BIO_URL, controller.apiController.editBioUser);
+router.post(EDIT_USER_PASSWORD_URL, controller.apiController.editPasswordUser);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Server Data API routes - Defining routes for AJAX usage for saving/loading project data -------------------------
