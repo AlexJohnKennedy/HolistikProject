@@ -9,8 +9,10 @@ body {
     position: relative;
     display: grid;
     grid-template-columns: 200px 5fr;
-    grid-auto-rows: minmax(500px, 650px);
+    grid-template-rows: 1fr;
     grid-gap: 10px;
+
+    min-height: calc(100vh - 74px - 10px); /* SINCE THE HEADER HEIGHT IS HARDCODED, WE HAVE TO HARD CODE THE AMOUNT TO ADJUST THE GRID HEIGHT BY!! */
 }
 
 /* control the visibility of the popup edit window */
