@@ -62,7 +62,8 @@ async function createNewUser(userData, pwHash) {
 function createNewProject(projectData) {
     //build new model from JSON
     let structure = new Project.structureModel({
-        contentNodes: []
+        contentNodes: [],
+        globalContextArrangement: ""    //There is no arrangement here yet!
     });
     let arrangement = new Project.arrangementModel({
         contextNodeId: null,
@@ -332,13 +333,14 @@ function validateString(newString, oldString) {
     return true;
 }
 
-function updateProject(projectModel, structure, arrangement, imageDataURI) {
+function updateProject(projectModel, structure, globalContextArrangementString, arrangement, imageDataURI) {
     //Get all the structures and arrangements and shit
     return Project.structureModel.findById(projectModel.currentStructure).then(function(structureDoc) {
         console.log("db.updateProject() - Structure was retrieved from the database, the original document is: ");
         console.log(structureDoc);
 
         structureDoc.contentNodes = structure;     //Overwrite entire structure
+        structureDoc.globalContextArrangement = globalContextArrangementString;     //Save the global context STRING as well (not stored as an object).
 
         //Ok, save the document and return the promise from that, so we can continue chaining promise callbacks
         return structureDoc.save();
@@ -361,7 +363,7 @@ function updateProject(projectModel, structure, arrangement, imageDataURI) {
         console.log(arrangementSaveResult);
 
         //Everything passed!
-        //Finally, if the recevied imageDataURI is not empty, we should save the new image
+        //Finally, if the received imageDataURI is not empty, we should save the new image
         if (imageDataURI.length) {
             projectModel.image = imageDataURI;
         }
@@ -420,14 +422,14 @@ async function deleteProject(body, user) {
     for (let i = user.projects.length-1; i>= 0; i--) {
         //TODO figure out the correct way to compare ids, mongodb IDs have a compare function - investigate
         //the shit below ignores that the two project ids are of different type
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
+        console.log("---------------------------------------------------------------------------------------------");
+        console.log("---------------------------------------------------------------------------------------------");
+        console.log("---------------------------------------------------------------------------------------------");
         console.log(typeof(user.projects[i].projectId) + " " + typeof(projectId));
         console.log(new mongoose.Types.ObjectId(projectId) === user.projects[i].projectId);
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------------------------")
+        console.log("---------------------------------------------------------------------------------------------");
+        console.log("---------------------------------------------------------------------------------------------");
+        console.log("---------------------------------------------------------------------------------------------");
         //double equals?
         if (user.projects[i].projectId == projectId) {
             //we have a match! delete the project
