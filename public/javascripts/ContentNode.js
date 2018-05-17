@@ -19,7 +19,7 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     this.previousTranslation = {
         x : x,  //This object will be used to remember the previous position of this node, so that we can perform 'go back' actions
         y : y   //for example when we detatch a node from it's parents by dragging it into the 'detatch' zone. It should move back afterwards.
-    }           //We will update the 'previous position' whenever the user starts dragging the node!
+    };          //We will update the 'previous position' whenever the user starts dragging the node!
     this.size            = {
         height : height,
         width  : width
@@ -34,6 +34,9 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     this.numViewedBy     = -1;      //This tracks how many parents are supplying 'visibility' to the node at the current time.
     //DEPRECEATED                  //-1 indicates that the node is independently visible (i.e. it is not visible based on a parent viewing it)
                                     //New nodes are always set to be root nodes, thus we can initialise as -1.
+
+    // --- arrangement for when this node is the context node.
+    this.contextArrangement = "";
 
     // --- Relationship properties ---
     //Upon creation, new nodes have no defined relationships.

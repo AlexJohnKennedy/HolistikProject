@@ -67,7 +67,8 @@ function contentNode_state_replacer(key, value) {
     ||  key === 'titleText'
     ||  key === 'descriptionText'
     ||  key === 'colour'
-    ||  key === 'childrenList') {
+    ||  key === 'childrenList'
+    ||  key === 'contextArrangement') {
 
         return value;   //Serialize as normal!
     }
@@ -201,10 +202,10 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
 
     //Assign the context node to the canvasState
     if (contextNodeId != null) {
-        switchContext(newNodeMap.get(contextNodeId));
+        switchContext(newNodeMap.get(contextNodeId), false, false);
     }
     else {
-        switchContext(null);
+        switchContext(null, false, false);
     }
 }
 
@@ -338,10 +339,10 @@ function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate, co
 
     if (contextSwitch) {
         if (result.contextNodeId != null) {
-            switchContext(nodeMap.get(result.contextNodeId));
+            switchContext(nodeMap.get(result.contextNodeId), true, animate);
         }
         else {
-            switchContext(null);
+            switchContext(null, true, animate);
         }
     }
 

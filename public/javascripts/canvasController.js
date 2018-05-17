@@ -10,7 +10,8 @@ const canvasState = {
     viewDepth : 50,         //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : [],
     showingNodes : [],      //List of all content nodes which are currently 'showing' their info (i.e. expanded)
-    projectLoaded : false
+    projectLoaded : false,
+    globalContextArrangement : ""
 };
 
 let ajaxHandler = null;
@@ -715,7 +716,15 @@ function traverseForVisibility(curr, depth) {
  *
  * @param newContextNode the new node object to become the new context, OR null, to imply global context.
  */
-function switchContext(newContextNode) {
+function switchContext(newContextNode, loadArrangementFromNewContext, animate) {
+    //We are switching context. In order to preserve this particular arrangement when we return to this arrangement, we should save this current arrangement
+    //as a JSON string within the current context node!
+    if (canvasState.contextNode === null) {
+        canvasState.globalContextArrangement = serialiseNodeArrangement();
+    }
+    else {
+        canvasState.contextNode.contextArrangement = serialiseNodeArrangement();
+    }
 
     //Attain access to the context display object.
     let contextBox = document.getElementById("contextIndicatorBox");
@@ -768,6 +777,29 @@ function switchContext(newContextNode) {
         }
     }
 
+    //Finally, we should update the arrangement based on the new context's saved arrangement string, if the parameter says we should.
+    if (loadArrangementFromNewContext) {
+        let arrangementString;
+        if (newContextNode === null) {
+            arrangementString = canvasState.globalContextArrangement;
+        }
+        else {
+            arrangementString = newContextNode.contextArrangement;
+        }
+
+        //If the arrangement string is null, undefined, or empty, then we should trigger an auto arragement, since this context has never been arranged before!
+        if (arrangementString === undefined || arrangementString === null || arrangementString === "") {
+            autoArrangeVisibleNodes(false);
+        }
+        else {
+            //Load the arrangement, but DO NOT HIDE MISSING NODES, as we still want to show everything which is in this context!
+            //Updated arrangements which hide missing nodes will be for when the user wishes to return to viewing a previously saved arrangement.
+            //Missing nodes occur when there is a saved arrangement here, but since the arrangement was last saved, the user has added more nodes, and thus,
+            //they are now missing.
+            updateArrangementFromJSON(arrangementString, false, animate, false);    //False for hiding missing nodes, and False for triggering another context switch (avoid potential inf. recurse).
+        }
+    }
+
     //Now, we just need to rebuild the visibility!!
     rebuildVisibility();
 }
@@ -787,10 +819,10 @@ function zoomContextOut() {
     //to facilitate further development of features and not getting stuck.
     if (canvasState.contextNode.parentList.length === 0) {
         //The current context has no parent! Thus, we should move to global context.
-        switchContext(null);
+        switchContext(null, true, true);
     }
     else {
-        switchContext(canvasState.contextNode.parentList[0].parentNode);
+        switchContext(canvasState.contextNode.parentList[0].parentNode, true, true);
     }
 }
 
@@ -814,7 +846,7 @@ function zoomContextIn(event) {
         return;
     }
 
-    switchContext(node);
+    switchContext(node, true, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -878,7 +910,7 @@ function reinstantiateExistingNode(id, x, y) {
 
     //Okay, now we need to determine if the node is an ancestor, or descendant, of the context node.
     if (canvasState.contextNode == null || areHierarchicallyRelated(toAdd, canvasState.contextNode)) {
-        switchContext(toAdd);
+        switchContext(toAdd, true, true);
     }
     else {
         addNewRootNode(toAdd);

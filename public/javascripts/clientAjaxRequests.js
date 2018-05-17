@@ -229,7 +229,7 @@ class AjaxProjectLoader {
         //DEBUG
         console.log(imageDataURI);
 
-        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI + '" }';
+        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI +', "globalContextArrangement": "' + canvasState.globalContextArrangement + '" }';
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project:");

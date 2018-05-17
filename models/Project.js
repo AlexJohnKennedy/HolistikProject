@@ -8,7 +8,7 @@ let projectSchema = new Schema({
     savedArrangements: [
         Schema.ObjectId     //Array of _id references to 'SavedArrangement' documents. Note: NOT directly referencing Arrangement documents.
     ],
-    image: String,
+    image: String,          //Data URI describing a literal image (image encoded as 64 bit string)
     name: {type: String, required: true},
     timestamp: Date
 });
@@ -30,9 +30,11 @@ let structureSchema = new Schema({
                         String      //HTML id string referencing a node
                     ]
                 }
-            ]
+            ],
+            contextArrangement: String  //JSON string representing the arrangement to load whenever THIS content node is set as the current context.
         }
-    ]
+    ],
+    globalContextArrangement: String
 });
 
 //Schema for a visual arrangement of a group of nodes

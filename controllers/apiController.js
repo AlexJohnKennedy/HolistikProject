@@ -164,7 +164,7 @@ async function projectLoad(req, res) {
         return res.status(500).send("ERROR: Client passed a project id that returned no results in the database during save operation")
     }
 
-    //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to save this project
+    //Alright! We got the project object. Now, let's get the user document for this user as well, so we can check if the user has permission to load this project
     let userModel = await db.getOneUserByEmail(req.user.email);
     if (userModel === undefined) {
 
@@ -178,7 +178,7 @@ async function projectLoad(req, res) {
 
     //Okay, let's make sure the user has the correct permissions for loading (read OR write)
     if (db.hasReadOrWritePermission(userModel, projectModel)) {
-        //They have permission to save to this project! So, let's update the project model!
+        //They have permission to load to this project! So, let's update the project model!
         let projectData = await db.getStructureAndArrangementFromProject(projectModel);
         if (projectData === undefined || projectData == null) {
             res.status(500).send("DATABASE ERROR: Failed to update project details");
@@ -238,7 +238,7 @@ async function projectSave(req, res) {
     //Okay, let's make sure the user has the correct permissions.
     if (db.hasWritePermission(userModel, projectModel)) {
         //They have permission to save to this project! So, let's update the project model!
-        let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.arrangement, req.body.image);
+        let updatedProjectModel = await db.updateProject(projectModel, req.body.structure, req.body.globalContextArrangement, req.body.arrangement, req.body.image);
         if (updatedProjectModel === undefined) {
             res.status(500).send("DATABASE ERROR: Failed to update project details");
         }
