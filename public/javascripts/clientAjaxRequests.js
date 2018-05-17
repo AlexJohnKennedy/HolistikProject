@@ -169,9 +169,13 @@ class AjaxProjectLoader {
 
             //TODO -- stop client from wasting fuck loads of effort re-stringifying everything...
             let structureJSON   = JSON.stringify(responseObject.structure.contentNodes);
+            let globalContextArrangement = responseObject.structure.globalContextArrangement;   //Don't need to restringify, since it should already be a string!
             let arrangementJSON = JSON.stringify(responseObject.arrangement);
 
-            fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
+            console.log("LOGGING GLOBAL CONTEXT STRING");
+            console.log(globalContextArrangement);
+
+            fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON, globalContextArrangement);
 
             removeBlackoutEffect();
             hideLoadingWindow();
@@ -226,10 +230,10 @@ class AjaxProjectLoader {
             });
         }
 
-        //DEBUG
-        console.log(imageDataURI);
+        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI +'", "globalContextArrangement": ' + JSON.stringify(canvasState.globalContextArrangement) + ' }';
 
-        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI +', "globalContextArrangement": "' + canvasState.globalContextArrangement + '" }';
+        //DEBUG
+        console.log(requestBody);
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project:");

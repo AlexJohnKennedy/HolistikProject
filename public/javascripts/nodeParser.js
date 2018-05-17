@@ -168,7 +168,7 @@ function serializeNodeArrangement_replacer(key, value) {
  * @param nodeArrangementJSON
  * @param contextNodeId
  */
-function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
+function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, globalArrangementString) {
     //Clear the current canvas state, and FULLY rebuild from scratch
     clearCanvasState();
 
@@ -199,6 +199,7 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
     currIdNum = maxIdSoFar + 1;
 
     let contextNodeId = arrangementResult.contextNodeId;
+    canvasState.globalContextArrangement =globalArrangementString;
 
     //Assign the context node to the canvasState
     if (contextNodeId != null) {
@@ -237,6 +238,7 @@ function parseAllNodeStatesFromJSON(jsonString) {
         newNode.setDescriptionText(data.descriptionText);
         //TODO - newNode.setColour(data.colour);
         newNode.colour = data.colour;    //TEMPORARY (until above to do gets done)
+        newNode.contextArrangement = data.contextArrangement;
 
         contentNodes.set(newNode.idString, newNode);
     }
