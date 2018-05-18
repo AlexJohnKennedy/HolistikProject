@@ -112,11 +112,6 @@ window.onload = function() {
     //Set up the undo handler after everything else is loaded!
     undoHandler = new UndoManager(MAX_UNDO_STATES);
 
-    //Now that the undoHandler exists, set up the click event listeners for the buttons!
-    //Set up event listeners on this elements!
-    document.getElementById("undoButton").addEventListener("click", undoHandler.undo());
-    document.getElementById("redoButton").addEventListener("click", undoHandler.redo());
-
     setupToolbarFading();
 };
 
@@ -1097,9 +1092,9 @@ function autoArrangeButtonClicked() {
 }
 
 function undoButtonClicked() {
-    undoHandler.undo();
+    if (undoHandler) undoHandler.undo();
 }
 
 function redoButtonClicked() {
-    undoHandler.redo();
+    if (undoHandler) undoHandler.redo();
 }
