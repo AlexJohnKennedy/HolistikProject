@@ -112,6 +112,11 @@ window.onload = function() {
     //Set up the undo handler after everything else is loaded!
     undoHandler = new UndoManager(MAX_UNDO_STATES);
 
+    //Now that the undoHandler exists, set up the click event listeners for the buttons!
+    //Set up event listeners on this elements!
+    document.getElementById("undoButton").addEventListener("click", undoHandler.undo());
+    document.getElementById("redoButton").addEventListener("click", undoHandler.redo());
+
     setupToolbarFading();
 };
 
@@ -202,6 +207,8 @@ function createNewContentNode() {
     newNode.editNodeContent();
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
+
+    undoHandler.recordChange();
 }
 
 /**
@@ -1087,4 +1094,12 @@ function autoArrangeButtonClicked() {
 
     //Track this change in the undo manager!
     undoHandler.recordChange();
+}
+
+function undoButtonClicked() {
+    undoHandler.undo();
+}
+
+function redoButtonClicked() {
+    undoHandler.redo();
 }

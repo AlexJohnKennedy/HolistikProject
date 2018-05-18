@@ -46,6 +46,26 @@ class UndoManager {
      * In other words, this is invoked AFTER every 'undoable' change!
      */
     recordChange() {
+        //DEBUG
+        console.log("Undo manager: Change recorded!");
+
+        //To avoid double callback errors causing weird behaviour, we should first check that the state we are about to record is not the same as the
+        //previous state!
+        let newState = {
+            structure : serialiseNodeState(),
+            arrangement : serialiseNodeArrangement(),
+            globalContextArrangement : canvasState.globalContextArrangement
+        };
+
+        if (newState.structure === this.currentState.structure &&
+            newState.arrangement === this.currentState.arrangement &&
+            newState.globalContextArrangement === this.currentState.globalContextArrangement) {
+            //OOPS! We probably shouldn't record this
+            console.log("Undo manager was asked to record the same change twice!!");
+
+            return;
+        }
+
         //The first thing to do, is push the current state into the undo stack. This is so we can return to it later!
         //We should make sure we do not push null states though (should never happen anyway, but let's be safe aye?)
         if (this.currentState) {
@@ -53,11 +73,7 @@ class UndoManager {
         }
 
         //Now, we need to make sure we record the new current state, by serialising it!
-        this.currentState = {
-            structure : serialiseNodeState(),
-            arrangement : serialiseNodeArrangement(),
-            globalContextArrangement : canvasState.globalContextArrangement
-        };
+        this.currentState = newState;
 
         //Any previously stored redo states are now invalid, since the user made a new state change and thus have branched away from the redo state chain.
         //Clear it!
@@ -68,6 +84,10 @@ class UndoManager {
             //Trim the FRONT item (the oldest state..)
             this.undoStates.shift();    //Don't need to keep the old one..
         }
+
+        //Update buttons accordingly
+        this.makeRedoButtonUnavailable();
+        this.makeUndoButtonAvailable();
     }
 
     /**
@@ -77,6 +97,9 @@ class UndoManager {
      * The original current state will be pushed to the REdo stack before it is overwritten, so that redoing is possible.
      */
     undo() {
+        //DEBUG
+        console.log("Undo method called!");
+
         //Firstly, if this is invoked when there is nothing to undo, just do nothing..
         if (this.undoStates.length === 0) {
             return;
@@ -90,10 +113,19 @@ class UndoManager {
 
         //Load the state!!
         fullyRebuildCanvasStateFromJSON(poppedState.structure, poppedState.arrangement, poppedState.globalContextArrangement);
+
+        //Update buttons accordingly
+        this.makeRedoButtonAvailable();
+        if (this.undoStates.length === 0) {
+            this.makeUndoButtonUnavailable();
+        }
     }
 
     //Basically all the same logic as an undo, but in reverse.
     redo() {
+        //DEBUG
+        console.log("Redo method called!");
+
         if (this.redoStates.length === 0) {
             return;
         }
@@ -105,6 +137,11 @@ class UndoManager {
 
         //Load the state!!
         fullyRebuildCanvasStateFromJSON(poppedState.structure, poppedState.arrangement, poppedState.globalContextArrangement);
+
+        this.makeUndoButtonAvailable();
+        if (this.redoStates.length === 0) {
+            this.makeRedoButtonUnavailable();
+        }
     }
 
 
@@ -114,7 +151,7 @@ class UndoManager {
 
     makeUndoButtonUnavailable() {
         //Set opacity to 50%, so it looks 'greyed out'
-        this.undoButtonElem.style.opacity = "0.5";
+        this.undoButtonElem.style.opacity = "0.15";
 
         //Set the 'title' to have a tooltip which informs the user that there is nothing to undo
         this.undoButtonElem.setAttribute("title", "Nothing to undo!");
@@ -124,7 +161,7 @@ class UndoManager {
     }
     makeRedoButtonUnavailable() {
         //Set opacity to 50%, so it looks 'greyed out'
-        this.redoButtonElem.style.opacity = "0.5";
+        this.redoButtonElem.style.opacity = "0.15";
 
         //Set the 'title' to have a tooltip which informs the user that there is nothing to undo
         this.redoButtonElem.setAttribute("title", "Nothing to redo!");

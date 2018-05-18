@@ -607,4 +607,7 @@ function updateNodeData() {
 
     //get rid of the info window
     closeEditWindow();
+
+    //Log this change in the undo manager
+    undoHandler.recordChange();
 }
