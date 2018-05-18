@@ -12,6 +12,31 @@
     border-width: 1px;
 }
 
+#undoButton {
+    position: absolute;
+    width: 35px;
+    height: 28px;
+    background: url("../images/undo.svg") no-repeat;
+    background-size: cover;
+
+    top: 6px;
+    left: 15%;
+}
+
+#redoButton {
+    position: absolute;
+    width: 35px;
+    height: 28px;
+    background: url("../images/undo.svg") no-repeat;
+    /* flip the element, so that the redo arrow is pointing the correct direction. */
+    transform: scaleX(-1);
+
+    background-size: cover;
+
+    top: 6px;
+    left: 30%;
+}
+
 #autoArrangeButton {
     position: absolute;
     width: 35px;
