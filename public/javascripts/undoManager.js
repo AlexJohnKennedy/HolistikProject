@@ -10,9 +10,9 @@
  */
 
 class UndoManager {
-    constructor(numUndoStatesToRember) {
+    constructor(numUndoStatesToRemember) {
         //Track how many states we should allow ourselves to remember
-        this.maxUndoStates = numUndoStatesToRember;
+        this.maxUndoStates = numUndoStatesToRemember;
 
         //Set up internal state objects, which will remember all our states and so on.
         this.undoStates = [];   //Will store undo states as a stack.
@@ -46,12 +46,68 @@ class UndoManager {
      * In other words, this is invoked on every 'undoable' change!
      */
     recordChange() {
+        //The first thing to do, is push the current state into the undo stack. This is so we can return to it later!
+        //We should make sure we do not push null states though (should never happen anyway, but let's be safe aye?)
+        if (this.currentState) {
+            this.undoStates.push(this.currentState);
+        }
 
+        //Now, we need to make sure we record the new current state, by serialising it!
+        this.currentState = {
+            structure : serialiseNodeState(),
+            arrangement : serialiseNodeArrangement(),
+            globalContextArrangement : canvasState.globalContextArrangement
+        };
+
+        //Any previously stored redo states are now invalid, since the user made a new state change and thus have branched away from the redo state chain.
+        //Clear it!
+        this.redoStates = [];
+
+        //Finally, trim the undo states to make sure we are not storing to many, as defined by our limit.
+        while (this.undoStates.length > this.maxUndoStates) {
+            //Trim the FRONT item (the oldest state..)
+            this.undoStates.shift();    //Don't need to keep the old one..
+        }
     }
 
+    /**
+     * When invoked, this performs an undo operation!!
+     *
+     * Will pop a state from the undo stack, load it, and set the currentState to be the state we just popped.
+     * The original current state will be pushed to the REdo stack before it is overwritten, so that redoing is possible.
+     */
+    undo() {
+        //Firstly, if this is invoked when there is nothing to undo, just do nothing..
+        if (this.undoStates.length === 0) {
+            return;
+        }
 
+        //Alright! lets do it.
+        this.redoStates.push(this.currentState);
 
+        let poppedState = this.undoStates.pop();
+        this.currentState = poppedState;
 
+        //Load the state!!
+        fullyRebuildCanvasStateFromJSON(poppedState.structure, poppedState.arrangement, poppedState.globalContextArrangement);
+    }
+
+    //Basically all the same logic as an undo, but in reverse.
+    redo() {
+        if (this.redoStates.length === 0) {
+            return;
+        }
+
+        this.undoStates.push(this.currentState);
+
+        let poppedState = this.redoStates.pop();
+        this.currentState = poppedState;
+
+        //Load the state!!
+        fullyRebuildCanvasStateFromJSON(poppedState.structure, poppedState.arrangement, poppedState.globalContextArrangement);
+    }
+
+    
     // -----------------------------------------------------------------------------------------------------------------
     // --- Undo and redo button management functions -------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
