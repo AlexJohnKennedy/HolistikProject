@@ -255,6 +255,9 @@ function onNodeMoved(elem) {
     //becuase it's kinda pointless to do so many updates.
     contentNode.translation.y = yPos;
     contentNode.translation.x = xPos;
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 
@@ -365,6 +368,9 @@ function onElementDropped(event) {
     removeRootNode(dropped);
 
     parent.addChildNoLabel(dropped);
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -431,6 +437,9 @@ interact('#detachNodeDropZone').dropzone({
 
         //Finally, animate the node back to it's previous position before the drag-and-drop
         draggedNode.returnToPreviousPosition(true);
+
+        //Track this change in the undo manager!
+        undoHandler.recordChange();
     }
 });
 
@@ -459,6 +468,9 @@ interact('#deleteNodeDropZone').dropzone({
         //how to handle deleation operations!
         //deleteContentNode(dropped, false);  //Do not splice the tree
         deleteContentNode(dropped, true); //splice the tree
+
+        //Track this change in the undo manager!
+        undoHandler.recordChange();
     }
 });
 

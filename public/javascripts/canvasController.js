@@ -17,6 +17,9 @@ const canvasState = {
 let ajaxHandler = null;
 let hasWritePermission = false;
 
+let undoHandler = null;
+const MAX_UNDO_STATES = 50;     //How many changes to locally remember, for undoing.
+
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
@@ -105,6 +108,9 @@ window.onload = function() {
             saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
+
+    //Set up the undo handler after everything else is loaded!
+    undoHandler = new UndoManager(MAX_UNDO_STATES);
 
     setupToolbarFading();
 };

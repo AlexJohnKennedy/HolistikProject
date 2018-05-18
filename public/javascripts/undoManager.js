@@ -43,7 +43,7 @@ class UndoManager {
      * This function is invoked when you want to tell the undo manager object that 'hey, we want to record this current state as something we can
      * return to using the undo functionality!
      *
-     * In other words, this is invoked on every 'undoable' change!
+     * In other words, this is invoked AFTER every 'undoable' change!
      */
     recordChange() {
         //The first thing to do, is push the current state into the undo stack. This is so we can return to it later!
@@ -107,7 +107,7 @@ class UndoManager {
         fullyRebuildCanvasStateFromJSON(poppedState.structure, poppedState.arrangement, poppedState.globalContextArrangement);
     }
 
-    
+
     // -----------------------------------------------------------------------------------------------------------------
     // --- Undo and redo button management functions -------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
