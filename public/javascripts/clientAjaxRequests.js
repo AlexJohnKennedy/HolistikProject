@@ -169,9 +169,13 @@ class AjaxProjectLoader {
 
             //TODO -- stop client from wasting fuck loads of effort re-stringifying everything...
             let structureJSON   = JSON.stringify(responseObject.structure.contentNodes);
+            let globalContextArrangement = responseObject.structure.globalContextArrangement;   //Don't need to restringify, since it should already be a string!
             let arrangementJSON = JSON.stringify(responseObject.arrangement);
 
-            fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON);
+            console.log("LOGGING GLOBAL CONTEXT STRING");
+            console.log(globalContextArrangement);
+
+            fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON, globalContextArrangement);
 
             removeBlackoutEffect();
             hideLoadingWindow();
@@ -226,10 +230,10 @@ class AjaxProjectLoader {
             });
         }
 
-        //DEBUG
-        console.log(imageDataURI);
+        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI +'", "globalContextArrangement": ' + JSON.stringify(canvasState.globalContextArrangement) + ' }';
 
-        let requestBody = '{ "projectId": "' + this.projectId + '", "structure": '+serialiseNodeState()+', "arrangement": '+serialiseNodeArrangement()+', "image": "' + imageDataURI + '" }';
+        //DEBUG
+        console.log(requestBody);
 
         this.httpClient.sendJsonPostRequest(PROJECT_SAVE_URL, requestBody, this.httpClient, function(response) {
             console.log("Got response from server after saving project:");
@@ -300,6 +304,8 @@ class AjaxProjectLoader {
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * OBSOLETE BY PASSPORT
+ *
  * Define an ES6 class to handle sending user login data and new-user registration data. This will be sent to the server
  * and the server will handle generating session cookies and so forth.
  *
@@ -348,5 +354,5 @@ function handleServerSideError(responseText, request) {
     ajaxHandler.cancelPendingLoadRequests();
 
     addBlackoutEffect();
-    showErrorWindow("Whoops! Something went wrong.. Try again in a few minutes. "+responseText);
+    showErrorWindow("Whoops! Something went wrong. "+responseText);
 }

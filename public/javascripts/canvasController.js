@@ -10,7 +10,8 @@ const canvasState = {
     viewDepth : 50,         //The current maximum view depth to be displayed on the canvas.
     hierarchyLines : [],
     showingNodes : [],      //List of all content nodes which are currently 'showing' their info (i.e. expanded)
-    projectLoaded : false
+    projectLoaded : false,
+    globalContextArrangement : ""
 };
 
 let ajaxHandler = null;
@@ -42,6 +43,9 @@ const MAX_NODE_WIDTH  = 300;
 const MIN_NODE_HEIGHT = 50;
 const MAX_NODE_HEIGHT = 200;
 
+const TOOLBAR_FADEOUT_TIME_MS = 5000;   //Millisecond; how long to wait until the toolbar should fade out if the mouse has not entered it.
+let toolbarFadeTimeoutId;
+
 const defaultNodeTitle = "New concept";
 const defaultNodeDesc  = "See the 'Help' page for some tips on using Holistik!";
 const defaultHierarchicalRelationshipLabel = "Child";
@@ -56,7 +60,7 @@ let childrenHorizontalSpacing = 20;   //pixels. Horizontal space between childre
 let verticalSpacing           = 50;   //pixels. Vertical space between un-related nodes. (not including semantic relationships).
 let horizontalSpcaing         = 60;   //pixels. Horizontal space between un-related nodes. (not including semantic relationships).
 
-let currTopZIndex = 1;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
+let currTopZIndex = 2;      //TODO figure out a non-cancerous non-overflow-vulnerable way of tracking the 'top' of the render stack
 
 // ---------------------------------------------------------------------------------------------------------------------
 // --- Initialisation logic for when page first loads ------------------------------------------------------------------
@@ -101,7 +105,45 @@ window.onload = function() {
             saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
+
+    setupToolbarFading();
 };
+
+function setupToolbarFading() {
+    //Set up faded in and out callbacks for the toolbar. This will make it fade away to invisible if the mouse has not entered it for a specified time.
+    let toolbar = document.getElementById("toolbar");
+    toolbar.addEventListener("mouseenter", function(event) {
+        //Cancel any previous timeout event!
+        if (toolbarFadeTimeoutId !== undefined) {
+            clearTimeout(toolbarFadeTimeoutId);
+        }
+
+        let elem = event.currentTarget;
+
+        //Make it instantly visible!
+        elem.style.transitionProperty = "opacity";
+        elem.style.transitionDuration = "0s";
+        elem.style.opacity = "1.0";
+    });
+    toolbar.addEventListener("mouseleave", function(event) {
+        //Set a timeout callback, to invoke the fade out after some specified time...
+        //Make sure to save the id! that way we can cancel the timer if the mouse reenters the toolbar!!
+        toolbarFadeTimeoutId = setTimeout(function(elem) {
+            //Make the passed element fade out.
+            elem.style.transitionProperty = "opacity";
+            elem.style.transitionDuration = "1s";
+            elem.style.opacity = "0.0";
+        }, TOOLBAR_FADEOUT_TIME_MS, event.currentTarget);
+    });
+
+    //Set up the intial fade timeout event..
+    toolbarFadeTimeoutId = setTimeout(function(elem) {
+        //Make the passed element fade out.
+        elem.style.transitionProperty = "opacity";
+        elem.style.transitionDuration = "1s";
+        elem.style.opacity = "0.0";
+    }, TOOLBAR_FADEOUT_TIME_MS, toolbar);
+}
 
 function saveProject() {
     if (ajaxHandler !== undefined && ajaxHandler != null) {
@@ -145,7 +187,7 @@ function createNewContentNode() {
     let idString = idPrefix + currIdNum;
     currIdNum++;
 
-    let newNode = buildContentNode(idString);
+    let newNode = buildContentNode(idString, true);  //True to indicate we are adding it as a root.
 
     canvasState.contentNodeList.push(newNode);
     addNewRootNode(newNode);    //Any newly created node is automatically said to be an additional root node, by design.
@@ -163,7 +205,7 @@ function createNewContentNode() {
  * The HTML element will have a unique id, and have the associated class types to allow interact.js library to
  * apply it's drag/drop/resize functionality to the node.
  */
-function buildContentNode(idString) {
+function buildContentNode(idString, buildAsRoot) {
     //Get the scroll position of the canvas window so we can always spawn a new node such that it is visible
     let canvasWindow = document.getElementById("canvasWindow");
     let xpos = canvasWindow.scrollLeft + defaultNodePosition.x;
@@ -173,6 +215,10 @@ function buildContentNode(idString) {
 
     //Use the returned details to create a new logical object representing the HTML element, and store it.
     let newNode = new ContentNode(newElemDetails.elementReference, newElemDetails.elementId, newElemDetails.x, newElemDetails.y, newElemDetails.height, newElemDetails.width, newElemDetails.observer);
+
+    if (!buildAsRoot) {
+        removeRootNode(newNode);    //Don't add this boy as a root!
+    }
 
     return newNode;
 }
@@ -410,7 +456,7 @@ function deleteContentNode(node, stitchTree) {
                 if (parentRel.compareLabel(childRel.categoryLabel)) {
                     //Matched! Add all children of this relationship to the corresponding parent label!
                     for (let matchedChildNode of childRel.children) {
-                        parentRel.addChild(matchedChildNode);
+                        parentRel.addChild(matchedChildNode, false);
                     }
                 }
             }
@@ -569,12 +615,12 @@ function removeRootNode(node) {
     let index = canvasState.rootNodes.indexOf(node);
     if (index !== -1) {
         //Add custom root node styling
-        node.htmlElement.classList.add("rootNode");
+        //node.htmlElement.classList.add("rootNode");
         canvasState.rootNodes.splice(index, 1);
     }
 
     //Remove custom root node styling
-    node.htmlElement.classList.add("rootNode");
+    node.htmlElement.classList.remove("rootNode");
 
     //Make the root node 'border effect' invisible by accessing the hidden child element with said border.
     node.htmlElement.getElementsByClassName('rootNodeBorderElement').item(0).style.display = "none";
@@ -668,11 +714,18 @@ function traverseForVisibility(curr, depth) {
  * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
  * render the new context.
  *
- * TODO: also invoke node repositioning, once that is implemented.
- *
  * @param newContextNode the new node object to become the new context, OR null, to imply global context.
  */
-function switchContext(newContextNode) {
+function switchContext(newContextNode, loadArrangementFromNewContext, animate) {
+    //We are switching context. In order to preserve this particular arrangement when we return to this arrangement, we should save this current arrangement
+    //as a JSON string within the current context node!
+    if (canvasState.contextNode === null) {
+        canvasState.globalContextArrangement = serialiseNodeArrangement();
+    }
+    else {
+        canvasState.contextNode.contextArrangement = serialiseNodeArrangement();
+    }
+
     //Attain access to the context display object.
     let contextBox = document.getElementById("contextIndicatorBox");
     let backButton = contextBox.getElementsByTagName("button").item(0);   //Only one button.
@@ -724,12 +777,37 @@ function switchContext(newContextNode) {
         }
     }
 
+    //Finally, we should update the arrangement based on the new context's saved arrangement string, if the parameter says we should.
+    if (loadArrangementFromNewContext) {
+        let arrangementString;
+        if (newContextNode === null) {
+            arrangementString = canvasState.globalContextArrangement;
+        }
+        else {
+            arrangementString = newContextNode.contextArrangement;
+        }
+
+        //If the arrangement string is null, undefined, or empty, then we should trigger an auto arragement, since this context has never been arranged before!
+        if (arrangementString === undefined || arrangementString === null || arrangementString === "") {
+            autoArrangeVisibleNodes(false);
+        }
+        else {
+            //Load the arrangement, but DO NOT HIDE MISSING NODES, as we still want to show everything which is in this context!
+            //Updated arrangements which hide missing nodes will be for when the user wishes to return to viewing a previously saved arrangement.
+            //Missing nodes occur when there is a saved arrangement here, but since the arrangement was last saved, the user has added more nodes, and thus,
+            //they are now missing.
+            updateArrangementFromJSON(arrangementString, false, animate, false);    //False for hiding missing nodes, and False for triggering another context switch (avoid potential inf. recurse).
+        }
+    }
+
     //Now, we just need to rebuild the visibility!!
     rebuildVisibility();
 }
 
 /** invoked to zoom out the context. For safety, performs a null check even though it should never be called with null. */
 function zoomContextOut() {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     if (canvasState.contextNode === null) { return; }
 
     //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
@@ -738,13 +816,13 @@ function zoomContextOut() {
     //TODO: NEED TO DETERMINE LOGIC FOR HANDLING ZOOM OUT WHEN THE CURRENT CONTEXT HAS MORE THAN ONE PARENT!!
 
     //For now, i'm just going to pick the first parent in the list, although this is a bad solution. I'm doing this just
-    //to facilitate further development of features and not get stuck.
+    //to facilitate further development of features and not getting stuck.
     if (canvasState.contextNode.parentList.length === 0) {
         //The current context has no parent! Thus, we should move to global context.
-        switchContext(null);
+        switchContext(null, true, true);
     }
     else {
-        switchContext(canvasState.contextNode.parentList[0].parentNode);
+        switchContext(canvasState.contextNode.parentList[0].parentNode, true, true);
     }
 }
 
@@ -755,18 +833,20 @@ function zoomContextOut() {
  * @param event MouseDoubleClick DOM event
  */
 function zoomContextIn(event) {
+    hideAllInfo();  //Don't allow nodes to be showing info if we are in the middle of context switching.
+
     //Gain access to the node, then context switch to it!
     let node = getContentNode(event.currentTarget);     //NOTE: using currentTarget instead of target because we only want to access the element the
                                                         //listener is ATTATCHED TO (i.e. the node div itself) rather than the element which triggered the
                                                         //the event!
     //We DO NOT want to zoom if the item clicked is not the outer node element itself. This is becuase if the double click ocurred on one of the
     //utility buttons, we don't want to also zoom. That would be confusing.
-    //we also do not want to allow zoom in event if ANY node is showing info
-    if (event.target.classList.contains("utilityButton") || node.isShowingInfo || canvasState.showingNodes.length > 0) {
+    //we also do not want to allow zoom in event if ANY node is showing info -- REVERTED 16/05/2018
+    if (event.target.classList.contains("utilityButton") /* ##REVERTED## || node.isShowingInfo ##REVERTED## */ ) {
         return;
     }
 
-    switchContext(node);
+    switchContext(node, true, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -830,7 +910,7 @@ function reinstantiateExistingNode(id, x, y) {
 
     //Okay, now we need to determine if the node is an ancestor, or descendant, of the context node.
     if (canvasState.contextNode == null || areHierarchicallyRelated(toAdd, canvasState.contextNode)) {
-        switchContext(toAdd);
+        switchContext(toAdd, true, true);
     }
     else {
         addNewRootNode(toAdd);
@@ -974,4 +1054,15 @@ function showErrorWindow(errorMessage) {
 function hideErrorWindow() {
     document.getElementById("errorWindow").style.display = "none";
     removeBlackoutEffect();
+}
+
+/**
+ * This function simply 'minimises' all nodes which are currently showing info. After invoking this, you should be confident there
+ * are no nodes showing info anymoe
+ */
+function hideAllInfo() {
+    //Iterate backwards through the list, since it will be removing items as we go.
+    for (let i = canvasState.showingNodes.length - 1; i >= 0; i--) {
+        canvasState.showingNodes[i].hideInfo()
+    }
 }

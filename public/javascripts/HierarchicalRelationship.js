@@ -21,13 +21,13 @@ function HierarchicalRelationship(label, parentNode) {
     this.isVisible  = false;
 }
 
-HierarchicalRelationship.prototype.addChild = function(node) {
+HierarchicalRelationship.prototype.addChild = function(node, repositionFlag) {
     //Remember the new child, unless this relationship already has this node as a child!
     let newid = node.idString;
     for (let child of this.children) {
         if (child.idString == newid) {
             //Oops! we already have this node added! Let's simply reposition it, and then do nothing else.
-            this.repositionChildren(node);
+            if (repositionFlag === undefined || repositionFlag) this.repositionChildren(node);
             return;
         }
     }
@@ -43,7 +43,7 @@ HierarchicalRelationship.prototype.addChild = function(node) {
     this.lineList.push(newLine);
 
     //For now, whenever we add a new child, we will reposition all the children nodes to be underneath the parent
-    this.repositionChildren(node);
+    if (repositionFlag === undefined || repositionFlag) this.repositionChildren(node);
 };
 
 //This function will try to nicely arrange all of the children of a node relative to it's parent.
@@ -56,7 +56,8 @@ HierarchicalRelationship.prototype.repositionChildren = function(newlyAddedNode)
     let parentYpos = this.parentNode.translation.y;
     let newChildY  = parentYpos + this.parentNode.size.height + childrenVerticalSpacing;
 
-    newlyAddedNode.moveNodeTo(parentXpos, newChildY, true); //True for animations
+    newlyAddedNode.moveNodeTo(parentXpos, newChildY, true);
+    //newlyAddedNode.returnToPreviousPosition(true); //True for animations
 };
 
 HierarchicalRelationship.prototype.compareLabel = function(label) {

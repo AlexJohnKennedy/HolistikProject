@@ -19,7 +19,7 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     this.previousTranslation = {
         x : x,  //This object will be used to remember the previous position of this node, so that we can perform 'go back' actions
         y : y   //for example when we detatch a node from it's parents by dragging it into the 'detatch' zone. It should move back afterwards.
-    }           //We will update the 'previous position' whenever the user starts dragging the node!
+    };          //We will update the 'previous position' whenever the user starts dragging the node!
     this.size            = {
         height : height,
         width  : width
@@ -34,6 +34,9 @@ function ContentNode(element, id, x, y, height, width, mutationObserver) {
     this.numViewedBy     = -1;      //This tracks how many parents are supplying 'visibility' to the node at the current time.
     //DEPRECEATED                  //-1 indicates that the node is independently visible (i.e. it is not visible based on a parent viewing it)
                                     //New nodes are always set to be root nodes, thus we can initialise as -1.
+
+    // --- arrangement for when this node is the context node.
+    this.contextArrangement = "";
 
     // --- Relationship properties ---
     //Upon creation, new nodes have no defined relationships.
@@ -416,7 +419,7 @@ ContentNode.prototype.makeInvisible = function() {
  *
  *      (Future) - will show references/names to attatched resources.
  */
-ContentNode.prototype.showInfo = function() {
+ContentNode.prototype.showInfo = function(animate) {
     this.isShowingInfo = true;
     canvasState.showingNodes.push(this);
 
@@ -429,7 +432,8 @@ ContentNode.prototype.showInfo = function() {
     this.htmlElement.style.zIndex = currTopZIndex;
     currTopZIndex++;
 
-    this.htmlElement.classList.remove("draggable");   //Remove the draggable attribute so that the showing info node cannot be dragged.
+    //REVERTED THIS BEHAVIOUR 16/05/2018
+    //this.htmlElement.classList.remove("draggable");   //Remove the draggable attribute so that the showing info node cannot be dragged.
 
     let titleText = this.htmlElement.getElementsByClassName('nodeTitleText').item(0);
     titleText.style.position = 'static';     //Move title text back to top of node
@@ -478,12 +482,17 @@ ContentNode.prototype.showInfo = function() {
     y = (y < padding) ? (padding) : y;
     y = (y + height + padding > CANVAS_HEIGHT) ? (CANVAS_HEIGHT - height - padding) : y;
 
+    //If no parameter was passed, assume that the animate flag is true. (avoid full refactoring)
+    if (animate === undefined) {
+        animate = true;
+    }
+
     //Now, animate the node to go to that position!
-    this.moveNodeTo_noStateChange(x, y, true);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
-    this.resizeNode_noStateChange(width, height, true);
+    this.moveNodeTo_noStateChange(x, y, animate);              //True to animate. Relying on CSS rules to have transition timings set (0.3)
+    this.resizeNode_noStateChange(width, height, animate);
 };
 
-ContentNode.prototype.hideInfo = function() {
+ContentNode.prototype.hideInfo = function(animate) {
     this.isShowingInfo = false;
     let index = canvasState.showingNodes.indexOf(this);
     if (index === -1) {
@@ -505,9 +514,14 @@ ContentNode.prototype.hideInfo = function() {
     }
     titleText.style.cursor   = '';      //Delete the cursor property so it goes back to not affecting the cursor.
 
+    //If no parameter was passed, assume that the animate flag is true. (avoid full refactoring)
+    if (animate === undefined) {
+        animate = true;
+    }
+
     //Move the node back to it's 'position', and resize it back to the 'size'
-    this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, true);
-    this.resizeNode_noStateChange(this.size.width, this.size.height, true);
+    this.moveNodeTo_noStateChange(this.translation.x, this.translation.y, animate);
+    this.resizeNode_noStateChange(this.size.width, this.size.height, animate);
 
     this.htmlElement.classList.add("draggable");
 };

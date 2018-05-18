@@ -67,7 +67,8 @@ function contentNode_state_replacer(key, value) {
     ||  key === 'titleText'
     ||  key === 'descriptionText'
     ||  key === 'colour'
-    ||  key === 'childrenList') {
+    ||  key === 'childrenList'
+    ||  key === 'contextArrangement') {
 
         return value;   //Serialize as normal!
     }
@@ -167,7 +168,7 @@ function serializeNodeArrangement_replacer(key, value) {
  * @param nodeArrangementJSON
  * @param contextNodeId
  */
-function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
+function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON, globalArrangementString) {
     //Clear the current canvas state, and FULLY rebuild from scratch
     clearCanvasState();
 
@@ -198,13 +199,14 @@ function fullyRebuildCanvasStateFromJSON(nodeStateJSON, nodeArrangementJSON) {
     currIdNum = maxIdSoFar + 1;
 
     let contextNodeId = arrangementResult.contextNodeId;
+    canvasState.globalContextArrangement =globalArrangementString;
 
     //Assign the context node to the canvasState
     if (contextNodeId != null) {
-        switchContext(newNodeMap.get(contextNodeId));
+        switchContext(newNodeMap.get(contextNodeId), false, false);
     }
     else {
-        switchContext(null);
+        switchContext(null, false, false);
     }
 }
 
@@ -231,11 +233,12 @@ function parseAllNodeStatesFromJSON(jsonString) {
     //Sweet! now we can iterate through the data packages and build ContentNode objects! Note that this will also update the DOM
     let contentNodes = new Map();
     for (let data of stateData_noRels) {
-        let newNode = buildContentNode(data.idString);
+        let newNode = buildContentNode(data.idString, false);
         newNode.setTitleText(data.titleText);
         newNode.setDescriptionText(data.descriptionText);
         //TODO - newNode.setColour(data.colour);
-        newNode.colour = data.colour;    //TEMPORARY (until above to do get's done)
+        newNode.colour = data.colour;    //TEMPORARY (until above to do gets done)
+        newNode.contextArrangement = data.contextArrangement;
 
         contentNodes.set(newNode.idString, newNode);
     }
@@ -338,10 +341,10 @@ function updateArrangementFromJSON(jsonString, hideMissingNodesFlag, animate, co
 
     if (contextSwitch) {
         if (result.contextNodeId != null) {
-            switchContext(nodeMap.get(result.contextNodeId));
+            switchContext(nodeMap.get(result.contextNodeId), true, animate);
         }
         else {
-            switchContext(null);
+            switchContext(null, true, animate);
         }
     }
 
