@@ -17,6 +17,9 @@ const canvasState = {
 let ajaxHandler = null;
 let hasWritePermission = false;
 
+let undoHandler = null;
+const MAX_UNDO_STATES = 50;     //How many changes to locally remember, for undoing.
+
 
 //Define a default translation (relative to the drawing canvas) to place newly created nodes at.
 //Later on, we should probably make nodes appear on a cursor translation, or something more user-friendly.
@@ -105,6 +108,9 @@ window.onload = function() {
             saveBtn.setAttribute("title","You do not have permission to save changes to this project!");
         }
     }
+
+    //Set up the undo handler after everything else is loaded!
+    undoHandler = new UndoManager(MAX_UNDO_STATES);
 
     setupToolbarFading();
 };
@@ -196,6 +202,8 @@ function createNewContentNode() {
     newNode.editNodeContent();
 
     /*TODO - automatically rearrange nodes on screen after placing a new one, since it may be overlapping if there was a node already in the default spawn location*/
+
+    undoHandler.recordChange();
 }
 
 /**
@@ -396,6 +404,9 @@ function expandChildrenButtonClickedCallback(event) {
         event.target.classList.remove("expandChildrenButton_collapsed");
         event.target.classList.add("expandChildrenButton_expanded");
     }
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 function setupElementObserver(element) {
@@ -710,7 +721,7 @@ function traverseForVisibility(curr, depth) {
  * If the context node is null, we interpret this as 'global context' - I.e. we are zoomed out as far as we can go.
  * In this case, all parentless nodes will become root nodes of the global context.
  *
- * So, when this function is call, we will simply wipe the root node list, set the new context node, then rebuild the
+ * So, when this function is called, we will simply wipe the root node list, set the new context node, then rebuild the
  * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
  * render the new context.
  *
@@ -824,6 +835,9 @@ function zoomContextOut() {
     else {
         switchContext(canvasState.contextNode.parentList[0].parentNode, true, true);
     }
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 /**
@@ -847,6 +861,9 @@ function zoomContextIn(event) {
     }
 
     switchContext(node, true, true);
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1065,4 +1082,19 @@ function hideAllInfo() {
     for (let i = canvasState.showingNodes.length - 1; i >= 0; i--) {
         canvasState.showingNodes[i].hideInfo()
     }
+}
+
+function autoArrangeButtonClicked() {
+    autoArrangeVisibleNodes(false);
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
+}
+
+function undoButtonClicked() {
+    if (undoHandler) undoHandler.undo();
+}
+
+function redoButtonClicked() {
+    if (undoHandler) undoHandler.redo();
 }

@@ -66,9 +66,13 @@
     <!-- Create a 'toolbar' element which hovers in the bottom right corner of the canvas. This will contain zoom slider, auto arrange buttons, and so on! -->
     <div id="toolbar">
 
-        <div id="autoArrangeButton" onclick="autoArrangeVisibleNodes(false)" title="Arrange visible nodes"></div>
+        <div id="autoArrangeButton" onclick="autoArrangeButtonClicked()" title="Arrange visible nodes"></div>
 
         <div id="resetZoomButton"   onclick="resetCanvasScale()" title="Set to 100% zoom"></div>
+
+        <div id="undoButton" onclick="undoButtonClicked()"></div>
+
+        <div id="redoButton" onclick="redoButtonClicked()"></div>
 
         <div id="zoomSlider" class="slider">
             <div id="sliderHandle"></div>

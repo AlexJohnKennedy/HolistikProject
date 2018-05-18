@@ -108,7 +108,7 @@ ContentNode.prototype.moveNodeTo_noStateChange = function(x, y, animate) {
 
 /**
  * Moves or animates the node back to wherever it was prior to the last drag move by the user!
- * @param animateTime
+ * @param animate flag to determine if this should be animated
  */
 ContentNode.prototype.returnToPreviousPosition = function(animate) {
     console.log(this.idString+" was asked to move back to it's previous position, which is x = "+this.previousTranslation.x+" y = "+this.previousTranslation.y);
@@ -607,4 +607,7 @@ function updateNodeData() {
 
     //get rid of the info window
     closeEditWindow();
+
+    //Log this change in the undo manager
+    undoHandler.recordChange();
 }
