@@ -27,7 +27,7 @@
 }
 
 .input {
-    display: block;
+    display: inline;
     align-content: center;
     margin: auto;
     font-family: "Open Sans";
@@ -38,7 +38,6 @@
 }
 
 label {
-    display: block;
     align-content: center;
     margin: auto;
     font-family: "Open Sans";
@@ -58,7 +57,7 @@ label {
 #loginBtn {
     display: block;
     font-family: "Open Sans";
-    font-weight: 400;
+    font-weight: 300;
     font-size: 27px;
     border: 1px solid;
     border-radius: 30px;
@@ -71,7 +70,7 @@ label {
 
 #loginBtn:hover {
     background-color: rgb(90,159,231);
-    text-decoration: underline;
+    text-decoration: none;
     color: white;
 }
 
@@ -79,3 +78,19 @@ a {
     text-decoration: none;
 }
 
+.inputField {
+    display: block;
+    margin-left: 35%;
+}
+
+label[for='username'] {
+    margin-right: 10px;
+}
+
+label[for='email'] {
+    margin-right: 46px;
+}
+
+label[for='password'] {
+    margin-right: 16px;
+}

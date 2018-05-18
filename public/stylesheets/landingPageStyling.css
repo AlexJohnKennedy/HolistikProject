@@ -7,7 +7,11 @@
 }
 
 body {
+<<<<<<< userPage
     background: linear-gradient(rgba(150,150,150,0.6), rgba(0, 0, 0, 0.5)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
+=======
+    background: linear-gradient(rgba(237,237,237,0), rgba(221, 229, 234, 0.4)), url('../images/background.jpg');
+>>>>>>> local
     background-position: center;
     background-size: cover;
 }
@@ -21,9 +25,10 @@ body {
 
 #signUpBtn {
     border-radius: 30px;
-    color: black;
+    color: white;
     font-size: 22px;
     height: 35px;
+    font-weight: 300;
 }
 
 
@@ -34,6 +39,7 @@ body {
     margin-bottom: 6px;
     margin-left: auto;
     margin-right: auto;
+    font-weight: 300;
 }
 
 #goToProfileButton {
@@ -46,11 +52,12 @@ body {
 }
 
 h1 {
-    margin-bottom: 15px;
+    margin-bottom: -15px;
+    color: white;
 }
 
 h2 {
-    margin-bottom: 4%;
+    margin-bottom: 5%;
 }
 h3 {
     font-size: 3em;
@@ -64,19 +71,19 @@ h3 {
     font-family: "Open Sans";
     font-weight: 400;
     font-size: 0.9em;
-    color: #eff7de;
+    color: grey;
 }
 
 #signUpBtn:hover {
     background-color: rgb(90,159,231);
     color: white;
-    text-decoration: underline;
+    text-decoration: none;
     border-color: rgb(90,159,231);
 }
 
 #loginBtn:hover {
     background-color: rgb(90,159,231);
     color: white;
-    text-decoration: underline;
+    text-decoration: none;
     border-color: rgb(90,159,231);
 }
