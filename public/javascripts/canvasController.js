@@ -719,7 +719,7 @@ function traverseForVisibility(curr, depth) {
  * If the context node is null, we interpret this as 'global context' - I.e. we are zoomed out as far as we can go.
  * In this case, all parentless nodes will become root nodes of the global context.
  *
- * So, when this function is call, we will simply wipe the root node list, set the new context node, then rebuild the
+ * So, when this function is called, we will simply wipe the root node list, set the new context node, then rebuild the
  * root node list based on teh context node's children. Finally, we will invoke 'rebuildVisibility()' in order to
  * render the new context.
  *
@@ -833,6 +833,9 @@ function zoomContextOut() {
     else {
         switchContext(canvasState.contextNode.parentList[0].parentNode, true, true);
     }
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 /**
@@ -856,6 +859,9 @@ function zoomContextIn(event) {
     }
 
     switchContext(node, true, true);
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1074,4 +1080,11 @@ function hideAllInfo() {
     for (let i = canvasState.showingNodes.length - 1; i >= 0; i--) {
         canvasState.showingNodes[i].hideInfo()
     }
+}
+
+function autoArrangeButtonClicked() {
+    autoArrangeVisibleNodes(false);
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
