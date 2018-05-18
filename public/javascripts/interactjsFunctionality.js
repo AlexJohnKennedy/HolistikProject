@@ -144,6 +144,9 @@ interact('.draggable').draggable({
     for (let childElem of event.target.children) {
         childElem.classList.remove("noTransitions");
     }
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 });
 
 

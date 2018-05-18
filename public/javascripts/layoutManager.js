@@ -75,6 +75,9 @@ function autoArrangeVisibleNodes(useSimpleGrouping) {
 
     //Pray..
     animateToFinalPositions(verticesWithGroupBoundaries, true);
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 

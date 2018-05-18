@@ -402,6 +402,9 @@ function expandChildrenButtonClickedCallback(event) {
         event.target.classList.remove("expandChildrenButton_collapsed");
         event.target.classList.add("expandChildrenButton_expanded");
     }
+
+    //Track this change in the undo manager!
+    undoHandler.recordChange();
 }
 
 function setupElementObserver(element) {
