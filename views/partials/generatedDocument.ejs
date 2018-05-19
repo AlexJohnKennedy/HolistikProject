@@ -1,0 +1,49 @@
+
+<!-- This document defines the structure of the auto-generated document template. It expects to be included by some other
+  -- page and treated as a black-box item, which SHOULD BE WRAPPED in a div by the page including it! -->
+
+
+<!-- The first thing on the page is the title, which is the context node's name -->
+<h1> <%= contextNode.titleText %> </h1>
+
+<!-- Next, we have a quick sub title block which tells us which relationship categories are included in this document.
+  -- In other words, it sorta shows which 'aspects' of the context node's 'Thing' is being covered here; usually, nodes
+  -- are nouns of some kind! -->
+<h3>
+    <!-- For each included relationship category, include a string component -->
+    <% let i=0; %>
+    <% relationshipCategories.forEach(function(category) { %>
+        <% if (i === 0 ) { %>
+        <!-- do not include a leading comma if it's the first one! -->
+            <%= category.name %>
+        <% } else { %>
+        <!-- for subsequent categories, include a comma! -->
+            ,&nbsp <%= category.name %>
+        <% } %>
+        <% i++; %>
+    <% }); %>
+</h3>
+
+<!-- Awesome! Now, include a section for the context node's details! For now, this will basically just include the node's
+  -- description text.. but in the future we will append images and attached resources and so on -->
+<div id="contextNode_content">
+    <div class="nodeDescriptionText">
+        <%= contextNode.descriptionText %>
+    </div>
+
+    <!-- for all images, append some right floating images (Will be nothing for now..) -->
+    <% contextNode.imageAttachments.forEach(function(image) { %>
+        <img class="image_content" src="<% image %>">
+    <% }); %>
+
+    <!-- Include semantic link elements! These form HREF links to other sections of this document -->
+    <!-- NOTE: The id of each inner content node's 'div' which contains their 'section' of data will be the content nodes idString from the project!
+      -- This way, we already know in advance how to hyper-link to that section of the page, by just linking directly to the element's id attribute.
+      -->
+    <div class="internalPageLinks">
+        <% contextNode.semanticRelationships.forEach(function(semlink) { %>
+            <!-- add a hyper link for each semantic relationship.. -->
+            <a href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
+        <% }); %>
+    </div>
+</div>

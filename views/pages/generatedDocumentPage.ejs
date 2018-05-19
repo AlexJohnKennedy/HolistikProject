@@ -3,7 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <title> <%= projectName %> - <%= contextNode.titleText %> </title>
+
+        <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+        <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+        <link rel="stylesheet" href="/stylesheets/generatedDocumentStyleSheets/gridLayoutStyling.css">
     </head>
+
+    <!-- In this file we are just defining the overall page layout and how it is to be laid out with CSS grid.
+      -- It treats the 'generated document' as a black box object which already exists. (I.e. does not define the
+      -- document generation template itself yet!! That is hanlded within another EJS file.
+      -->
 
     <body class="gridWrapper">  <!-- We want the entire page body to be controlled layout-wise by CSS grid -->
 
@@ -24,7 +33,9 @@
         <div class="rightMarginColumn"> </div>
 
         <!-- the footer will contain the entire bottom row -->
-
+        <footer class="gridFooter">
+            <% include ../partials/footer.ejs %>
+        </footer>
 
     </body>
 </html>

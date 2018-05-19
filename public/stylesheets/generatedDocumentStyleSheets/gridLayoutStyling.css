@@ -1,0 +1,39 @@
+/* define the CSS grid structure we will use by default (given that the window is wide enough!!) */
+.gridWrapper {
+    display: grid;
+    grid-template-areas: "header header header"
+                         "leftControls main rightControls"
+                         "footer footer footer";
+    grid-template-columns: 150px 1fr 150px;         /* The margins will stick to being 150 pixels, and the main document will fill the rest */
+    grid-template-rows: 84px   /* hard coded header size */
+    1fr                         /* The actual content will just take up as much vertical space as it needs.. */
+    82px;                       /* hard coded footer size */
+
+
+    min-height: 100vh;          /* Ensures that the TOTAL vertical height of the document is AT LEAST the size of the window.
+                                   (I.e. will extend the main section if necessary. This makes the footer stay at the bottom
+                                   of the page even if the main document is too short. The length can still grow beyond this if required though.
+                                 */
+}
+
+.gridHeader { grid-area: header; }
+.gridFooter { grid-area: footer; }
+.document { grid-area: main; }
+.leftMarginColumn { grid-area: leftControls; }
+.rightMarginColumn { grid-area: rightControls; }
+
+@media screen and (max-width: 600px) {
+    .hg {
+        grid-template-areas: "header"
+                             "leftControls"
+                             "main"
+                             "rightControls"
+                             "footer";
+        grid-template-columns: 100%;
+        grid-template-rows: 84px
+        50px
+        1fr
+        50px
+        82px;
+    }
+}
