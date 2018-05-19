@@ -7,11 +7,7 @@
 }
 
 body {
-<<<<<<< userPage
-    background: linear-gradient(rgba(150,150,150,0.6), rgba(0, 0, 0, 0.5)), url('https://source.unsplash.com/SMJC_JJm7W4/1600x900');
-=======
-    background: linear-gradient(rgba(237,237,237,0), rgba(221, 229, 234, 0.4)), url('../images/background.jpg');
->>>>>>> local
+    background: linear-gradient(rgba(62,87,127,0.4), rgba(204, 225, 234, 0.3)), url('../images/background.jpg');
     background-position: center;
     background-size: cover;
 }

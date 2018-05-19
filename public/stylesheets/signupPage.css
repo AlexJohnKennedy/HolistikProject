@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
-@import url('https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i');
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif:300,400,400i,700,700i');
 
 .container {
     display: block;
@@ -38,6 +38,7 @@
 }
 
 label {
+    display: none;
     align-content: center;
     margin: auto;
     font-family: "Open Sans";
@@ -49,8 +50,7 @@ label {
 ::placeholder {
     font-size: 10px;
     font-family: "Noto Serif";
-    font-weight: 400;
-    font-style: italic;
+    font-weight: 300;
     font-size: 500px;
 }
 
@@ -83,14 +83,3 @@ a {
     margin-left: 35%;
 }
 
-label[for='username'] {
-    margin-right: 10px;
-}
-
-label[for='email'] {
-    margin-right: 46px;
-}
-
-label[for='password'] {
-    margin-right: 16px;
-}
