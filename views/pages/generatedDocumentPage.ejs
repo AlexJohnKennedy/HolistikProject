@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title> <%= projectName %> - <%= contextNode.titleText %> </title>
+    </head>
+
+    <body class="gridWrapper">  <!-- We want the entire page body to be controlled layout-wise by CSS grid -->
+
+        <!-- The header will span the entire top row of the grid, with a fixed height, the same as in the other pages -->
+        <header class="gridHeader">
+            <% include ../partials/header.ejs %>
+        </header>
+
+        <!-- Next, the actual document itself will occupy the main column of the document -->
+        <!-- THIS WRAPS THE WHOLE 'DOCUMENT' itself -->
+        <div class="document">
+            <% include ../partials/generatedDocument.ejs %>
+        </div>
+
+        <!-- now the left and right column spacers, which essentially just block out some fixed width of space to provide a left
+          -- and right margin to the page, if the page is too wide (aesthetic AF) -->
+        <div class="leftMarginColumn"> </div>
+        <div class="rightMarginColumn"> </div>
+
+        <!-- the footer will contain the entire bottom row -->
+
+
+    </body>
+</html>
