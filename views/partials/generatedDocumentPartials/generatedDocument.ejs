@@ -3,6 +3,10 @@
   -- page and treated as a black-box item, which SHOULD BE WRAPPED in a div by the page including it! -->
 
 
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Document title and description of active relationship categories ------------------------------------------ -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
 <!-- The first thing on the page is the title, which is the context node's name -->
 <h1> <%= contextNode.titleText %> </h1>
 
@@ -23,6 +27,11 @@
         <% i++; %>
     <% }); %>
 </h3>
+
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Context node content section ------------------------------------------------------------------------------ -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
 
 <!-- Awesome! Now, include a section for the context node's details! For now, this will basically just include the node's
   -- description text.. but in the future we will append images and attached resources and so on -->
@@ -47,3 +56,31 @@
         <% }); %>
     </div>
 </div>
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Nested structured node content ---------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+<!-- Now the hard part; we need to build a tree-like structure of node content sections, laid out in nested HTML ordered lists, for each 'category', since
+  -- each category forms it's own DAG structure! -->
+
+<!-- Loop through each relationship category; each one contains a list of root node sections, and each root node section has a tree structure
+  -- within it -->
+<% relationshipCategories.forEach(function(category) { %>
+
+    <!-- Title for the category type -->
+    <h2>
+        <%= category.name %>
+    </h2>
+
+    <!-- Loop through each root node (each root of the content node) for this category, generating subtrees for each one!
+    <% category.rootNodes.forEach(function(rootContent) { %>
+
+        <!-- Generate tree structures recursively using a 'tree-like' EJS partial, which recursively includes itself as a partial.
+          -- This essentially simulates a recursive function inside of EJS.
+          -- The base case is when the node content has no more children, and then, it just generates nothing. -->
+        <%- include('../partials/generatedDocumentPartials/nodeContentSubtree.', { curr: rootContent }) %>
+
+    <% }); %>
+
+<% }); %>
