@@ -372,8 +372,9 @@ function onElementDropped(event) {
 
     parent.addChildNoLabel(dropped);
 
-    //Track this change in the undo manager!
-    undoHandler.recordChange();
+    //Track this change in the undo manager! However, we want to skip the previous state so we do not record the node move, and the child add, separately
+    //(instead record it as one action)
+    undoHandler.recordChange_IgnorePreviousChange();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -442,7 +443,9 @@ interact('#detachNodeDropZone').dropzone({
         draggedNode.returnToPreviousPosition(true);
 
         //Track this change in the undo manager!
-        undoHandler.recordChange();
+        //However, we want to skip the previous state so we do not record the node move, and the child detachment, separately
+        //(instead record it as one action)
+        undoHandler.recordChange_IgnorePreviousChange();
     }
 });
 
@@ -472,8 +475,9 @@ interact('#deleteNodeDropZone').dropzone({
         //deleteContentNode(dropped, false);  //Do not splice the tree
         deleteContentNode(dropped, true); //splice the tree
 
-        //Track this change in the undo manager!
-        undoHandler.recordChange();
+        //Track this change in the undo manager! However, we want to skip the previous state so we do not record the node move, and the node deletion, separately
+        //(instead record it as one action)
+        undoHandler.recordChange_IgnorePreviousChange();
     }
 });
 
