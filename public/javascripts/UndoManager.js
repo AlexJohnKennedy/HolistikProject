@@ -91,6 +91,47 @@ class UndoManager {
     }
 
     /**
+     * This function also informs the manager of a new change just finished, so it can be recorded, as usual. HOWEVER this version of the
+     * method specifically does not remember the last change (in other word, it skips the last one and saves the new one). This is used when
+     * some change is triggered by some other change, and we do not want to record each one differently.
+     *
+     * For example, when a node is deleted, it has to be first dragged to the delete utility dropzone. From the user's perspective, this is
+     * a single operation that should be 'undone' in one step. However, because the UndoManager.recordChange() call back is invoked when nodes move,
+     * if we used the non-skipping version, then the delete operation would be recorded here as two separate actions: a node move, and then a deletion.
+     *
+     * Consequently, undoing the delete would make the node reappear, but not in the original position, but in the position of the delete utility dropzone.
+     * This is not the desired behaviour. Using this method will essentially tell the UndoManager 'hey, the previously recorded change is actually part of
+     * THIS change, as a single operation, so disregard it!'
+     */
+    recordChange_IgnorePreviousChange() {
+        //To avoid double callback errors causing weird behaviour, we should first check that the state we are about to record is not the same as the
+        //previous state!
+        let newState = {
+            structure : serialiseNodeState(),
+            arrangement : serialiseNodeArrangement(),
+            globalContextArrangement : canvasState.globalContextArrangement
+        };
+
+        if (newState.structure === this.currentState.structure &&
+            newState.arrangement === this.currentState.arrangement &&
+            newState.globalContextArrangement === this.currentState.globalContextArrangement) {
+            //OOPS! We probably shouldn't record this
+            console.log("Undo manager was asked to record the same change twice!!");
+
+            return;
+        }
+
+        //Logic is the same as the normal version, except we DO NOT push the original current state onto the undo stack! We just ignore it!
+        //That state is being skipped as we are interpreting it as part-of-this-change.
+        //Now, we need to make sure we record the new current state, by serialising it!
+        this.currentState = newState;
+
+        //Update buttons accordingly
+        this.makeRedoButtonUnavailable();
+        this.makeUndoButtonAvailable();
+    }
+
+    /**
      * When invoked, this performs an undo operation!!
      *
      * Will pop a state from the undo stack, load it, and set the currentState to be the state we just popped.

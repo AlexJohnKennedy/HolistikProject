@@ -177,6 +177,10 @@ class AjaxProjectLoader {
 
             fullyRebuildCanvasStateFromJSON(structureJSON, arrangementJSON, globalContextArrangement);
 
+            //Whenever a project is loaded back from the server, we need to set the undo manager back up! otherwise the states will persist across
+            //loads, which will be very weird and unpredictable indeed..
+            undoHandler = new UndoManager(MAX_UNDO_STATES);
+
             removeBlackoutEffect();
             hideLoadingWindow();
             canvasState.projectLoaded = true;   //Set this flag to true. This way, we will allow saving since we know the original project was loaded first!
