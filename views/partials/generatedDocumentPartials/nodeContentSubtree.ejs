@@ -1,0 +1,31 @@
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Content for the current node ------------------------------------------------------------------------------ -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+
+
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Generate recursive sublist if it needs to be generated ---------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+<!-- If the current content object has children, we want to create a sub-list here and recurse! Other wise, just generate
+  -- nothing else -->
+<% if (curr.children.length > 0) { %>
+
+    <!-- Create a sub list right here -->
+    <ol>
+
+        <!-- Make a sublist entry for every child item -->
+        <% curr.children.forEach(function(child){ %>
+
+            <li>
+                <!-- Recurse and generate more! -->
+                <%- include('../partials/generatedDocumentPartials/nodeContentSubtree.ejs', { curr: child }); %>
+            </li>
+
+        <% }); %>
+    </ol>
+
+<% } %>
