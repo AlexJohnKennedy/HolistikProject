@@ -7,6 +7,11 @@ const apiController = require('./apiController.js');
 //It is not up to the controller object to decide WHICH URLS activate which repsonses, that is the job of the router
 //Here, we are simply defining the functions which pass data to views to be rendered, and the router will decide when to call each one
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Canvas page / application page. For both logged in user's and guest users. --------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
 //For loading canvas when you are a logged in user. Should have parameters along with it!
 function mainPageGet(req, res) {
     let username = null;
@@ -19,6 +24,10 @@ function mainPageGet(req, res) {
     res.render('pages/mindMapPage', { username: username });
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Landing page and login screen page ------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
@@ -35,14 +44,9 @@ function homeDirectoryGet(req, res) {
     });
 }
 
-
-//Define behaviour and access data to get user list
-function generateUserList(req, res) {
-    res.render('usersDirectory', {
-        userList : db.users,
-        path : "/users"
-    });
-}
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Help page -------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 function helpPageGet(req, res) {
     let username = null;
@@ -52,6 +56,10 @@ function helpPageGet(req, res) {
     }
     res.render('pages/helpPage', { username: username});
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Project page (display a logged in user's projects) --------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 async function projectsPageGet(req,res) {
     console.log("--- Rendering the profile page! ---");
@@ -126,10 +134,69 @@ function extractProjectInfoForProfilePageIcons(queryResults, arrayToPushTo) {
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Sign up page ----------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 function signupPageGet(req,res) {
     res.render('pages/signupPage');
 }
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Dynamically generated document page - renders a custom document based on a particular project layout ------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+//For the sake of developing the front end templating for this feature for now i am sending a dummy data object!
+
+//Define the data object 'types' which get sent to the front end with contructor functions
+function NodeData(idString, titleText, descriptionText, relationshipToParentLabel) {
+    this.isLink = false;    //This object contains ACTUAL DATA: we need to inform the rendering engine of this!
+
+    this.idString = idString;
+    this.titleText = titleText;
+    this.descriptionText = descriptionText;
+    this.relationshipToParentLabel = relationshipToParentLabel;
+
+    //Set up inner collections so that can be added to.
+    this.imageAttachments = [];
+    this.semanticRelationships = [];
+    this.children = [];     //Will contain an array of NodeData and NodeLink objects!
+}
+
+//Define a type for children entries which, instead of the actual node information, contain a link to the section of the document where the node data
+//has already (presumably earlier) appeared.
+function NodeLink(idString, titleText, relationshipToParentLabel, linkObject) {
+    this.isLink = true;
+
+    this.idString = idString;
+    this.titleText = titleText;
+    this.relationshipToParentLabel = relationshipToParentLabel;
+
+    this.link = linkObject;
+}
+
+//Simple type which contains the information necessary to hyper-link to another part of the document.
+function LinkToDocumentSection(name, nodeIdString) {
+    this.name = name;
+    this.nodeIdString = nodeIdString;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function documentGenerationPage(req, res) {
+    //FOR NOW SENDING DUMMY DATA WITH NO AUTHENTICATION, FOR DEVELOPMENT PURPOSES!!
+
+}
+
+
+
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- DEPRECATED USER LIST - STILL HERE FOR REFERENCE -----------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 //Define behaviour and access data to get specific user page
 function userDetail(req, res) {
@@ -168,10 +235,13 @@ function userDetail(req, res) {
     });
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
 //Now, we have to export our functions so that the router can use them as callbacks
 module.exports = {
     homeDirectoryGet : homeDirectoryGet,
-    generateUserList : generateUserList,
     userDetail : userDetail,
     mainPageGet : mainPageGet,
     helpPageGet : helpPageGet,
