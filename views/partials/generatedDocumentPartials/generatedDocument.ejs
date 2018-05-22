@@ -98,7 +98,7 @@
           -- The base case is when the node content has no more children, and then, it just generates nothing. -->
         <div class="rootNode_contentWrapper">
             <div class="childRelationshipText">
-                <%= rootContent.relationshipToParentLabel %>
+                <%= contextNode.titleText %>&nbsp<%= rootContent.relationshipToParentLabel %>:
             </div>
 
             <%- include('../partials/generatedDocumentPartials/nodeContentSubtree.ejs', { curr: rootContent }); %>
