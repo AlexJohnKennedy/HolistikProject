@@ -22,10 +22,20 @@
 #generalHeader {
     background-color: rgb(219, 229, 234);
     padding-bottom: 10px;
+
+    /* make the line breaking not happen when the window is small, to avoid weird spacing issues being created
+       when the header items cannot fit across the width of the screen */
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .navbar {
     padding-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+
+    /* SHITTY WORKAROUND SOLUTION FOR NAVBAR WIDTH SHRINKAGE */
+    min-width: 900px;
 }
 
 .navbar-nav {
