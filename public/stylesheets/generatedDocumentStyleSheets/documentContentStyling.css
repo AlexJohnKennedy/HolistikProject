@@ -81,3 +81,7 @@ li {
     /* Make a line run down the side of each node content block, to indicate where it starts and ends (?) */
     border-left: lightgrey 1px solid;
 }
+
+.highlight {
+    background-color: #fffe5c;
+}

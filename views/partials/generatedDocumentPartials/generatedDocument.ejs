@@ -67,7 +67,7 @@
 
             <% contextNode.semanticRelationships.forEach(function(semlink) { %>
                 <!-- add a hyper link for each semantic relationship.. -->
-                <a href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
+                <a class="nodeLink" href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
             <% }); %>
         </div>
     <% } %>

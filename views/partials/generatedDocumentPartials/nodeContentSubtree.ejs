@@ -33,7 +33,7 @@
 
             <% curr.semanticRelationships.forEach(function(semlink) { %>
             <!-- add a hyper link for each semantic relationship.. -->
-            <a href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
+            <a class="nodeLink" href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
             <% }); %>
 
         </div>
@@ -65,7 +65,7 @@
                           -- instead of repeating information -->
                         <div class="childNodeLink">
                             See:&nbsp
-                            <a href="#<%= child.link.nodeIdString %>">
+                            <a class="nodeLink" href="#<%= child.link.nodeIdString %>">
                                 <span class="nodeTitleText">
                                     <%= child.titleText %>
                                 </span>
