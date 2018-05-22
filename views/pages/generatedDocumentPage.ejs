@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="/stylesheets/footerStyling.css">
         <link rel="stylesheet" href="/stylesheets/generatedDocumentStyleSheets/gridLayoutStyling.css">
         <link rel="stylesheet" href="/stylesheets/generatedDocumentStyleSheets/documentContentStyling.css">
+
+        <script src="/javascripts/documentPageScripts/dynamicFormattingOptions.js"></script>
     </head>
 
     <!-- In this file we are just defining the overall page layout and how it is to be laid out with CSS grid.
@@ -24,7 +26,7 @@
 
         <!-- Next, the actual document itself will occupy the main column of the document -->
         <!-- THIS WRAPS THE WHOLE 'DOCUMENT' itself -->
-        <div class="document">
+        <div id="mainDocument" class="document">
             <% include ../partials/generatedDocumentPartials/generatedDocument.ejs %>
         </div>
 
@@ -48,7 +50,7 @@
                 <label for="showSemanticLinksCheckbox">Show related-concept links</label>
             </div>
             <div class="toggleButton">
-                <input type="checkbox" id="showHighlightCheckbox" onchange="toggleShowSemanticLinks()" checked="true">
+                <input type="checkbox" id="showHighlightCheckbox" onchange="toggleHighlighting()" checked="true">
                 <label for="showHighlightCheckbox">Highlight relevant section when mouse is over links</label>
             </div>
             <div class="toggleButton">
