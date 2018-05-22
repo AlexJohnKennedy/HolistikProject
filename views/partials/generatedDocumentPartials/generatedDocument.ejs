@@ -16,16 +16,24 @@
 <h3>
     <!-- For each included relationship category, include a string component -->
     <% let i=0; %>
-    <% relationshipCategories.forEach(function(category) { %>
+    <% for (let category of relationshipCategories) { %>
         <% if (i === 0 ) { %>
         <!-- do not include a leading comma if it's the first one! -->
             <%= category.name %>
+        <% } else if (i === relationshipCategories.length-1) { %>
+        <!-- For the last item, append with an 'and' -->
+        <!-- If the total number of categories is two, do not use an oxford comma. If more than two, use an oxford comma here! -->
+            <% if (relationshipCategories.length === 2) { %>
+                and&nbsp<%= category.name %>
+            <% } else { %>
+                , and&nbsp<%= category.name %>
+            <% } %>
         <% } else { %>
-        <!-- for subsequent categories, include a comma! -->
+        <!-- for subsequent categories (but not the last one), include a comma! -->
             ,&nbsp <%= category.name %>
         <% } %>
         <% i++; %>
-    <% }); %>
+    <% } %>
 </h3>
 
 

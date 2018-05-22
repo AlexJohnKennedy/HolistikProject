@@ -7,7 +7,7 @@
     grid-template-columns: 75px 1fr 75px;         /* The margins will stick to being 75 pixels, and the main document will fill the rest */
     grid-template-rows: 74px   /* hard coded header size */
     1fr                         /* The actual content will just take up as much vertical space as it needs.. */
-    82px;                       /* hard coded footer size */
+    100px;                       /* hard coded footer size */
 
 
     min-height: 100vh;          /* Ensures that the TOTAL vertical height of the document is AT LEAST the size of the window.
