@@ -204,6 +204,8 @@ let polNode1 = new NodeData('contentNode7', "Politics yo", "This was a thing eve
 polNode1.children = [new NodeLink(milNode6.idString, milNode6.titleText, "Appoints power to", new LinkToDocumentSection("", milNode6.idString))]
 
 let dummyDocumentData = {
+    username: "DEVELOPMENT",
+    projectName: "Ancient Empires",
     contextNode: new NodeData('contentNode1', "The Roman Empire", "This was a very large civilisation and shit my boy. No seriously, this shit was a big deal", null),
     relationshipCategories: [{
         name: "Military organisation",
@@ -214,16 +216,12 @@ let dummyDocumentData = {
     }]
 };
 
-
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function documentGenerationPage(req, res) {
     //FOR NOW SENDING DUMMY DATA WITH NO AUTHENTICATION, FOR DEVELOPMENT PURPOSES!!
-    res.render('/pages/generatedDocumentPage', dummyDocumentData);
+    res.render('pages/generatedDocumentPage', dummyDocumentData);
 }
-
-
-
-
 
 
 // ---------------------------------------------------------------------------------------------------------------------

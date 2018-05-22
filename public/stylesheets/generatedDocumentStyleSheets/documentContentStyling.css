@@ -1,0 +1,25 @@
+/* apply a broad, low-specificity font type face styling to the document content itself, to essentially set the
+   'default' font styling.
+
+   Should match the node canvas styling/design.
+ */
+.document {
+    font-family: 'Open Sans', Sans serif;
+
+    /* set a 'default' text size as well */
+    font-size: small;
+}
+
+/* set headings inside the document */
+.document h1 {
+    margin-bottom: 0.1em;
+
+    text-align: center;
+}
+.document h3 {
+    margin-top: 0.5em;
+
+    text-transform: none;
+
+    text-align: center;
+}

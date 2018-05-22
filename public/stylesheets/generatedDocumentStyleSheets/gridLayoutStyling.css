@@ -3,9 +3,9 @@
     display: grid;
     grid-template-areas: "header header header"
                          "leftControls main rightControls"
-                         "footer footer footer";
-    grid-template-columns: 150px 1fr 150px;         /* The margins will stick to being 150 pixels, and the main document will fill the rest */
-    grid-template-rows: 84px   /* hard coded header size */
+                         "leftControls footer rightControls";
+    grid-template-columns: 75px 1fr 75px;         /* The margins will stick to being 75 pixels, and the main document will fill the rest */
+    grid-template-rows: 74px   /* hard coded header size */
     1fr                         /* The actual content will just take up as much vertical space as it needs.. */
     82px;                       /* hard coded footer size */
 
@@ -16,14 +16,36 @@
                                  */
 }
 
-.gridHeader { grid-area: header; }
-.gridFooter { grid-area: footer; }
-.document { grid-area: main; }
-.leftMarginColumn { grid-area: leftControls; }
-.rightMarginColumn { grid-area: rightControls; }
+.gridHeader {
+    grid-area: header;
+}
+.gridFooter {
+    grid-area: footer;
+}
+.document {
+    grid-area: main;
 
-@media screen and (max-width: 600px) {
-    .hg {
+    /* Set the left and right padding to 65 pixels */
+    padding-left: 60px;
+    padding-right: 60px;
+}
+.leftMarginColumn {
+    grid-area: leftControls;
+
+    /* Set the background colour to match the drawing canvas background colour, to match stylistically */
+    background-color: rgb(237, 237, 237);
+}
+.rightMarginColumn {
+    grid-area: rightControls;
+
+    /* Set the background colour to match the drawing canvas background colour, to match stylistically */
+    background-color: rgb(237, 237, 237);
+}
+
+
+/* If the screen is less than 720 pixels wide, make it just go in one column with no margin columns */
+@media screen and (max-width: 720px) {
+    .gridWrapper {
         grid-template-areas: "header"
                              "leftControls"
                              "main"

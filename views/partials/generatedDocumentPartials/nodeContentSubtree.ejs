@@ -8,7 +8,7 @@
 <div id="<%= curr.idString %>" class="nodeContent">
 
     <div class="nodeTitleText">
-        <%= curr.titleText %> &nbsp-&nbsp <%= curr.relationshipToParentLabel %>
+        <%= curr.titleText %>
     </div>
 
     <div class="nodeDescriptionText">
@@ -24,14 +24,20 @@
     <!-- NOTE: The id of each inner content node's 'div' which contains their 'section' of data will be the content nodes idString from the project!
       -- This way, we already know in advance how to hyper-link to that section of the page, by just linking directly to the element's id attribute.
       -->
-    <div class="internalPageLinks">
-        <% curr.semanticRelationships.forEach(function(semlink) { %>
-        <!-- add a hyper link for each semantic relationship.. -->
-        <a href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
-        <% }); %>
+    <% if (curr.semanticRelationships.length > 0) { %>
+        <div class="internalPageLinks">
 
-    </div>
+            Related concept links:
 
+            <br>
+
+            <% curr.semanticRelationships.forEach(function(semlink) { %>
+            <!-- add a hyper link for each semantic relationship.. -->
+            <a href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
+            <% }); %>
+
+        </div>
+    <% } %>
 </div>
 
 
@@ -50,20 +56,25 @@
         <% curr.children.forEach(function(child){ %>
 
             <li>
+                <div class="childRelationshipText">
+                    <%= child.relationshipToParentLabel %>
+                </div>
+
                 <% if (child.isLink) { %>
                     <!-- Some children may have already appeared earlier in the document; in this case we only show a link to that section
                       -- instead of repeating information -->
                     <div class="childNodeLink">
+                        See:&nbsp
                         <a href="#<%= child.link.nodeIdString %>">
-                            <div class="nodeTitleText">
-                                See: &nbsp <%= child.titleText %> &nbsp-&nbsp <%= child.relationshipToParentLabel %>
-                            </div>
+                            <span class="nodeTitleText">
+                                <%= child.titleText %>
+                            </span>
                         </a>
                     </div>
 
                 <% } else { %>
                     <!-- Recurse and generate more! -->
-                    <%- include('../partials/generatedDocumentPartials/nodeContentSubtree.ejs', { curr: child }); %>
+                    <%- include('./nodeContentSubtree.ejs', { curr: child }); %>
                 <% } %>
             </li>
 
