@@ -38,47 +38,49 @@
 
         </div>
     <% } %>
-</div>
+
 
 
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 <!-- --- Generate recursive sublist if it needs to be generated ---------------------------------------------------- -->
 <!-- --------------------------------------------------------------------------------------------------------------- -->
 
-<!-- If the current content object has children, we want to create a sub-list here and recurse! Other wise, just generate
-  -- nothing else -->
-<% if (curr.children.length > 0) { %>
+    <!-- If the current content object has children, we want to create a sub-list here and recurse! Other wise, just generate
+      -- nothing else -->
+    <% if (curr.children.length > 0) { %>
 
-    <!-- Create a sub list right here -->
-    <ol>
+        <!-- Create a sub list right here -->
+        <ul>
 
-        <!-- Make a sublist entry for every child item -->
-        <% curr.children.forEach(function(child){ %>
+            <!-- Make a sublist entry for every child item -->
+            <% curr.children.forEach(function(child){ %>
 
-            <li>
-                <div class="childRelationshipText">
-                    <%= curr.titleText %>&nbsp<%= child.relationshipToParentLabel %>:
-                </div>
-
-                <% if (child.isLink) { %>
-                    <!-- Some children may have already appeared earlier in the document; in this case we only show a link to that section
-                      -- instead of repeating information -->
-                    <div class="childNodeLink">
-                        See:&nbsp
-                        <a href="#<%= child.link.nodeIdString %>">
-                            <span class="nodeTitleText">
-                                <%= child.titleText %>
-                            </span>
-                        </a>
+                <li>
+                    <div class="childRelationshipText">
+                        <%= curr.titleText %>&nbsp<%= child.relationshipToParentLabel %>:
                     </div>
 
-                <% } else { %>
-                    <!-- Recurse and generate more! -->
-                    <%- include('./nodeContentSubtree.ejs', { curr: child }); %>
-                <% } %>
-            </li>
+                    <% if (child.isLink) { %>
+                        <!-- Some children may have already appeared earlier in the document; in this case we only show a link to that section
+                          -- instead of repeating information -->
+                        <div class="childNodeLink">
+                            See:&nbsp
+                            <a href="#<%= child.link.nodeIdString %>">
+                                <span class="nodeTitleText">
+                                    <%= child.titleText %>
+                                </span>
+                            </a>
+                        </div>
 
-        <% }); %>
-    </ol>
+                    <% } else { %>
+                        <!-- Recurse and generate more! -->
+                        <%- include('./nodeContentSubtree.ejs', { curr: child }); %>
+                    <% } %>
+                </li>
 
-<% } %>
+            <% }); %>
+        </ul>
+
+    <% } %>
+
+</div>

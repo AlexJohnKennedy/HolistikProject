@@ -37,9 +37,12 @@
 .nodeContent {
     /* Each 'block' of node content should be slightly further indented than their relationship-to-parent tag! */
     padding-left: 10px;
+
+    /* Make a line run down the side of each node content block, to indicate where it starts and ends (?) */
+    border-left: lightgrey 1px solid;
 }
 
-.document ol {
+.document ol, .document ul {
     margin-top: 1em;
 }
 li {
