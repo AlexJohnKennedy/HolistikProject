@@ -37,9 +37,6 @@
 .nodeContent {
     /* Each 'block' of node content should be slightly further indented than their relationship-to-parent tag! */
     padding-left: 10px;
-
-    /* Make a line run down the side of each node content block, to indicate where it starts and ends (?) */
-    border-left: lightgrey 1px solid;
 }
 
 .document ol, .document ul {
@@ -75,4 +72,12 @@ li {
 
 .image_content {
     float: right;
+}
+
+/* --------------------- Dynamic formatting style class rules ------------------ */
+
+/* intended to be added to node content blocks if the corresponding setting is toggled on */
+.nodeContentLeftBorder {
+    /* Make a line run down the side of each node content block, to indicate where it starts and ends (?) */
+    border-left: lightgrey 1px solid;
 }

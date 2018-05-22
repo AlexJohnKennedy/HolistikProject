@@ -3,11 +3,13 @@
     display: grid;
     grid-template-areas: "header header header"
                          "leftControls main rightControls"
+                         "leftControls formattingOptions rightControls"
                          "leftControls footer rightControls";
     grid-template-columns: 75px 1fr 75px;         /* The margins will stick to being 75 pixels, and the main document will fill the rest */
     grid-template-rows: 74px   /* hard coded header size */
     1fr                         /* The actual content will just take up as much vertical space as it needs.. */
-    100px;                       /* hard coded footer size */
+    max-content                        /* specified height for the formatting controls */
+    max-content;                       /* hard coded footer size */
 
 
     min-height: 100vh;          /* Ensures that the TOTAL vertical height of the document is AT LEAST the size of the window.
@@ -28,6 +30,9 @@
     /* Set the left and right padding to 65 pixels */
     padding-left: 60px;
     padding-right: 60px;
+
+    /* Add a little spacing on the bottom of the document, before the formatting toolbar */
+    margin-bottom: 40px;
 }
 .leftMarginColumn {
     grid-area: leftControls;
@@ -41,6 +46,31 @@
     /* Set the background colour to match the drawing canvas background colour, to match stylistically */
     background-color: rgb(237, 237, 237);
 }
+.formattingOptions {
+    grid-area: formattingOptions;
+    border-top: black 1px solid;
+    border-bottom: black 1px solid;
+    margin: 8px;
+
+    background-color: rgb(250, 250, 250);
+
+    /* make the content not appear like, right on the edges! */
+    padding-left: 10px;
+    padding-right: 10px;
+
+    /* leave a little spacing on the inside of the content at the bottom */
+    padding-bottom: 15px;
+}
+.toggleButton {
+    margin-bottom: 2px;
+    margin-top: 2px;
+}
+#formattingSectionTitle {
+    text-align: center;
+    font-size: medium;
+    font-family: 'Open Sans', Sans serif;
+    margin-bottom: 15px;
+}
 
 
 /* If the screen is less than 720 pixels wide, make it just go in one column with no margin columns */
@@ -49,13 +79,13 @@
         grid-template-areas: "header"
                              "leftControls"
                              "main"
-                             "rightControls"
+                             "formattingOptions"
                              "footer";
         grid-template-columns: 100%;
         grid-template-rows: 84px
         50px
         1fr
-        50px
+        185px
         82px;
     }
 }

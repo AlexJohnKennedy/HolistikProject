@@ -33,6 +33,30 @@
         <div class="leftMarginColumn"> </div>
         <div class="rightMarginColumn"> </div>
 
+        <!-- Controls for toggling basic formatting settings. -->
+        <div class="formattingOptions">
+            <div id="formattingSectionTitle">
+                Formatting Options
+            </div>
+
+            <div class="toggleButton">
+                <input type="checkbox" id="showRelationshipTagsCheckbox" onchange="toggleShowRelationshipTags()" checked="true">
+                <label for="showRelationshipTagsCheckbox">Show relationship tags</label>
+            </div>
+            <div class="toggleButton">
+                <input type="checkbox" id="showSemanticLinksCheckbox" onchange="toggleShowSemanticLinks()" checked="true">
+                <label for="showSemanticLinksCheckbox">Show related-concept links</label>
+            </div>
+            <div class="toggleButton">
+                <input type="checkbox" id="showHighlightCheckbox" onchange="toggleShowSemanticLinks()" checked="true">
+                <label for="showHighlightCheckbox">Highlight relevant section when mouse is over links</label>
+            </div>
+            <div class="toggleButton">
+                <input type="checkbox" id="showLeftBorderCheckbox" onchange="toggleShowBorderlines()">
+                <label for="showLeftBorderCheckbox">Show border-line for concept sections</label>
+            </div>
+        </div>
+
         <!-- the footer will contain the entire bottom row -->
         <footer class="gridFooter">
             <% include ../partials/footer.ejs %>
