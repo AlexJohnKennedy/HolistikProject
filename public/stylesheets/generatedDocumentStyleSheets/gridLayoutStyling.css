@@ -90,6 +90,30 @@
     }
 }
 
+/* If the screen is MORE than 1120 pixels wide, fix the central column width at what it would normally be for a 1120px screen,
+   and start growing the margin columns evenly so that the actual document content stayed centered, and doesn't grow so
+   wide such that it becomes irritating to read */
+@media screen and (min-width: 1120px) {
+    .gridWrapper {
+        display: grid;
+        grid-template-areas: "header header header"
+        "leftControls main rightControls"
+        "leftControls formattingOptions rightControls"
+        "leftControls footer rightControls";
+        grid-template-columns: 1fr 937px 1fr;
+        grid-template-rows: 74px   /* hard coded header size */
+        1fr                         /* The actual content will just take up as much vertical space as it needs.. */
+        max-content                        /* specified height for the formatting controls */
+        max-content;                       /* hard coded footer size */
+
+
+        min-height: 100vh;          /* Ensures that the TOTAL vertical height of the document is AT LEAST the size of the window.
+                                   (I.e. will extend the main section if necessary. This makes the footer stay at the bottom
+                                   of the page even if the main document is too short. The length can still grow beyond this if required though.
+                                 */
+    }
+}
+
 body {
     overflow-x: hidden;
 }
