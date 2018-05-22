@@ -1,0 +1,108 @@
+
+<!-- This document defines the structure of the auto-generated document template. It expects to be included by some other
+  -- page and treated as a black-box item, which SHOULD BE WRAPPED in a div by the page including it! -->
+
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Document title and description of active relationship categories ------------------------------------------ -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+<!-- The first thing on the page is the title, which is the context node's name -->
+<h1> <%= contextNode.titleText %> </h1>
+
+<!-- Next, we have a quick sub title block which tells us which relationship categories are included in this document.
+  -- In other words, it sorta shows which 'aspects' of the context node's 'Thing' is being covered here; usually, nodes
+  -- are nouns of some kind! -->
+<h3>
+    <!-- For each included relationship category, include a string component -->
+    <% let i=0; %>
+    <% for (let category of relationshipCategories) { %>
+        <% if (i === 0 ) { %>
+        <!-- do not include a leading comma if it's the first one! -->
+            <%= category.name %>
+        <% } else if (i === relationshipCategories.length-1) { %>
+        <!-- For the last item, append with an 'and' -->
+        <!-- If the total number of categories is two, do not use an oxford comma. If more than two, use an oxford comma here! -->
+            <% if (relationshipCategories.length === 2) { %>
+                and&nbsp<%= category.name %>
+            <% } else { %>
+                , and&nbsp<%= category.name %>
+            <% } %>
+        <% } else { %>
+        <!-- for subsequent categories (but not the last one), include a comma! -->
+            ,&nbsp <%= category.name %>
+        <% } %>
+        <% i++; %>
+    <% } %>
+</h3>
+
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Context node content section ------------------------------------------------------------------------------ -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+<!-- Awesome! Now, include a section for the context node's details! For now, this will basically just include the node's
+  -- description text.. but in the future we will append images and attached resources and so on -->
+<div id="contextNode_content">
+
+    <div class="nodeDescriptionText">
+        <%= contextNode.descriptionText %>
+    </div>
+
+    <!-- for all images, append some right floating images (Will be nothing for now..) -->
+    <% contextNode.imageAttachments.forEach(function(image) { %>
+        <img class="image_content" src="<% image %>">
+    <% }); %>
+
+    <!-- Include semantic link elements! These form HREF links to other sections of this document -->
+    <!-- NOTE: The id of each inner content node's 'div' which contains their 'section' of data will be the content nodes idString from the project!
+      -- This way, we already know in advance how to hyper-link to that section of the page, by just linking directly to the element's id attribute.
+      -->
+    <% if (contextNode.semanticRelationships.length > 0) { %>
+        <div class="internalPageLinks">
+
+            Related concept links:
+
+            <br>
+
+            <% contextNode.semanticRelationships.forEach(function(semlink) { %>
+                <!-- add a hyper link for each semantic relationship.. -->
+                <a class="nodeLink" href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Nested structured node content ---------------------------------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+<!-- Now the hard part; we need to build a tree-like structure of node content sections, laid out in nested HTML ordered lists, for each 'category', since
+  -- each category forms it's own DAG structure! -->
+
+<!-- Loop through each relationship category; each one contains a list of root node sections, and each root node section has a tree structure
+  -- within it -->
+<% relationshipCategories.forEach(function(category) { %>
+
+    <!-- Title for the category type -->
+    <h2>
+        <%= category.name %>
+    </h2>
+
+
+    <!-- Loop through each root node (each root of the content node) for this category, generating subtrees for each one!
+    <% category.rootNodes.forEach(function(rootContent) { %>
+
+        <!-- Generate tree structures recursively using a 'tree-like' EJS partial, which recursively includes itself as a partial.
+          -- This essentially simulates a recursive function inside of EJS.
+          -- The base case is when the node content has no more children, and then, it just generates nothing. -->
+        <div class="rootNode_contentWrapper">
+            <div class="childRelationshipText">
+                <%= contextNode.titleText %>&nbsp<%= rootContent.relationshipToParentLabel %>:
+            </div>
+
+            <%- include('../partials/generatedDocumentPartials/nodeContentSubtree.ejs', { curr: rootContent }); %>
+        </div>
+    <% }); %>
+
+<% }); %>

@@ -1,0 +1,86 @@
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Content for the current node ------------------------------------------------------------------------------ -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+<!-- The content for each node should be identified by the id string of the node, so that we can hyper link to this part of
+  -- page for links! -->
+<div id="<%= curr.idString %>" class="nodeContent">
+
+    <div class="nodeTitleText">
+        <%= curr.titleText %>
+    </div>
+
+    <div class="nodeDescriptionText">
+        <%= curr.descriptionText %>
+    </div>
+
+    <!-- for all images, append some right floating images (Will be nothing for now..) -->
+    <% curr.imageAttachments.forEach(function(image) { %>
+        <img class="image_content" src="<% image %>">
+    <% }); %>
+
+    <!-- Include semantic link elements! These form HREF links to other sections of this document -->
+    <!-- NOTE: The id of each inner content node's 'div' which contains their 'section' of data will be the content nodes idString from the project!
+      -- This way, we already know in advance how to hyper-link to that section of the page, by just linking directly to the element's id attribute.
+      -->
+    <% if (curr.semanticRelationships.length > 0) { %>
+        <div class="internalPageLinks">
+
+            Related concept links:
+
+            <br>
+
+            <% curr.semanticRelationships.forEach(function(semlink) { %>
+            <!-- add a hyper link for each semantic relationship.. -->
+            <a class="nodeLink" href="#<%= semlink.nodeIdString %>"> <%= semlink.name %> </a>
+            <% }); %>
+
+        </div>
+    <% } %>
+
+
+
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+<!-- --- Generate recursive sublist if it needs to be generated ---------------------------------------------------- -->
+<!-- --------------------------------------------------------------------------------------------------------------- -->
+
+    <!-- If the current content object has children, we want to create a sub-list here and recurse! Other wise, just generate
+      -- nothing else -->
+    <% if (curr.children.length > 0) { %>
+
+        <!-- Create a sub list right here -->
+        <ul>
+
+            <!-- Make a sublist entry for every child item -->
+            <% curr.children.forEach(function(child){ %>
+
+                <li>
+                    <div class="childRelationshipText">
+                        <%= curr.titleText %>&nbsp<%= child.relationshipToParentLabel %>:
+                    </div>
+
+                    <% if (child.isLink) { %>
+                        <!-- Some children may have already appeared earlier in the document; in this case we only show a link to that section
+                          -- instead of repeating information -->
+                        <div class="childNodeLink">
+                            See:&nbsp
+                            <a class="nodeLink" href="#<%= child.link.nodeIdString %>">
+                                <span class="nodeTitleText">
+                                    <%= child.titleText %>
+                                </span>
+                            </a>
+                        </div>
+
+                    <% } else { %>
+                        <!-- Recurse and generate more! -->
+                        <%- include('./nodeContentSubtree.ejs', { curr: child }); %>
+                    <% } %>
+                </li>
+
+            <% }); %>
+        </ul>
+
+    <% } %>
+
+</div>

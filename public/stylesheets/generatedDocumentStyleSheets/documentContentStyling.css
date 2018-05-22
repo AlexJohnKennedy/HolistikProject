@@ -1,0 +1,87 @@
+/* apply a broad, low-specificity font type face styling to the document content itself, to essentially set the
+   'default' font styling.
+
+   Should match the node canvas styling/design.
+ */
+.document {
+    font-family: 'Open Sans', Sans serif;
+
+    /* set a 'default' text size as well */
+    font-size: small;
+}
+
+/* set headings inside the document */
+.document h1 {
+    margin-bottom: 0.1em;
+
+    text-align: center;
+}
+.document h3 {
+    margin-top: 0.5em;
+
+    text-transform: none;
+
+    text-align: center;
+}
+
+/* -------------------------------------------- */
+/* Style content element types of the document! */
+/* -------------------------------------------- */
+
+.childRelationshipText {
+    /* these are the relationship labels. They should appear kind of small, and in italics */
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.nodeContent {
+    /* Each 'block' of node content should be slightly further indented than their relationship-to-parent tag! */
+    padding-left: 10px;
+}
+
+.document ol, .document ul {
+    margin-top: 1em;
+}
+li {
+    /* children list elements should be spaced out just a touch */
+    margin-bottom: 0.5em;
+}
+
+.nodeTitleText {
+    /* the title for each node content section should have slightly larger text, and be bolded! */
+    font-weight: bold;
+    font-size: 1.1em;
+
+    /* The description paragraph should be spaced by a line */
+    margin-bottom: 0.7em;
+}
+.nodeDescriptionText {
+    margin-bottom: 0.7em;
+}
+
+.internalPageLinks {
+    display: inline-block;
+    /* for better differentiation, make a bordered box for showing the page links.. */
+    border-style: solid;
+    border-width: 1px;
+    background-color: rgb(237, 237, 237);
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.image_content {
+    float: right;
+}
+
+/* --------------------- Dynamic formatting style class rules ------------------ */
+
+/* intended to be added to node content blocks if the corresponding setting is toggled on */
+.nodeContentLeftBorder {
+    /* Make a line run down the side of each node content block, to indicate where it starts and ends (?) */
+    border-left: lightgrey 1px solid;
+}
+
+.highlight {
+    background-color: #fffe5c;
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title> <%= projectName %> - <%= contextNode.titleText %> </title>
+
+        <link rel="stylesheet" href="/stylesheets/headerStyling.css">
+        <link rel="stylesheet" href="/stylesheets/footerStyling.css">
+        <link rel="stylesheet" href="/stylesheets/generatedDocumentStyleSheets/gridLayoutStyling.css">
+        <link rel="stylesheet" href="/stylesheets/generatedDocumentStyleSheets/documentContentStyling.css">
+
+        <script src="/javascripts/documentPageScripts/dynamicFormattingOptions.js"></script>
+    </head>
+
+    <!-- In this file we are just defining the overall page layout and how it is to be laid out with CSS grid.
+      -- It treats the 'generated document' as a black box object which already exists. (I.e. does not define the
+      -- document generation template itself yet!! That is hanlded within another EJS file.
+      -->
+
+    <body class="gridWrapper">  <!-- We want the entire page body to be controlled layout-wise by CSS grid -->
+
+        <!-- The header will span the entire top row of the grid, with a fixed height, the same as in the other pages -->
+        <header class="gridHeader">
+            <% include ../partials/header.ejs %>
+        </header>
+
+        <!-- Next, the actual document itself will occupy the main column of the document -->
+        <!-- THIS WRAPS THE WHOLE 'DOCUMENT' itself -->
+        <div id="mainDocument" class="document">
+            <% include ../partials/generatedDocumentPartials/generatedDocument.ejs %>
+        </div>
+
+        <!-- now the left and right column spacers, which essentially just block out some fixed width of space to provide a left
+          -- and right margin to the page, if the page is too wide (aesthetic AF) -->
+        <div class="leftMarginColumn"> </div>
+        <div class="rightMarginColumn"> </div>
+
+        <!-- Controls for toggling basic formatting settings. -->
+        <div class="formattingOptions">
+            <div id="formattingSectionTitle">
+                Formatting Options
+            </div>
+
+            <div class="toggleButton">
+                <input type="checkbox" id="showRelationshipTagsCheckbox" onchange="toggleShowRelationshipTags()" checked="true">
+                <label for="showRelationshipTagsCheckbox">Show relationship tags</label>
+            </div>
+            <div class="toggleButton">
+                <input type="checkbox" id="showSemanticLinksCheckbox" onchange="toggleShowSemanticLinks()" checked="true">
+                <label for="showSemanticLinksCheckbox">Show related-concept links</label>
+            </div>
+            <div class="toggleButton">
+                <input type="checkbox" id="showHighlightCheckbox" onchange="toggleHighlighting()" checked="true">
+                <label for="showHighlightCheckbox">Highlight relevant section when mouse is over links</label>
+            </div>
+            <div class="toggleButton">
+                <input type="checkbox" id="showLeftBorderCheckbox" onchange="toggleShowBorderlines()">
+                <label for="showLeftBorderCheckbox">Show border-line for concept sections</label>
+            </div>
+        </div>
+
+        <!-- the footer will contain the entire bottom row -->
+        <footer class="gridFooter">
+            <% include ../partials/footer.ejs %>
+        </footer>
+
+    </body>
+</html>

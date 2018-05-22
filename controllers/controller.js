@@ -7,6 +7,11 @@ const apiController = require('./apiController.js');
 //It is not up to the controller object to decide WHICH URLS activate which repsonses, that is the job of the router
 //Here, we are simply defining the functions which pass data to views to be rendered, and the router will decide when to call each one
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Canvas page / application page. For both logged in user's and guest users. --------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
 //For loading canvas when you are a logged in user. Should have parameters along with it!
 function mainPageGet(req, res) {
     let username = null;
@@ -19,6 +24,10 @@ function mainPageGet(req, res) {
     res.render('pages/mindMapPage', { username: username });
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Landing page and login screen page ------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 //Define behaviour for the home directory
 function homeDirectoryGet(req, res) {
@@ -35,14 +44,9 @@ function homeDirectoryGet(req, res) {
     });
 }
 
-
-//Define behaviour and access data to get user list
-function generateUserList(req, res) {
-    res.render('usersDirectory', {
-        userList : db.users,
-        path : "/users"
-    });
-}
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Help page -------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 function helpPageGet(req, res) {
     let username = null;
@@ -52,6 +56,10 @@ function helpPageGet(req, res) {
     }
     res.render('pages/helpPage', { username: username});
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Project page (display a logged in user's projects) --------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 async function projectsPageGet(req,res) {
     console.log("--- Rendering the profile page! ---");
@@ -126,10 +134,99 @@ function extractProjectInfoForProfilePageIcons(queryResults, arrayToPushTo) {
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Sign up page ----------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 function signupPageGet(req,res) {
     res.render('pages/signupPage');
 }
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- Dynamically generated document page - renders a custom document based on a particular project layout ------------
+// ---------------------------------------------------------------------------------------------------------------------
+
+//For the sake of developing the front end templating for this feature for now i am sending a dummy data object!
+
+//Define the data object 'types' which get sent to the front end with contructor functions
+function NodeData(idString, titleText, descriptionText, relationshipToParentLabel) {
+    this.isLink = false;    //This object contains ACTUAL DATA: we need to inform the rendering engine of this!
+
+    this.idString = idString;
+    this.titleText = titleText;
+    this.descriptionText = descriptionText;
+    this.relationshipToParentLabel = relationshipToParentLabel;
+
+    //Set up inner collections so that can be added to.
+    this.imageAttachments = [];
+    this.semanticRelationships = [];
+    this.children = [];     //Will contain an array of NodeData and NodeLink objects!
+}
+
+//Define a type for children entries which, instead of the actual node information, contain a link to the section of the document where the node data
+//has already (presumably earlier) appeared.
+function NodeLink(idString, titleText, relationshipToParentLabel, linkObject) {
+    this.isLink = true;
+
+    this.idString = idString;
+    this.titleText = titleText;
+    this.relationshipToParentLabel = relationshipToParentLabel;
+
+    this.link = linkObject;
+}
+
+//Simple type which contains the information necessary to hyper-link to another part of the document.
+function LinkToDocumentSection(name, nodeIdString) {
+    this.name = name;
+    this.nodeIdString = nodeIdString;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+//Define Dummy data for document generation.
+let milNode1 = new NodeData('contentNode2', "Command structure", "STATISTICS AND THE LIKE WHAT IDK MY BRAIN is ded :PPP", "has");
+let milNode2 = new NodeData('contentNode3', "Noble Ranks", "FUCK YOU", "has");
+let milNode3 = new NodeData('contentNode4', "Pleb ranks", "STATISTICS AND THE LIKE WHAT IDK MY BRAIN is ded :PPP", "Supersedes");
+let milNode6 = new NodeData('contentNode4', "General", "Allocated overall command of a number of legions by the Roman Senate, for a specified time. This is the main commander of the army", "Supersedes");
+let milNode4 = new NodeData('contentNode5', "Legate", "STATISTICS AND THE LIKE WHAT IDK MY BRAIN is ded :PPP", "Commands an entire legion");
+let milNode5 = new NodeData('contentNode6', "Prefect Centurion", "Highest pleb rank - the mst experienced commander of all teh cohorts", "organised by");
+
+milNode1.children = [milNode6, milNode4];
+milNode2.children = [milNode3, new NodeLink(milNode6.idString, milNode6.titleText, "highest rank", new LinkToDocumentSection("", milNode6.idString)),
+                                  new NodeLink(milNode4.idString, milNode4.titleText, "commands a legion", new LinkToDocumentSection("", milNode4.idString))];
+milNode2.semanticRelationships = [new LinkToDocumentSection("Remains distinct from", milNode3.idString)];
+
+milNode3.children = [milNode5];
+milNode3.semanticRelationships = [new LinkToDocumentSection("Remains distinct from", milNode2.idString)];
+
+let polNode1 = new NodeData('contentNode7', "Politics yo", "This was a thing even in the old ancient civilisations. BTW, i'm going to type a heap of random description text right now so that the front end testing has an example of longer text blocks being generated in the document.", "governed with:");
+polNode1.children = [new NodeLink(milNode6.idString, milNode6.titleText, "Appoints power to", new LinkToDocumentSection("", milNode6.idString))]
+
+let dummyDocumentData = {
+    username: "DEVELOPMENT",
+    projectName: "Ancient Empires",
+    contextNode: new NodeData('contentNode1', "The Roman Empire", "This was a very large civilisation and shit my boy. No seriously, this shit was a big deal", null),
+    relationshipCategories: [{
+        name: "Military organisation",
+        rootNodes: [milNode1, milNode2]
+    }, {
+        name: "Political organisation",
+        rootNodes: [polNode1]
+    }]
+};
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+function documentGenerationPage(req, res) {
+    //FOR NOW SENDING DUMMY DATA WITH NO AUTHENTICATION, FOR DEVELOPMENT PURPOSES!!
+    res.render('pages/generatedDocumentPage', dummyDocumentData);
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// --- DEPRECATED USER LIST - STILL HERE FOR REFERENCE -----------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 //Define behaviour and access data to get specific user page
 function userDetail(req, res) {
@@ -168,15 +265,19 @@ function userDetail(req, res) {
     });
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+
 //Now, we have to export our functions so that the router can use them as callbacks
 module.exports = {
     homeDirectoryGet : homeDirectoryGet,
-    generateUserList : generateUserList,
     userDetail : userDetail,
     mainPageGet : mainPageGet,
     helpPageGet : helpPageGet,
     profilePageGet: projectsPageGet,
     signupPageGet : signupPageGet,
+    documentGenerationPage : documentGenerationPage,
 
     apiController : apiController
 };

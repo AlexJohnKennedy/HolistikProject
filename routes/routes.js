@@ -31,6 +31,9 @@ router.get('/help', controller.helpPageGet);
 //Route for the profile page
 router.get('/profile', controller.profilePageGet);
 
+//DEVELOPMENT ROUTE
+router.get('/document', controller.documentGenerationPage);
+
 // ---------------------------------------------------------------------------------------------------------------------
 // --- User information gathering api routes ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
