@@ -139,3 +139,9 @@ function unhighlightCallback(event) {
 
     targetElem.classList.remove("highlight");
 }
+
+window.onload = function() {
+    if (showingHighlights) {
+        addHighlightListeners();
+    }
+};
