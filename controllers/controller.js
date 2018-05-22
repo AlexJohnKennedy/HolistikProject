@@ -184,9 +184,41 @@ function LinkToDocumentSection(name, nodeIdString) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+//Define Dummy data for document generation.
+let milNode1 = new NodeData('contentNode2', "Command structure", "STATISTICS AND THE LIKE WHAT IDK MY BRAIN is ded :PPP", "has");
+let milNode2 = new NodeData('contentNode3', "Noble Ranks", "FUCK YOU", "has");
+let milNode3 = new NodeData('contentNode4', "Pleb ranks", "STATISTICS AND THE LIKE WHAT IDK MY BRAIN is ded :PPP", "Supersedes");
+let milNode6 = new NodeData('contentNode4', "General", "Allocated overall command of a number of legions by the Roman Senate, for a specified time. This is the main commander of the army", "Supersedes");
+let milNode4 = new NodeData('contentNode5', "Legate", "STATISTICS AND THE LIKE WHAT IDK MY BRAIN is ded :PPP", "Commands an entire legion");
+let milNode5 = new NodeData('contentNode6', "Prefect Centurion", "Highest pleb rank - the mst experienced commander of all teh cohorts", "organised by");
+
+milNode1.children = [milNode6, milNode4];
+milNode2.children = [milNode3, new NodeLink(milNode6.idString, milNode6.titleText, "highest rank", new LinkToDocumentSection("", milNode6.idString)),
+                                  new NodeLink(milNode4.idString, milNode4.titleText, "commands a legion", new LinkToDocumentSection("", milNode4.idString))];
+milNode2.semanticRelationships = [new LinkToDocumentSection("Remains distinct from", milNode3.idString)];
+
+milNode3.children = [milNode5];
+milNode3.semanticRelationships = [new LinkToDocumentSection("Remains distinct from", milNode2.idString)];
+
+let polNode1 = new NodeData('contentNode7', "Politics yo", "This was a thing even in the old ancient civilisations. BTW, i'm going to type a heap of random description text right now so that the front end testing has an example of longer text blocks being generated in the document.", "governed with:");
+polNode1.children = [new NodeLink(milNode6.idString, milNode6.titleText, "Appoints power to", new LinkToDocumentSection("", milNode6.idString))]
+
+let dummyDocumentData = {
+    contextNode: new NodeData('contentNode1', "The Roman Empire", "This was a very large civilisation and shit my boy. No seriously, this shit was a big deal", null),
+    relationshipCategories: [{
+        name: "Military organisation",
+        rootNodes: [milNode1, milNode2]
+    }, {
+        name: "Political organisation",
+        rootNodes: [polNode1]
+    }]
+};
+
+
+
 function documentGenerationPage(req, res) {
     //FOR NOW SENDING DUMMY DATA WITH NO AUTHENTICATION, FOR DEVELOPMENT PURPOSES!!
-
+    res.render('/pages/generatedDocumentPage', dummyDocumentData);
 }
 
 
@@ -247,6 +279,7 @@ module.exports = {
     helpPageGet : helpPageGet,
     profilePageGet: projectsPageGet,
     signupPageGet : signupPageGet,
+    documentGenerationPage : documentGenerationPage,
 
     apiController : apiController
 };
